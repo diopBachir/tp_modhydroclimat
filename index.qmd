@@ -1,25 +1,38 @@
 ---
 # title: "Extreme Value Analysis: An Introduction"
-about:
-  template: solana
-  image: images/evaillustr.png
+# about:
+#   template: solana
+#   image: images/evaillustr.png
 format:
   html:
     toc: false
-    number-sections: false
-    image-title: "test"
+#     number-sections: false
+#     image-title: "test"
 ---
 
-:::{#hero-heading}
-
-# Introduction to Extreme Value Analysis
+# Introduction to Extreme Value Analysis {.unnumbered}
 
 Understanding the probabilistic behavior of extreme observations and tail phenomena in statistical distributions: application to hydrological data.
 
-## [Yves Tramblay <i class='fa-brands fa-orcid'></i>](http://orcid.org/0000-0003-0481-5330)
-Research scientist of the French Institute of Research for Development since 2013 - Working on hydrological hazards in Mediterranean countries, to improve the modelling of floods, heavy rainfall and droughts in the context of climate change **`[Espace-Dev, Univ. Montpellier, IRD, Montpellier, France]`**.
+:::{.column-margin}
+![](images/evaillustr.png)
+:::
 
-## [Serigne Bassirou Diop <i class='fa-brands fa-orcid'></i>](https://orcid.org/0009-0002-8743-3660)
-PhD Researcher on flood modelling in the context of climate change – Passionate about Hydrology, Climate Change, Statistical Modelling and Machine Learning **`[Leïdi, Univ. Gaston Berger, Saint-Louis, Senegal]`**
+:::{.column-margin}
+![](images/1755_Lisbon_earthquake.jpg)
+
+<p style="font-size: 0.7em;">
+  <strong>1755 engraving of Lisbon in flames, with a tsunami engulfing ships in the harbor.</strong>
+</p>
 
 :::
+
+**[Yves Tramblay <i class='fa-brands fa-orcid'></i>](http://orcid.org/0000-0003-0481-5330)**
+
+Research scientist of the French Institute of Research for Development since 2013 - Working on hydrological hazards in Mediterranean countries, to improve the modelling of floods, heavy rainfall and droughts in the context of climate change **`[Espace-Dev, Univ. Montpellier, IRD, Montpellier, France]`**.
+
+**[Serigne Bassirou Diop <i class='fa-brands fa-orcid'></i>](https://orcid.org/0009-0002-8743-3660)**
+
+PhD Researcher on flood modelling in the context of climate change – Passionate about Hydrology, Climate Change, Statistical Modelling and Machine Learning **`[Leïdi, Univ. Gaston Berger, Saint-Louis, Senegal]`**
+
+
