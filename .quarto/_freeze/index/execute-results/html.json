@@ -1,0 +1,15 @@
+{
+  "hash": "1e421286b359a279c5733090613ef1e5",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Overview\"\nformat:\n  html:\n    toc: true\n    toc-title: Contents\n    html-math-method: katex\n    anchor-sections: true\n    smooth-scroll: true\n    css: styles.scss\n\n    execute:\n      message: false\n      echo: false\n      cache: true\n      code-tools: true\n    \n  ipynb: default\n  pdf: default\nformat-links: [ipynb]\n\nengine: knitr\njupyter: python3\n\n---\n\n\n::: {.panel-tabset}\n\n## [Introduction]{.custom-tabset-title}\n\nFrequency analysis of floods is a statistical method used in hydrology to estimate the probability of occurrence of extreme flow events, such as floods, over a given period. It is typically based on the study of observed annual maximum flood discharges over several years. An alternative approach is the peak over threshold (POT) method, which considers all flood peaks that exceed a certain threshold, rather than only the annual maxima. This method allows for a more detailed analysis of extreme flood events by using more data points above the chosen threshold.\n\nThe objective is to determine the discharge associated with a return period, that is, the discharge that has a certain probability (e.g., 1%, 10%) of being exceeded in any given year. For example, a 100-year flood has a 1% chance of being exceeded in any year.\n\nTo achieve this, the data are fitted to a probability distribution (such as the Gumbel distribution), and a frequency curve is constructed linking discharges to return periods. This curve is then used to design hydraulic structures (dams, bridges, levees) and to manage flood risks.\n\nFrequency analysis thus allows for an objective assessment of flood-related risks and supports informed decision-making in land-use planning and flood protection.\n\n\n## [Extreme Value Theory (EVT)]{.custom-tabset-title}\n\nImagine we have daily observational data for a random variable (e.g., river discharges, precipitations, etc.) for many years. [EVT](https://en.wikipedia.org/wiki/Extreme_value_theory) suggests that the extreme values of this variable are asymptotically close to one of three types of extreme value distributions, regardless of the original distribution of daily flows. \n\nThe EVD helps us estimate the probability of rare, high-flow events like floods.\n\n\n::: {.cell}\n::: {.cell-output-display}\n![](index_files/figure-html/unnamed-chunk-1-1.png){width=672}\n:::\n:::\n\n\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

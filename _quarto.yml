@@ -1,0 +1,75 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Introduction to Extreme Value Analysis"
+  back-to-top-navigation: true
+  page-navigation: true
+  search: 
+    location: navbar
+    type: overlay
+    copy-button: true
+  navbar:
+    collapse: true
+    pinned: true
+    background: "#536878"
+    left:
+      - href: overview/index.qmd
+        text: Overview
+      - href: softwaresetup/index.qmd
+        text: Software & Setup
+      - href: blockmaxima/index.qmd
+        text: Block Maxima Approach
+      - href: pot/pot.qmd
+        text: Peak-Over-Threshold (POT)
+    #   - href: teaching/index.qmd
+    #     text: Distributions Fitting
+    #   - href: about/index.qmd
+    #     text: Quantiles Estimation
+  page-footer:
+    left: "© Copyright 2025"
+    right: "Powered by <a href='https://quarto.org/'>Quarto</a>"
+    center:
+      - text: "Yves Tramblay <i class='fa-brands fa-orcid'></i>"
+        href: http://orcid.org/0000-0003-0481-5330
+      - text: "|"
+      - text: "Serigne Bassirou Diop <i class='fa-brands fa-orcid'></i>"
+        href: https://orcid.org/0009-0002-8743-3660
+    background: "#536878"
+  
+
+date-format: "D MMMM YYYY"
+
+format:
+  html:
+    # Table of contents
+    toc: true
+    toc-depth: 6
+    toc-expand: 4
+    toc-title: On this page
+    toc-location: left
+    toc-collapsible: true
+    # Section numbering
+    number-sections: true
+    theme: 
+      - styles.scss
+    html-math-method: katex
+    include-in-header:
+      file: header.html
+    anchor-sections: true
+    smooth-scroll: true
+    
+    highlight-style: github
+    code-block-border-left: "#31BAE9"
+
+    code-overflow: scroll
+    execute:
+      message: false
+      echo: false
+      cache: true
+
+fig-cap-location: bottom
+
+engine: knitr
+jupyter: python3

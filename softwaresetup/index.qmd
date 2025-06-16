@@ -1,0 +1,118 @@
+---
+title: "Software, Setup and Libraries (Packages)"
+---
+
+# R (environment) & Rstudio (IDE)
+
+::: {.column-margin}
+::: {.callout-note}
+An **`IDE (Integrated Development Environment)`** is a **software application** that provides developers with a comprehensive set of tools for **writing, testing, and debugging code** in one place.
+:::
+:::
+
+
+## 🧠 What is R?
+[**`R`**](https://www.r-project.org/) is a **programming language** and **software environment** designed primarily for **statistical computing**, **data analysis**, and **visualization**.
+
+![Some of the key advantages of learning the R programming language. *(Source: [C# Corner](https://www.c-sharpcorner.com/article/installing-and-setting-up-r-environment-on-windows/))*](img/whylearnR.jpg){#fig-Rbenefits width=100% fig-alt="Benefits of learning R language"}
+
+
+## 🖥️ What is RStudio?
+[**`RStudio`**](https://posit.co/download/rstudio-desktop/) is an **`IDE (Integrated Development Environment)`** specifically made for working with **`R`**. It provides a much more convenient and powerful interface than the basic **`R console`**:
+
+* 📝 Script editor with syntax highlighting and auto-completion
+* 💻 Console for interactive execution
+* 📦 Environment viewer to see your variables, functions, and data
+* 📊 Plot viewer, 🗂️ file browser, 📖 help pane, and more
+* ⚙️ Easy access to package management, 🔄 version control, and 📄 [`R Markdown / Quarto`](https://quarto.org/)
+
+![Overview of the four main panes in the **RStudio interface**. **Source pane (top-left):** where scripts and R Markdown files are written and edited. **Console pane (bottom-left):** where R commands are executed interactively. **Environment pane (top-right):** displays the current workspace, including variables and data. **Output pane (bottom-right):** shows plots, files, packages, help pages, and more. *(Source: [Posit](https://docs.posit.co/ide/user/ide/guide/ui/ui-panes.html))*](img/rstudio-panes-labeled.jpeg){#fig-rstudiopane width=100% fig-alt="Rstudio panes labeled"}
+
+
+## 🔧 How to use them together?
+
+1- Install **`R`** → [https://cran.r-project.org](https://cran.r-project.org)
+
+2- Install **`RStudio`** → [https://posit.co/download/rstudio-desktop/](https://posit.co/download/rstudio-desktop/)
+
+3- Then, open **`RStudio`** → it will automatically use the installed R engine in the background.
+
+![**R environment**, the engine powering your data analysis, and **RStudio**, the dashboard and controls that make driving (coding) efficient and user-friendly.  *(Source: [umanitoba.ca](https://home.cc.umanitoba.ca/~gersteia/MBIO7040/02-Intro.html))*](img/R-Rstudio.png){#fig-r_rstudio width=100% fig-alt="R and Rstudio"}
+
+
+# Libraries (Packages)
+
+::: {.column-margin}
+::: {.callout-important}
+## Must-haves
+```{r}
+#| echo: true
+#| eval: false
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(lubridate)
+library(trend)
+library(extRemes)
+```
+:::
+:::
+
+::: {.column-margin}
+::: {.callout-note}
+The packages `dplyr`, `ggplot2` and `lubridate` are part of the [`tidyverse`](https://www.tidyverse.org/packages/) collection of R packages. The `core tidyverse` includes the packages that you’re likely to use in everyday data analyses. It's is advised to install this set of packages, including `dplyr`, `ggplot2` and `lubridate`, together by running:
+
+```{r}
+#| echo: true
+#| eval: false
+
+install.packages("tidyverse")
+```
+:::
+:::
+
+📦 [{extRemes}](https://www.jstatsoft.org/article/view/v072i08) — For fitting and analyzing extreme value distributions.
+
+```{r}
+#| echo: true
+#| eval: false
+
+install.packages("extRemes")
+```
+
+📦 [{trend}](https://cran.r-project.org/web/packages/trend/index.html) — Provides non-parametric tests test for trend detection.
+
+```{r}
+#| echo: true
+#| eval: false
+
+install.packages("trend")
+```
+
+📦 [{dplyr}](https://cran.r-project.org/web/packages/dplyr/index.html) — For data manipulation and tidy workflows
+
+```{r}
+#| echo: true
+#| eval: false
+
+install.packages("dplyr")
+```
+
+📦 [{ggplot2}](https://cran.r-project.org/web/packages/ggplot2/index.html) — For creating clear and publication-quality plots
+
+```{r}
+#| echo: true
+#| eval: false
+
+install.packages("ggplot2")
+```
+
+📦 [{lubridate}](https://cran.r-project.org/web/packages/lubridate/index.html) — To work with date-times and time-spans.
+
+```{r}
+#| echo: true
+#| eval: false
+
+install.packages("lubridate")
+```

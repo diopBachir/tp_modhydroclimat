@@ -1,0 +1,900 @@
+---
+title: "Flood Frequency Analysis (FFA) with Block-Maxima"
+---
+
+# Libraries
+
+```{r}
+#| echo: true
+#| eval: true
+#| message: false
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(lubridate)
+library(trend)
+library(extRemes)
+```
+
+# Data Import
+
+Will work with real-world data, from the **`La Drôme à Luc-en-Diois`** station in France, to analyze flood events using daily streamflow data covering the period from August 1st, 1958, to December 31st, 2020. The metadata of the station are available on the [HydroPortail website (here)](https://hydro.eaufrance.fr/stationhydro/V421401001/fiche).
+
+Let’s consider the formatted daily streamflow data file for the target catchment. We can read the data into a data frame using the `read.csv()` function. We will also set the column names using the `col.names` argument, and use the `lubridate` library to prepare a time serie.
+
+```{r}
+#| echo: true
+#| eval: true
+
+library(lubridate)
+
+filename = './data/discharge.csv'
+Qdata = read.csv(filename, col.names = c("Year", "Month", "Day", "Q"))  
+
+# construct time serie
+Qdata$Date = paste(Qdata[["Year"]], Qdata[["Month"]], Qdata[["Day"]], sep="-")
+Qdata$Date  = ymd(Qdata$Date)
+
+# final time serie
+Qdata = Qdata[, c("Date", "Q")]
+```
+
+The output is a data frame (or a matrix) with 22799 rows and 2 columns.
+
+```{r}
+#| echo: false
+#| eval: true
+#| label: tbl-bm_loaddata
+#| tbl-cap: "First (6) lines of the daily streamflow data for Block-Maxima approach"
+
+head(Qdata, 6) %>% knitr::kable(align=rep("c", 2))
+```
+
+::: {.column-margin}
+
+::: {.callout-note}
+We can display the structure of the data frame using the `str()` function.
+
+```{r}
+#| echo: true
+#| eval: true
+
+str(Qdata)  
+```
+
+:::
+
+:::
+
+# Sampling Extreme Events
+
+
+
+## The Block-Maxima Approach
+
+The **Block-Maxima Approach**, consists of sampling the maximum streamflow value for each year (or block). This method is straightforward to implement and ensures, by construction, that the sampled values are statistically independent, a key requirement in extreme value analysis (EVA).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-height: 2
+#| label: fig-bm_illust
+#| fig-cap: "Illustration of the Block-Maxima Approach: Daily Streamflow with Yearly Maxima"
+
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(scales)  # for better date formatting
+
+# Simulate daily streamflow data
+set.seed(42)
+dates = seq.Date(from = as.Date("1958-08-01"), to = as.Date("1962-07-31"), by = "day")
+Q = rgamma(length(dates), shape = 3, scale = 10)
+streamflow = tibble(date = dates, Q = Q)
+
+# Define hydrological year starting August 1
+streamflow = streamflow %>%
+  mutate(hydro_year = if_else(month(date) >= 8, year(date) + 1, year(date)),
+         hydro_year_start = as.Date(paste0(hydro_year - 1, "-08-01")))
+
+# Extract block maxima per hydrological year
+maxima = streamflow %>%
+  group_by(hydro_year) %>%
+  filter(Q == max(Q)) %>%
+  ungroup()
+
+# Get unique hydrological year start dates for vertical lines
+hydro_year_starts = unique(streamflow$hydro_year_start)
+
+# Plot with enhancements
+ggplot(streamflow, aes(x = date, y = Q)) +
+  geom_line(color = "steelblue", size = 0.3, alpha = 0.8) +
+  geom_point(data = maxima, aes(x = date, y = Q), color = "red", size = .7, shape = 8) +
+  geom_vline(xintercept = hydro_year_starts, linetype = "dashed", color = "gray40", alpha = 0.6) +
+  scale_x_date(date_breaks = "1 years", date_labels = "%Y") +
+  labs(
+    x = "Date",
+    y = "Streamflow (Q)"
+  ) +
+  theme_minimal(base_size = 5) +
+  theme(
+    axis.title = element_text(size=5, face="bold"),
+    axis.text = element_text(size=5, color="black"),
+  )
+
+
+```
+
+## Exract Annual Maximum Floods (AMF) from the daily streamflow serie
+
+**1.** To extract annual maximum floods (AMF) from the streamflow series, we need to define a function that returns the maximum value of a block of data:
+
+```{r}
+#| echo: true
+#| eval: true
+#| message: false
+#| warning: false
+
+extract_annual_max = function(df) 
+{
+    df %>%
+    mutate(Year = year(Date)) %>%    # extract year from Date
+    group_by(Year) %>%
+    filter(Q == max(Q)) %>%          # keep only max flow per year
+    slice(1) %>%                     # in case of ties, keep first max
+    ungroup() %>%
+    select(Year, Date, AMAX=Q)
+}
+```
+
+**2.** Now, we apply the function to the data to extract AMF for each year:
+
+```{r}
+#| echo: true
+#| eval: true
+#| message: false
+#| warning: false
+
+extractedAMF = extract_annual_max(Qdata)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+#| label: tbl-bm_extract
+#| tbl-cap: "First (6) rows of the AMF extracted using the Block-Maxima approach"
+
+head(extractedAMF, 6) %>% knitr::kable(align=rep("c", 2))
+```
+
+## Display Sampled Events
+
+Now, we overlap the extracted **Annual Maximum Flow** with the original daily discharge time serie to visualize the sampling process. We use the functions from the `dplyr` and `ggplot2` library to create the plot.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+#| output: false
+#| code-fold: true
+#| code-summary: "Show the code"
+
+amf.plot = ggplot() +
+           geom_line(data=Qdata, aes(x=Date, y=Q), color="steelblue", size=0.7, alpha=0.8) +
+           geom_point(data=extractedAMF, aes(x=Date, y=AMAX), color ="red", size=1.2) +
+           labs(x="Date", y="Discharge (Q)") +
+           theme_minimal(base_size = 13) +
+           theme(axis.title=element_text(size=12, face="bold"),
+                 axis.text=element_text(size=12, color="black"))
+print(amf.plot)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-height: 3
+#| label: fig-amf_with_dailystreamflow
+#| fig-cap: "Daily streamflow time serie (blue) and with Extracted Annual Peak Floods (red) extracted using the Block-Maxima Approach"
+
+print(amf.plot)
+```
+
+
+
+# Autocorrelation Testing
+
+::: {.column-margin}
+::: {.callout-tip}
+## Recall
+The `extractedAMF` variable used in the following code blocs is created previously in the **Sampling Events** section
+The `acf` function is a R-base function, no installation needed
+:::
+:::
+
+
+## What is Autocorrelation?
+
+**`Autocorrelation (or autocovariance)`** of a series refers to the fact that in a time or spatial serie, the measurement of a phenomenon at time t can be correlated with previous measurements (at time t-1, t-2, t-3, etc.) or with subsequent measurements (at t+1, t+2, t+3, ...). An autocorrelated series is thus correlated with itself, with a given lag (please refer [here](https://perso.ens-lyon.fr/lise.vaudor/autocorrelation-de-series-temporelles-ou-spatiales/) for mode details). 
+
+::: {.callout-note}
+
+## To assess autocorrelation, two methods will be used in this lab
+
+🔍 **Correlogram:**
+
+* Visualization of correlation coefficients between the serie and its lags
+* Based on the [autocorrelation function (ACF)](https://medium.com/@kis.andras.nandor/understanding-autocorrelation-and-partial-autocorrelation-functions-acf-and-pacf-2998e7e1bcb5)
+* Helps identify the presence and extent of dependencies over time
+
+📊 **Wald-Wolfowitz Test  [(1940)](https://doi.org/10.1214/aoms/1177731909):**
+
+* Non-parametric to assess the randomness of a time series
+* Used to detect the absence of randomness in the series
+* **Null hypothesis: The sequence of observations is random**
+
+:::
+
+### Correlogram
+
+If you execute the above given chunk, it generates the @fig-acfplot as output:
+
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: "Show the code"
+#| message: true
+#| warning: false
+#| fig-height: 2.5
+#| label: fig-acfplot
+#| fig-cap: "Autocorrelation (at different lags) of Annual Maximum Flood (AMAX). The red line represents the 95% confidence interval."
+
+# compute autocorrelation lag
+bacf = acf(extractedAMF$AMAX, plot = FALSE)
+bacfdf = with(bacf, data.frame(lag, acf))
+
+# confidence interval
+n = length(extractedAMF$AMAX)
+conf_limit = 1.96 / sqrt(n)
+
+# correlogram
+library(ggplot2)
+ggplot(data=bacfdf, mapping=aes(x=lag, y=acf)) +
+  geom_hline(aes(yintercept=0)) +
+  geom_bar(stat="identity", position="identity", width=.2) +
+  geom_hline(yintercept=conf_limit, linetype="dashed", color="red") +
+  geom_hline(yintercept=-conf_limit, linetype="dashed", color="red") +
+  labs(y="ACF", x="Lag") +
+  theme_minimal() +
+  theme(axis.title=element_text(size=10, face="bold", family="Times"),
+        axis.text=element_text(size=10, color="black", family="Times"))
+
+```
+
+::: {.column-margin}
+::: {.callout-tip}
+## Interpretation
+Looking at the 95% confidence interval bounds in the correlogram, we can see that from lag -1 to lag-16, the autocorrelation is only significant at lag-8, so we can conclude that the maximum annual flood is a random variable.
+:::
+:::
+
+
+### Wald-Wolfowitz (WW) Test
+
+In the chunk below, we use the `ww.test(...)` function from `{trend}` package to perform the `WW test` at the **0.05 significance level** to test the hypothesis that the maximum annual flood is a random variable.
+
+```{r}
+#| echo: true
+
+wwtest = trend::ww.test(extractedAMF$AMAX)
+print(wwtest)
+```
+
+::: {.column-margin}
+::: {.callout-tip}
+## Interpretation
+**`p.value = 0.4609:`** indicates that the data series appears to be consistent with the assumption of independence and stationarity (i.e., there is not enough evidence to reject the null hypothesis of randomness).
+:::
+:::
+
+# Trend Detection
+
+## Non-Parametric methods: The Mann-Kendall (MK) test
+
+The MK test's null hypothesis (H0) assumes no trend in the data (please see [here](https://vsp.pnnl.gov/help/vsample/design_trend_mann_kendall.htm) for the detailed algorithm). Recommended by the World Meteorological Organization (WMO), it is simple and requires no assumptions about data distribution, which is particularly advantageous for hydroclimatic series that are rarely normally distributed. Additionally, outlier values have very little influence on the results.
+
+We use the `mk.test(...)` function from `{trend}` package to perform the `MK test` at the **0.05 significance level** to test the hypothesis that there is no stationarity in the maximum annual floods serie.
+
+::: {.column-margin}
+::: {.callout-note}
+**`Non-Stationarity (NS)`** refers to changes in statistical properties over time.
+:::
+:::
+
+```{r}
+#| echo: true
+mktest = trend::mk.test(extractedAMF$AMAX)
+print(mktest)
+```
+
+::: {.column-margin}
+::: {.callout-tip}
+## Interpretation
+**`p.value = 0.2183:`** there is not enough statistical evidence to conclude that a significant trend exists in the AMF serie.
+
+**`tau = -0.1096665:`** Kendall's Tau is a non-parametric measure of trend strength, ranging from -1 (perfect decreasing trend) to +1 (perfect increasing trend). A value near 0 indicates a weak or no trend.
+
+**`z = -1.231:`** the calculated test statistic (a z-score). A negative value suggests a potential decreasing trend, while a positive value suggests a potential increasing trend.
+:::
+:::
+
+@fig-amfevolution shows the data points and a red line indicating the overall linear trend. The Mann-Kendall test result (p-value = 0.2183) indicates that this visually apparent (decreasing) linear trend is not statistically significant at the 0.05 significance level.
+
+```{r}
+#| echo: true
+#| message: false
+#| code-fold: true
+#| code-summary: "Show the code"
+#| fig-height: 3
+#| label: fig-amfevolution
+#| fig-cap: "Evolution of the annual peak flood over time."
+
+lineplot = ggplot(extractedAMF, aes(Year, AMAX)) +
+           geom_line(color="blue", linewidth=1) +
+           geom_smooth(color="red", linewidth=1, method="lm", se=F)
+print(lineplot)
+```
+
+## Parametric methods
+
+Parametric methods rely on the adjustment of distributions adapted to extremes event (e.g., Generalized Extreme Value, Generalized Pareto Distribution, etc.) in a `non-stationary (NS)` context. 
+
+::: {.callout-note}
+NS is taken into account by allowing the models parameters to vary as a linear function of time or other covariates. Here, the location parameter **`(μ)`** will be expressed as a linear function of time, denoted as **`μ(t)`**, leaving the others parameters constant.
+:::
+
+# Flood Frequency Analysis (FFA)
+
+## Probability distributions
+
+We will compare two probability distributions adapted to the `Block-Maxima Framework`: the Generalized Extreme Value (GEV) and the Gumbel probability distributions.
+
+::: {.callout-note}
+## GEV Distribution
+
+The Generalized Extreme Value (GEV) distribution is a family of continuous probability distributions developed to combine the Gumbel, Fréchet, and Weibull distributions. According to the Extreme Value Theorem, the GEV distribution is the only possible limit distribution for properly normalized sequences of maxima of independent and identically distributed random variables. The cumulative distribution function (CDF) of the GEV distribution is given by:
+
+$$ F(x; \mu, \sigma, \xi) = \exp\left\{ -\left[ 1 + \xi \left( \frac{x - \mu}{\sigma} \right) \right]^{-1/\xi} \right\} $$
+
+for $1 + \xi (x - \mu)/\sigma > 0$, where:
+
+* $\mu$ is the location parameter.
+* $\sigma > 0$ is the scale parameter.
+* $\xi$ is the shape parameter.
+
+The shape parameter $\xi$ determines the type of extreme value distribution:
+
+* If $\xi > 0$, the distribution is a Fréchet type.
+* If $\xi < 0$, the distribution is a Weibull type.
+* If $\xi = 0$, the distribution is a Gumbel type.
+
+:::
+
+::: {.callout-note}
+
+## Gumbel Distribution
+
+The Gumbel distribution is a special case of the GEV distribution when the shape parameter $\xi = 0$. It is often used to model the distribution of the maximum (or minimum) of a number of samples of various distributions. It is one of the three types of extreme value distributions. The cumulative distribution function (CDF) of the Gumbel distribution (Type I Extreme Value distribution) is given by:
+
+:::
+
+## Models fitting
+
+We will employ the **`Generalized Maximum Likelihood Estimation (GMLE)`** method to fit probability distributions to our data. The **`{extRemes}`** package offers the function **`fevd(..)`**, which enables fitting a range of probability distributions — such as the **GEV**, **Gumbe**l distributions — to a given dataset using three distinct fitting methods: **`L-moments`**, **`Maximum Likelihood Estimation (MLE)`**, and **`GMLE`**.
+
+::: {.column-margin}
+::: {.callout-tip}
+## Why the **`GML`** method?
+
+The **`GMLE`** method use a prior distribution to constrain the **`GEVC shape parameter`** within a reasonnable interval . This prior helps avoid unrealistic or extreme negative values of the shape parameter, leading to more reliable and stable parameter estimates when data are limited (See [**`Martins & Stedinger (2000)`**](https://agupubs.onlinelibrary.wiley.com/doi/10.1029/1999WR900330) for more details).
+:::
+:::
+
+The advantage of using **`GMLE`** and **`MLE`** over the **`L-moments`** method is that **`L-moments`** are limited in their ability to accommodate non-stationary processes. In contrast, **`GMLE`** and **`MLE`** can directly incorporate covariates or time trends, making them more flexible and suitable for analyzing data where the underlying distribution may change over time or as a function of external variables. This flexibility is especially important for trend detection.
+
+## Model selection
+
+To select the best probability distribution, we will use the **`AIC`** and **`AIC`** criteria. The model with the lowest AIC or BIC value will be selected.
+
+::: {.callout-note}
+## AIC (Akaike Information Criterion)
+
+The **`AIC`** balances the goodness of fit of the model with the number of parameters used by the model. This mean that it rewards models that fit the data well but also penalizes models that use too many parameters. The formula for AIC is:
+
+$$ \text{AIC} = 2k - 2\ln(\hat{L}) $$
+
+where:
+
+* $k$ is the number of parameters in the model.
+* $\hat{L}$ is the maximum value of the [likelihood function](https://en.wikipedia.org/wiki/Likelihood_function) for the model.
+
+
+:::
+
+::: {.column-margin}
+::: {.callout-tip}
+## How to select the best model?
+The model with the lowest **`AIC`** and **`BIC`** values is the best-suited model. **`AIC`** tends to favor models with better fit, even if more complex, while **`BIC`** favors simpler models, especially as sample size grows. Combining these these performance metrics enhances the efficiency of model selection: 
+
+* if both criteria select the same model, it is strongly preferred
+* if not, the choice depends on whether your goal is **predictive accuracy (AIC)** or **model simplicity (BIC)**
+:::
+:::
+
+::: {.callout-note}
+## BIC (Bayesian Information Criterion)
+
+**`BIC`** penalizes model complexity **more heavily than `AIC`**, especially for larger sample sizes. This means **`BIC`** tends to favor simpler models compared to AIC. The formula for BIC is:
+
+$$ \text{BIC} = k\ln(n) - 2\ln(\hat{L}) $$
+
+where:
+
+* $k$ is the number of parameters in the model.
+* $n$ is the number of data points.
+* $\hat{L}$ is the maximum value of the [likelihood function](https://en.wikipedia.org/wiki/Likelihood_function) for the model.
+
+:::
+
+
+## Perform FFA
+
+### Setup utils
+
+To pretty-print the summary of our models' fitting, we will create a custom function that will take the fitted model as an argument, extract and format key components of the fiited object, and print the output: 
+
+```{r}
+#| echo: true
+
+pretty_gev_summary = function(fitobj, model) {
+  #' Pretty print summary of a  extreme value model fit
+  #'
+  #' @param fitobj Fitted model object from extRemes::fevd()
+  #' @param model Character string describing the model (e.g., "GEV")
+  
+  cat("===", model, " Fit Summary ===\n\n")
+  
+  # Estimated Parameters
+  cat("Estimated Parameters:\n")
+  params = fitobj$results$par
+  print(round(params, 4))
+  
+  # Log-likelihood, AIC, and BIC
+  look = summary(fitobj, silent=TRUE)
+  cat("\nModel Fit Criteria:\n")
+  cat(sprintf("LogLik: %.2f\n", look$nllh))
+  cat(sprintf("AIC: %.2f\n", look$AIC))
+  cat(sprintf("BIC: %.2f\n", look$BIC))
+
+  # return the AIC and BIC values for further comparison
+  return(data.frame(Model=model, Crit=c("AIC", "BIC"), Value=c(look$AIC, look$BIC)))
+}
+
+```
+
+### Distributions fitting
+
+#### Stationary context
+
+::: {.panel-tabset}
+
+## [GEV fitting]{.custom-tabset-title2}
+
+The chunk below use the **` {extRemes} `** library to fit the GEV distribution to the **Annual Maximum Floods** extracted earlier. 
+
+```{r}
+#| message: false
+#| echo: true
+#| cache: false
+
+# fit the GEV distribution to the AMF
+gevfit = fevd(x=extractedAMF$AMAX, type="GEV", method="GMLE")
+```
+
+Now, we will print the results of the fit, using the **`pretty_gev_summary()`** function we have defined above. This will show the **AIC** and **BIC** values, as well as the estimated parameters of the fitted GEV distribution.
+
+```{r}
+#| echo: true
+#| cache: false
+
+# show fitting sumary
+gevfit_res = pretty_gev_summary(gevfit, "GEV")
+```
+
+::: {.column-margin}
+::: {.callout-tip}
+## What about the parameters?
+
+**`location = 19.4868:`** is the **`central tendency (μ)`** of the GEV distribution. It defines the central position of the distribution and serves as a baseline around which extreme values are distributed.
+
+**`scale = 9.932:`** reflects the spread or variability of the extreme values. In our case, the AMF distribution has moderate spread around the shifting central value **`μ(t)`**.
+
+**`shape = 0.3576:`** this positive shape parameter implies a Fréchet-type (heavy-tailed) distribution. This means there is greater probability of very large flood events compared to a Gumbel (shape = 0) or Weibull (shape < 0) distribution.
+:::
+:::
+
+Finally, we show in @fig-gevfitdiag-stationary, the diagnostics from the GEV distribution fitted to the Annual Maximum Floods: density plot of empirical data and fitted GEV df (top-left), and  quantiles from a sample drawn from the fitted GEV against the empirical data quantiles with 95% confidence bands (top-right).
+
+```{r}
+#| echo: true
+#| cache: false
+#| fig-height: 4
+#| label: fig-gevfitdiag-stationary
+#| fig-cap: "Diagnostic plots for the Generalized Extreme Value (GEV) distribution fitted to the Annual Maximum Flood (AMF) series in a Stationary Context"
+
+# show diagnostic plots of the GEV distribution fitting
+par(mfrow=c(1,2))
+plot(gevfit, type="density", main="(a) Density plot", ylim=c(0, .043))
+plot(gevfit, type="qq2", main=NULL)
+title(main="(b) Q-Q plot")
+```
+
+## [Gumbel fitting]{.custom-tabset-title2}
+
+The chunk below use the **` {extRemes} `** library to fit the Gumbel distribution to the **Annual Maximum Floods** extracted earlier. 
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: true
+#| cache: false
+
+# fit the Gumbel distribution to the AMF
+gumfit = fevd(x=extractedAMF$AMAX, type="Gumbel", method="GMLE")
+```
+
+Now, we will print the results of the fit, using the **`pretty_gev_summary()`** function we have defined previously. This will show the **AIC** and **BIC** values, as well as the estimated parameters of the fitted Gumbel distribution.
+
+```{r}
+#| echo: true
+#| cache: false
+
+# show fitting sumary
+gumfit_res = pretty_gev_summary(gumfit, "Gumbel")
+```
+
+Finally, we show in @fig-gumfitdiag-stationary, the diagnostics from the GEV distribution fitted to the Annual Maximum Floods:
+
+```{r}
+#| echo: true
+#| cache: false
+#| fig-height: 4
+#| label: fig-gumfitdiag-stationary
+#| fig-cap: "Diagnostic plots for the Gumbel distribution fitted to the Annual Maximum Flood (AMF) series in a Stationary Context"
+
+# show diagnostic plots of the GEV distribution fitting
+par(mfrow=c(1,2))
+plot(gumfit, type="density", main="(a) Density plot", ylim=c(0, .035))
+plot(gumfit, type="qq2", main=NULL)
+title(main="(b) Q-Q plot")
+```
+
+## [Best-Suited Model]{.custom-tabset-title2}
+
+As mentionned previously, the model with the lowest **`AIC`** and **`BIC`** values is the best-suited model. The **`pretty_gev_summary()`** function we have defined previously return a data.frame of **AIC** and **BIC** values for each distribution. Lets compare these values to select the best-suited distribution for the next steps.
+
+```{r}
+#| echo: true
+#| eval: false
+
+print(gevfit_res)
+print(gumfit_res)
+```
+```{r}
+#| echo: false
+#| eval: true
+#| label: tbl-bm_aicbictable
+#| tbl-cap: "Table of AIC and BIC values for each distribution"
+#| tbl-subcap: 
+#|   - GEV
+#|   - Gumbel
+#| layout-ncol: 2
+
+knitr::kable(slice(gevfit_res, -3), align=rep("c", 2))
+knitr::kable(slice(gumfit_res, -3), align=rep("c", 2))
+```
+
+::: {.column-margin}
+::: {.callout-tip icon="false"}
+## ✅ Best-suited: GEV
+Both **AIC and BIC are lower for the GEV model**, which suggests that it provides a better balance of fit and complexity than the Gumbel model.
+:::
+:::
+
+:::
+
+
+#### Parametric trend-detection
+
+When covariates are to be incorporated into EVA, a common approach is to model them within the parameters of the distributions in a **`regression-like manner`**. To perform **`parametric trend detection with the GEV distribution`**, we model **`location parameter (μ)`** as a function of time, transforming the model into a **`non-stationary GEV`**. 
+
+::: {.callout-tip}
+# Trend?
+The decision to adopt a non-stationary (or more complex) model in FFA depends on whether the temporal trend is **`statistically significant`**.
+
+The **`deviance test`**, based on **`likelihood ratio statistic`** [(Coles, 2001)](https://link.springer.com/book/10.1007/978-1-4471-3675-0), offers a formal approach to test this hypothesis by comparing the stationary and non-stationary models.
+:::
+
+##### Creating covariate
+
+::: {.column-margin}
+::: {.callout-note}
+As mentionned above, we use **time index** to account for trend in the AMF serie. We create in this chunk above a new column, `TimeIndex`, to be used as covariate.
+:::
+:::
+
+```{r}
+#| echo: true
+
+# add time index to use for non-stationary context fitting
+extractedAMF[["TimeIndex"]] = 1:nrow(extractedAMF)
+head(tibble(extractedAMF), 5)
+```
+
+
+##### Non-Stationary GEV fitting
+
+The chunk below use the **` {extRemes} `** library to fit the **`Non-Stationary GEV (NS-GEV) distribution`**  to the **Annual Maximum Floods** extracted earlier. 
+
+```{r}
+#| message: false
+#| echo: true
+#| cache: false
+
+# fit the GEV distribution to the AMF
+extractedAMF = data.frame(extractedAMF)
+nsgevfit = fevd(x=AMAX, location.fun=~TimeIndex, data=extractedAMF, type="GEV", method="GMLE")
+```
+
+Now, we will print the results of the fit, using the **`pretty_gev_summary()`** function we have defined above. This will show the **AIC** and **BIC** values, as well as the estimated parameters of the fitted **`NS-GEV`** distribution.
+
+```{r}
+#| echo: true
+#| cache: false
+
+# show fitting sumary
+nsgevfit_res = pretty_gev_summary(nsgevfit, "GEV")
+```
+
+::: {.column-margin}
+::: {.callout-tip}
+## What about the parameters?
+
+**`μ(t) = μ0 + μ1·t`**, THE **`time-varying location parameter`** can be expressed as a simple linear model, where:
+
+* **`mu0 = μ0 = 20.5045:`** is the **`intercept`** of the time-varying location parameter. It represents the baseline magnitude of the annual maximum flood (AMF) at the starting point of the time serie.
+
+* **`mu1 = μ1 = –0.0276:`** is the **`slope`** of the location parameter with respect to time. It indicates a decreasing trend in the location (i.e., central tendency) of the AMF over time. Specifically, for each unit increase in time (i.e., each year), the location parameter decreases by $0.0276m^3.s^{-1}$. This suggests that the typical magnitude of extreme floods has been gradually declining over the observation period.
+:::
+:::
+
+Finally, we show in @fig-gevfitdiag-ns, the diagnostics from the **`NS-GEV`** distribution fitted to the Annual Maximum Floods: density plot of empirical data and fitted GEV df (top-left), quantiles from a sample drawn from the fitted GEV against the empirical data quantiles with 95% confidence bands (top-right).
+
+```{r}
+#| echo: true
+#| cache: false
+#| fig-height: 4
+#| label: fig-gevfitdiag-ns
+#| fig-cap: "Diagnostic plots for the Non-Stationary Generalized Extreme Value (NS-GEV) distribution fitted to the Annual Maximum Flood (AMF) series"
+
+# show diagnostic plots of the GEV distribution fitting
+par(mfrow=c(1,2))
+plot(nsgevfit, type="density", main="(a) Density plot", ylim=c(0, .4))
+plot(nsgevfit, type="qq2", main=NULL)
+title(main="(b) Q-Q plot")
+```
+
+##### Deviance test
+
+::: {.callout-note}
+## Mathematical of the deviance test
+As mentionned above, The **Deviance test**, or **Likelihood Ratio (LR)** test, compares two nested models — typically, a simpler (stationary) model and a more complex (non-stationary) model. It helps determine if introducing additional parameters (such as a time-varying location parameter in a GEV model) leads to a statistically significant improvement in model fit. 
+
+$$ D = 2{log(ML_{NSGEV}) - log(ML_{SGEV})} $$
+
+$D$ represents the deviance test statistic value $(D-statistic)$, $log(ML_{NSGEV})$ and $log(ML_{SGEV})$ are the maximised log-likelihood functions of the $NSGEV$ and the $SGEV$, respectively.
+:::
+
+
+::: {.column-margin}
+::: {.callout-tip}
+## log-likelihood function
+The **`likelihood function`** itself measures how well a statistical model explains observed data by giving, for a set of parameters, the probability (or probability density) of observing the data under the model.
+:::
+:::
+
+To perform the **`Deviance test`**, we can use the **`lr.test(...)`** of the **`{extRemes}`**. The **`lr.test(...)`** just requires the previous fitted objects of class **`“fevd”`** from the **`fevd(...)`** function: 
+
+* **`gevfit`**: model with fewer parameters (stationary GEV model)
+* **`nsgevfit`**model with more parameters (non-stationary GEV model)
+
+The null hypothesis of the **Deviance test** is that **simpler model is sufficient** — i.e., no trend (e.g., the location parameter μ is constant over time). Letting **`c.alpha`** be the **`(1 - alpha)`** quantile of the **`chi-square distribution`** with degrees of freedom equal to the difference in the number of model parameters, the null hypothesis that $D = 0$ is rejected if $D > c.alpha$ (i.e., in favor of model Non-Stationary GEV model).
+
+```{r}
+#| echo: true
+#| cache: false
+
+# applying the Deviance test
+lr.test(x=gevfit, y=nsgevfit, alpha=0.05, df=1)
+```
+
+::: {.column-margin}
+::: {.callout-tip icon="false"}
+## Interpretation
+🚫 We fail to reject the null hypothesis.
+
+* **`D-statistic (0.20)`** much smaller than the **`critical value (3.84)`**.
+* **`p-value (0.6547)`** much larger than the **`significance level (0.05)`**.
+:::
+:::
+
+
+::: {.callout-note}
+## Trend Significance
+There is **no significant evidence** that the **Non-Stationary GEV model (with a time-varying location parameter)** provides a better fit than the **stationary model**. The trend is not statistically significant (p = 0.6547).
+:::
+
+
+# Trend Analysis Conclusion
+
+🔎 **Trend Detection Methods Used**
+
+* Parametric: **`Non-stationary GEV model`** with **time-varying location parameter**
+* Non-parametric: **`Mann-Kendall test`**
+
+🚫 **No Significant Trend Detected**
+
+* Both methods consistently indicate **no statistically significant trend** in the annual maximum flow series.
+* The **Likelihood Ratio Test** showed a high p-value (0.65), and the **Mann-Kendall test** similarly returned a non-significant result (p = 0.22).
+
+✅ **Modeling Implication**
+
+* The results support the use of a stationary GEV model.
+* There is **no strong evidence** of temporal change in flood extremes over the study period.
+
+
+# Flood quantiles estimation
+
+## Stationary context
+
+To estimate **return levels** for given **return periods**, we can use the **`return.level(...)`** from the **`{extRemes}`** package: 
+
+::: {.column-margin}
+::: {.callout-note}
+The **`return level`** is the value expected to be exceeded on average **once every T years**.
+:::
+:::
+
+```{r}
+#| echo: true
+
+# specific return periods (e.g., 10, 20 years)
+rperiods = c(2, 5, 10, 20, 50, 100)
+# compute return levels (with 95% confidence intervals)
+rlevels = return.level(gevfit, return.period=rperiods, do.ci=TRUE)
+# print results
+print(rlevels)
+```
+
+
+::: {.column-margin}
+::: {.callout-note}
+The **`gevfit object`** is the **`gevfit`** object returned by the **`fevd(...)`** function when we have fitted a the **stationary GEV model**.
+:::
+:::
+
+
+::: {.column-margin}
+::: {.callout-warning icon="false"}
+## ⚠️ Warning
+For simplicity and illsutration, we use the **normal approximation method** to compute confidence intervals for the estimated return levels. This method assumes the **sampling distribution** of the return level estimates is **approximately normal** (which becomes more reasonable with large sample sizes).
+
+**For more robust intervals, consider using `bootstrap` methods.**
+:::
+:::
+
+## Non-Stationary context
+
+In non-stationary context, since the **location parameter is time-dependent**, **return levels** have to be calculated for each year over time period. We refer to this as **`“effective” return levels`** The same **`return.level(...)`** from the **`{extRemes}`** package is used to compute **`"effective" return levels`**.
+
+::: {.column-margin}
+::: {.callout-note}
+The **`nsgevfit object`** is the object returned by the **`fevd(...)`** function when we have fitted a the **non-stationary GEV model**.
+:::
+:::
+
+```{r}
+#| echo: true
+
+# specific return periods (e.g., 10, 20 years)
+rperiods = c(2, 5, 10, 20, 50, 100)
+# compute return levels (with 95% confidence intervals)
+rlevels = return.level(nsgevfit, return.period=rperiods)
+```
+
+For easy visualization, we will plot the **`effective return levels`** for each year over time period. Lets convert the output of **``** into a clean data.frame :
+
+```{r}
+#| echo: true
+
+# Convert to data.frame
+df_rlevels <- data.frame(year=extractedAMF$Year,
+                         Q2=rlevels[, 1],
+                         Q5=rlevels[, 2],
+                         Q10=rlevels[, 3],
+                         Q20=rlevels[, 4],
+                         Q50=rlevels[, 5],
+                         Q100=rlevels[, 6])
+head(df_rlevels)
+```
+
+Now, we tranform the data into a long (tidy) format suitable for plotting multiple lines withh **`ggplot`**:
+
+```{r}
+#| echo: true
+
+dataplot = df_rlevels |> pivot_longer(-1, names_to="RL", values_to="Q")
+```
+
+Finally, we plot the **`effective return levels`**:
+
+```{r}
+#| echo: true
+#| output: false
+
+rlplot = dataplot %>%
+         ggplot(aes(x=year, y=Q, color=RL, group=RL)) +
+         geom_line(linewidth=1) +
+         scale_x_continuous(expand=c(0.01, 0.01)) +
+         scale_y_continuous(expand=c(0.01, 0.01), limits = c(20, 150), breaks=seq(25, 200, by=25)) +
+         guides(color=guide_legend(keywidth=3)) +
+         theme_bw() +
+         theme(legend.text=element_text(size=12),
+               axis.title=element_text(size=12),
+               axis.text=element_text(size=12, color="black")) +
+         labs(x="Time (Year)", y="Return level (Q)", color=NULL)
+           
+print(rlplot)
+```
+
+@fig-effective-return-levels helps in understanding the variations and trends in flood quantiles across different time periods and stations."
+
+```{r}
+#| cache: false
+#| fig-height: 4
+#| label: fig-effective-return-levels
+#| fig-cap: "Effective return levels from the NS-GEV model. Each line represents a different return period (e.i., 2-, 5-, 10-, 20 50, and 100-year floods), and the colour coding indicates these return periods. The x-axis denotes the time index (year), and the y-axis indicates the estimated flood quantiles."
+
+print(rlplot)
+```
+
+# Uncertainty estimation
+
+Computing uncertainties in FFA is essential as it helps quantify the **confidence** and **reliability** of estimated flood magnitudes and return levels.
+
+🔍 **Acknowledge Data Limitations**
+Hydrological records are often short or incomplete. Uncertainty analysis helps reflect the limited information available and avoids overconfidence in estimates.
+
+📊 **Support Risk-Based Decision Making**
+Infrastructure design, floodplain mapping, and insurance policies rely on return levels. Knowing the uncertainty helps stakeholders assess risk margins and make safer choices.
+
+📈 **Evaluate Model Robustness**
+Comparing uncertainty across models (e.g., GEV vs Gumbel) can guide model selection and reveal sensitivity to assumptions or input data.
+
+::: {.callout-note icon="false"}
+## 🌊 Want to Go Further? Quantify Your Confidence!
+The simpler way to estimate the uncertainty is by calculating a **normalized uncertainty range**, defined as the ratio of the difference between the upper (97.5%) and lower (2.5%) bounds of the confidence interval and the estimated quantile was computed.
+:::

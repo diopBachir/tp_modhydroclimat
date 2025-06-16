@@ -1,0 +1,17 @@
+{
+  "hash": "7cb79942b281d5dae6cf45482bf775f7",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Flood Frequency Analysis (FFA) with Block-Maxima\"\n---\n\n\n\n::: {.panel-tabset}\n\n## [Data Import]{.custom-tabset-title}\n\nWill work with real-world data to analyze flood events using daily streamflow data covering the period from August 1st, 1958, to December 31st, 2020. \n\nLet’s consider the formatted daily streamflow data file for the target catchment. We can read the data into a data frame using the `read.csv()` function. We will also set the column names using the `col.names` argument.\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nfilename <- './data/discharge.csv'\ndata <- read.csv(filename, col.names = c(\"Year\", \"Month\", \"Day\", \"Q\"))  \n```\n:::\n\n\n\nThe output is a data frame (or a matrix) with 22799 rows and 4 columns.\n\n\n\n::: {#tbl-bm_loaddata .cell tbl-cap='First (6) lines of the daily streamflow data for Block-Maxima approach'}\n::: {.cell-output-display}\n\n\n| Year | Month | Day |     Q     |\n|:----:|:-----:|:---:|:---------:|\n| 1958 |   8   |  1  | 0.2357639 |\n| 1958 |   8   |  2  | 0.1841204 |\n| 1958 |   8   |  3  | 0.1437037 |\n| 1958 |   8   |  4  | 0.1437037 |\n| 1958 |   8   |  5  | 0.1437037 |\n| 1958 |   8   |  6  | 0.1437037 |\n\n\n:::\n:::\n\n\n\nWe now display the structure of the data frame using the `str()` function. The first three columns are the year, month, and day, respectively, and the fourth column is the streamflow.\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nstr(data)  \n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\n'data.frame':\t22799 obs. of  4 variables:\n $ Year : int  1958 1958 1958 1958 1958 1958 1958 1958 1958 1958 ...\n $ Month: int  8 8 8 8 8 8 8 8 8 8 ...\n $ Day  : int  1 2 3 4 5 6 7 8 9 10 ...\n $ Q    : num  0.236 0.184 0.144 0.144 0.144 ...\n```\n\n\n:::\n:::\n\n\n\n## [Sampling Events]{.custom-tabset-title}\n\n::: {.panel-tabset}\n\n### [The Block-Maxima Approach]{.custom-tabset-title2}\n\n### [Annual Maximum Flow (AMF) Sampling]{.custom-tabset-title2}\n\n:::\n\nNow, we extract annual maximum flows (AMF) from the streamflow series, based on a hydrological year starting on September 1st (i.e., \"09-01\").\n\n## [Autocorrelation]{.custom-tabset-title}\n\n## [Trend]{.custom-tabset-title}\n\n## [FFA]{.custom-tabset-title}\n\n:::",
+    "supporting": [
+      "block_maxima_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": null,
+    "postProcess": false
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "index.qmd": {
+    "index.html": "d7fbc6f0",
+    "index.ipynb": "1058d678",
+    "index.tex": "af014590"
+  },
+  "sampling_events/index.qmd": {
+    "index.html": "fa675c84"
+  },
+  "overview/index.qmd": {
+    "index.html": "1a4df7c7",
+    "index.ipynb": "a25c3e9c",
+    "index.tex": "53eb4d66"
+  },
+  "blockmaxima/index.qmd": {
+    "index.html": "c2e66aef"
+  },
+  "pot/index.qmd": {
+    "index.html": "98eb3011"
+  },
+  "blockmaxima/block_maxima.qmd": {
+    "block_maxima.html": "4baeb556",
+    "block_maxima.ipynb": "4c9f6158"
+  },
+  "overview/overview.qmd": {
+    "overview.html": "b4e34451",
+    "overview.ipynb": "600fa69a"
+  },
+  "pot/pot.qmd": {
+    "pot.html": "190ee189"
+  },
+  "softwaresetup/softwaresetup.qmd": {
+    "softwaresetup.html": "96c0d567"
+  },
+  "softwaresetup/index.qmd": {
+    "index.html": "02b89983"
+  },
+  "about.qmd": {
+    "about.html": "cbc3aebf"
+  }
+}
