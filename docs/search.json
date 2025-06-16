@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Introduction to Extreme Value Analysis",
     "section": "",
-    "text": "Understanding the probabilistic behavior of extreme observations and tail phenomena in statistical distributions: application to hydrological data.\n\n\n\n\nResearch scientist at IRD since 2013. Works on hydrological hazards in Mediterranean regions and climate change impacts.\n[Espace-Dev, Univ. Montpellier, IRD, France]\n\n\n\nPhD researcher on flood modeling and climate change, with a strong interest in hydrology, statistical modelling, and machine learning.\n[Leïdi, Univ. Gaston Berger, Saint-Louis, Senegal]"
+    "text": "Understanding the probabilistic behavior of extreme observations and tail phenomena in statistical distributions: application to hydrological data.\n\n\n\n\n\nResearch scientist at IRD since 2013. Works on hydrological hazards in Mediterranean regions and climate change impacts.\n\n\nPhD researcher on flood modeling and climate change, with a strong interest in hydrology, statistical modelling, and machine learning."
   },
   {
     "objectID": "sampling_events/index.html",
@@ -284,7 +284,7 @@
     "href": "index.html#yves-tramblay",
     "title": "Introduction to Extreme Value Analysis",
     "section": "",
-    "text": "Research scientist at IRD since 2013. Works on hydrological hazards in Mediterranean regions and climate change impacts.\n[Espace-Dev, Univ. Montpellier, IRD, France]"
+    "text": "Research scientist at IRD since 2013. Works on hydrological hazards in Mediterranean regions and climate change impacts.\n[Espace-Dev, Univ. Montpellier, IRD, France]\n\n\nPhD researcher on flood modeling and climate change, with a strong interest in hydrology, statistical modelling, and machine learning.\n[Leïdi, Univ. Gaston Berger, Saint-Louis, Senegal]"
   },
   {
     "objectID": "index.html#serigne-bassirou-diop",
@@ -446,5 +446,19 @@
     "title": "Flood Frequency Analysis (FFA) with Block-Maxima",
     "section": "8.2 Non-Stationary context",
     "text": "8.2 Non-Stationary context\nIn non-stationary context, since the location parameter is time-dependent, return levels have to be calculated for each year over time period. We refer to this as “effective” return levels The same return.level(...) from the {extRemes} package is used to compute \"effective\" return levels.\n\n\n\n\n\n\n\n\nNote\n\n\n\nThe nsgevfit object is the object returned by the fevd(...) function when we have fitted a the non-stationary GEV model.\n\n\n\n# specific return periods (e.g., 10, 20 years)\nrperiods = c(2, 5, 10, 20, 50, 100)\n# compute return levels (with 95% confidence intervals)\nrlevels = return.level(nsgevfit, return.period=rperiods)\n\nFor easy visualization, we will plot the effective return levels for each year over time period. Lets convert the output of return.level(...) into a clean data.frame :\n\n# Convert to data.frame\ndf_rlevels &lt;- data.frame(year=extractedAMF$Year,\n                         Q2=rlevels[, 1],\n                         Q5=rlevels[, 2],\n                         Q10=rlevels[, 3],\n                         Q20=rlevels[, 4],\n                         Q50=rlevels[, 5],\n                         Q100=rlevels[, 6])\nhead(df_rlevels)\n\n  year       Q2       Q5      Q10      Q20      Q50     Q100\n1 1958 24.36654 40.19203 54.81061 73.04541 104.8170 136.6172\n2 1959 24.33894 40.16443 54.78301 73.01781 104.7894 136.5896\n3 1960 24.31134 40.13683 54.75541 72.99021 104.7618 136.5620\n4 1961 24.28374 40.10923 54.72781 72.96261 104.7342 136.5344\n5 1962 24.25614 40.08163 54.70021 72.93501 104.7066 136.5068\n6 1963 24.22854 40.05403 54.67261 72.90741 104.6790 136.4792\n\n\nNow, we tranform the data into a long (tidy) format suitable for plotting multiple lines with ggplot:\n\ndataplot = df_rlevels |&gt; pivot_longer(-1, names_to=\"RL\", values_to=\"Q\")\n\nFinally, we plot the effective return levels:\n\nrlplot = dataplot %&gt;%\n         ggplot(aes(x=year, y=Q, color=RL, group=RL)) +\n         geom_line(linewidth=1) +\n         scale_x_continuous(expand=c(0.01, 0.01)) +\n         scale_y_continuous(expand=c(0.01, 0.01), limits = c(20, 150), breaks=seq(25, 200, by=25)) +\n         guides(color=guide_legend(keywidth=3)) +\n         theme_bw() +\n         theme(legend.text=element_text(size=12),\n               axis.title=element_text(size=12),\n               axis.text=element_text(size=12, color=\"black\")) +\n         labs(x=\"Time (Year)\", y=\"Return level (Q)\", color=NULL)\n           \nprint(rlplot)\n\nFigure 8 helps in understanding the variations and trends in flood quantiles across different time periods and stations.”\n\n\n\n\n\n\n\n\nFigure 8: Effective return levels from the NS-GEV model. Each line represents a different return period (e.i., 2-, 5-, 10-, 20 50, and 100-year floods), and the colour coding indicates these return periods. The x-axis denotes the time index (year), and the y-axis indicates the estimated flood quantiles."
+  },
+  {
+    "objectID": "index.html#yves-tramblay-orcid-icon",
+    "href": "index.html#yves-tramblay-orcid-icon",
+    "title": "Introduction to Extreme Value Analysis",
+    "section": "",
+    "text": "Research scientist at IRD since 2013. Works on hydrological hazards in Mediterranean regions and climate change impacts.\n\n\nPhD researcher on flood modeling and climate change, with a strong interest in hydrology, statistical modelling, and machine learning."
+  },
+  {
+    "objectID": "index.html#serigne-bassirou-diop-orcid-icon",
+    "href": "index.html#serigne-bassirou-diop-orcid-icon",
+    "title": "Introduction to Extreme Value Analysis",
+    "section": "",
+    "text": "PhD researcher on flood modeling and climate change, with a strong interest in hydrology, statistical modelling, and machine learning."
   }
 ]
