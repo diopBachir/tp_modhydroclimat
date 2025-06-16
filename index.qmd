@@ -16,7 +16,7 @@ Understanding the probabilistic behavior of extreme observations and tail phenom
 
 ::: {.columns}
 
-::: {.column width="55%"}
+::: {.column width="60%"}
 ## [Yves Tramblay ![ORCID icon](https://img.shields.io/badge/ORCID-0000--0003--0481--5330-a6ce39?logo=orcid&style=flat&logoColor=white)](http://orcid.org/0000-0003-0481-5330)
 
 ::: {.small}
@@ -28,9 +28,13 @@ PhD researcher on flood modeling and climate change, with a strong interest in h
 
 :::
 
+::: {.column width="5%"}
+
 :::
 
-::: {.column width="45%"}
+:::
+
+::: {.column width="35%"}
 ![](images/evaillustr.png)
 :::
 
