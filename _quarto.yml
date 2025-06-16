@@ -21,7 +21,7 @@ website:
         text: Software & Setup
       - href: blockmaxima/index.qmd
         text: Block Maxima Approach
-      - href: pot/pot.qmd
+      - href: pot/index.qmd
         text: Peak-Over-Threshold (POT)
     #   - href: teaching/index.qmd
     #     text: Distributions Fitting
