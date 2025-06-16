@@ -825,7 +825,7 @@ rperiods = c(2, 5, 10, 20, 50, 100)
 rlevels = return.level(nsgevfit, return.period=rperiods)
 ```
 
-For easy visualization, we will plot the **`effective return levels`** for each year over time period. Lets convert the output of **``** into a clean data.frame :
+For easy visualization, we will plot the **`effective return levels`** for each year over time period. Lets convert the output of **`return.level(...)`** into a clean data.frame :
 
 ```{r}
 #| echo: true

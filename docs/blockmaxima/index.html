@@ -1415,7 +1415,7 @@ Note
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="co"># compute return levels (with 95% confidence intervals)</span></span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>rlevels <span class="ot">=</span> <span class="fu">return.level</span>(nsgevfit, <span class="at">return.period=</span>rperiods)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>For easy visualization, we will plot the <strong><code>effective return levels</code></strong> for each year over time period. Lets convert the output of <strong>``</strong> into a clean data.frame :</p>
+<p>For easy visualization, we will plot the <strong><code>effective return levels</code></strong> for each year over time period. Lets convert the output of <strong><code>return.level(...)</code></strong> into a clean data.frame :</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to data.frame</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>df_rlevels <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">year=</span>extractedAMF<span class="sc">$</span>Year,</span>
