@@ -841,7 +841,7 @@ df_rlevels <- data.frame(year=extractedAMF$Year,
 head(df_rlevels)
 ```
 
-Now, we tranform the data into a long (tidy) format suitable for plotting multiple lines withh **`ggplot`**:
+Now, we tranform the data into a long (tidy) format suitable for plotting multiple lines with **`ggplot`**:
 
 ```{r}
 #| echo: true
@@ -886,15 +886,18 @@ print(rlplot)
 Computing uncertainties in FFA is essential as it helps quantify the **confidence** and **reliability** of estimated flood magnitudes and return levels.
 
 🔍 **Acknowledge Data Limitations**
+
 Hydrological records are often short or incomplete. Uncertainty analysis helps reflect the limited information available and avoids overconfidence in estimates.
 
 📊 **Support Risk-Based Decision Making**
+
 Infrastructure design, floodplain mapping, and insurance policies rely on return levels. Knowing the uncertainty helps stakeholders assess risk margins and make safer choices.
 
 📈 **Evaluate Model Robustness**
+
 Comparing uncertainty across models (e.g., GEV vs Gumbel) can guide model selection and reveal sensitivity to assumptions or input data.
 
 ::: {.callout-note icon="false"}
 ## 🌊 Want to Go Further? Quantify Your Confidence!
-The simpler way to estimate the uncertainty is by calculating a **normalized uncertainty range**, defined as the ratio of the difference between the upper (97.5%) and lower (2.5%) bounds of the confidence interval and the estimated quantile was computed.
+The simpler way to estimate the uncertainty is to compute a **normalized uncertainty range**, defined as the ratio of the difference between the upper (97.5%) and lower (2.5%) bounds of the confidence interval and the estimated quantile was computed.
 :::

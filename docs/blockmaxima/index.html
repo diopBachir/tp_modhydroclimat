@@ -1436,7 +1436,7 @@ Note
 6 1963 24.22854 40.05403 54.67261 72.90741 104.6790 136.4792</code></pre>
 </div>
 </div>
-<p>Now, we tranform the data into a long (tidy) format suitable for plotting multiple lines withh <strong><code>ggplot</code></strong>:</p>
+<p>Now, we tranform the data into a long (tidy) format suitable for plotting multiple lines with <strong><code>ggplot</code></strong>:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>dataplot <span class="ot">=</span> df_rlevels <span class="sc">|&gt;</span> <span class="fu">pivot_longer</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="at">names_to=</span><span class="st">"RL"</span>, <span class="at">values_to=</span><span class="st">"Q"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1476,9 +1476,12 @@ Figure&nbsp;8: Effective return levels from the NS-GEV model. Each line represen
 <section id="uncertainty-estimation" class="level1" data-number="9">
 <h1 data-number="9"><span class="header-section-number">9</span> Uncertainty estimation</h1>
 <p>Computing uncertainties in FFA is essential as it helps quantify the <strong>confidence</strong> and <strong>reliability</strong> of estimated flood magnitudes and return levels.</p>
-<p>🔍 <strong>Acknowledge Data Limitations</strong> Hydrological records are often short or incomplete. Uncertainty analysis helps reflect the limited information available and avoids overconfidence in estimates.</p>
-<p>📊 <strong>Support Risk-Based Decision Making</strong> Infrastructure design, floodplain mapping, and insurance policies rely on return levels. Knowing the uncertainty helps stakeholders assess risk margins and make safer choices.</p>
-<p>📈 <strong>Evaluate Model Robustness</strong> Comparing uncertainty across models (e.g., GEV vs Gumbel) can guide model selection and reveal sensitivity to assumptions or input data.</p>
+<p>🔍 <strong>Acknowledge Data Limitations</strong></p>
+<p>Hydrological records are often short or incomplete. Uncertainty analysis helps reflect the limited information available and avoids overconfidence in estimates.</p>
+<p>📊 <strong>Support Risk-Based Decision Making</strong></p>
+<p>Infrastructure design, floodplain mapping, and insurance policies rely on return levels. Knowing the uncertainty helps stakeholders assess risk margins and make safer choices.</p>
+<p>📈 <strong>Evaluate Model Robustness</strong></p>
+<p>Comparing uncertainty across models (e.g., GEV vs Gumbel) can guide model selection and reveal sensitivity to assumptions or input data.</p>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1489,7 +1492,7 @@ Figure&nbsp;8: Effective return levels from the NS-GEV model. Each line represen
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The simpler way to estimate the uncertainty is by calculating a <strong>normalized uncertainty range</strong>, defined as the ratio of the difference between the upper (97.5%) and lower (2.5%) bounds of the confidence interval and the estimated quantile was computed.</p>
+<p>The simpler way to estimate the uncertainty is to compute a <strong>normalized uncertainty range</strong>, defined as the ratio of the difference between the upper (97.5%) and lower (2.5%) bounds of the confidence interval and the estimated quantile was computed.</p>
 </div>
 </div>
 
