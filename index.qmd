@@ -3,7 +3,6 @@
 about:
   template: solana
   image: images/evaillustr.png
-  image-width: 200%
 format:
   html:
     toc: false
