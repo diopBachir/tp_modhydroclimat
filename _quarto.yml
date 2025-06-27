@@ -2,8 +2,14 @@ project:
   type: website
   output-dir: docs
 
+metadata:
+  image: evaillustr.png
+  
 website:
   title: "Introduction to Extreme Value Analysis"
+  image: evaillustr.png
+  open-graph: true
+  site-url: https://diopbachir.github.io/tp_eva/
   back-to-top-navigation: true
   page-navigation: true
   search: 
