@@ -4,38 +4,6 @@ title: Overview, Key Concepts and Objectives
 # date: last-modified
 ---
 
-# EVA: Extreme Value Analysis
-
-## 🌊 EVA in Hydrology
-
-EVA is a powerful statistical tool to analyze rare events in hydrology and climate science. It focuses on understanding the frequency and intensity of extreme events.
-
-## 📌 Key Concepts of EVA
-
-### 📈 Block Maxima Approach
-Selects the maximum value in fixed time blocks (e.g., annual maximum flow or rainfall) → Fits data to distributions like Gumbel or GEV.
-
-### 📉 Peak Over Threshold (POT) Method
-Considers all events exceeding a predefined threshold → More data points → Fitted to Generalized Pareto Distribution (GPD).
-
-## 🎯 Objectives of EVA
-
-🔁 **Estimate Return Periods**: Assess the intensity of rare events expected to be exceeded, on average, once every N years (e.g., for example, a 100-year event corresponds to a 1% annual probability of being exceeded).
-
-📊 **Construct Frequency Curves**: Fit statistical distributions (e.g., GEV, Gumbel, Log-Pearson Type III) to observed extremes to relate event magnitude to exceedance probability.
-
-🧰 **Support Risk-Based Design**: Inform engineering design criteria (e.g., for dams, levees, drainage systems) based on scientifically justified extreme thresholds
-
-## 🏗️ Real-world Applications of EVA
-
-🏞️ **Infrastructure Design:** Design dams, bridges, culverts based on expected extreme flows.
-
-💧 **Water Resource Management:** Plan for droughts, reservoir operations, and sustainable use.
-
-⚠️ **Risk Assessment & Planning:** Develop floodplain zoning, disaster risk reduction strategies.
-
-🧭 **Policy & Climate Adaptation:** Inform government strategies and early warning systems in a changing climate.
-
 # EVT: Extreme Value Theory
 
 ::: {.column-margin}
@@ -44,7 +12,7 @@ Considers all events exceeding a predefined threshold → More data points → F
 :::
 :::
 
-Imagine we have daily observational data for a random variable (e.g., river discharges, precipitations, etc.) for many years. [EVT](https://en.wikipedia.org/wiki/Extreme_value_theory) suggests that the extreme values of this variable are asymptotically close to one of three types of extreme value distributions, regardless of the original distribution of daily flows. [EVT](https://en.wikipedia.org/wiki/Extreme_value_theory) helps us estimate the probability of rare, high-flow events like floods.
+Imagine we have daily observational data for a random variable (e.g., river discharges, precipitations, etc.) for many years. [EVT](https://en.wikipedia.org/wiki/Extreme_value_theory) suggests that the extreme values of this variable are asymptotically close to one of three types of extreme value distributions, regardless of the original distribution of daily flows (see @coles2001 for details). [EVT](https://en.wikipedia.org/wiki/Extreme_value_theory) helps us estimate the probability of rare, high-flow events like floods.
 
 ```{r}
 #| echo: false
@@ -127,6 +95,39 @@ p1; p2; p3
 :::
 :::
 
+
+# EVA: Extreme Value Analysis
+
+## 🌊 EVA in Hydrology
+
+EVA is a powerful statistical tool to analyze rare events in hydrology and climate science. It focuses on understanding the frequency and intensity of extreme events.
+
+## 📌 Key Concepts of EVA
+
+### 📈 Block Maxima Approach
+Selects the maximum value in fixed time blocks (e.g., annual maximum flow or rainfall) → Fits data to distributions like Gumbel or GEV.
+
+### 📉 Peak Over Threshold (POT) Method
+Considers all events exceeding a predefined threshold → More data points → Fitted to Generalized Pareto Distribution (GPD).
+
+## 🎯 Objectives of EVA
+
+🔁 **Estimate Return Periods**: Assess the intensity of rare events expected to be exceeded, on average, once every N years (e.g., for example, a 100-year event corresponds to a 1% annual probability of being exceeded).
+
+📊 **Construct Frequency Curves**: Fit statistical distributions (e.g., GEV, Gumbel, Log-Pearson Type III) to observed extremes to relate event magnitude to exceedance probability.
+
+🧰 **Support Risk-Based Design**: Inform engineering design criteria (e.g., for dams, levees, drainage systems) based on scientifically justified extreme thresholds
+
+## 🏗️ Real-world Applications of EVA
+
+🏞️ **Infrastructure Design:** Design dams, bridges, culverts based on expected extreme flows.
+
+💧 **Water Resource Management:** Plan for droughts, reservoir operations, and sustainable use.
+
+⚠️ **Risk Assessment & Planning:** Develop floodplain zoning, disaster risk reduction strategies.
+
+🧭 **Policy & Climate Adaptation:** Inform government strategies and early warning systems in a changing climate.
+
 # Practical Objectives of this Module
 
 📊 **Apply sampling approaches for extreme events**
@@ -148,3 +149,11 @@ Evaluate the reliability and meaning of trend detection results under various st
 💻 **Use open-source R packages for implementation**
 
 Apply all methods in practice using reproducible, open-source tools within the [R environment](https://www.r-project.org/).
+
+
+
+# References
+
+
+::: {#refs}
+:::

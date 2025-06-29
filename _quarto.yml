@@ -2,9 +2,12 @@ project:
   type: website
   output-dir: docs
 
+bibliography: references.bib
+csl: apa.csl # optional, for styling
+
 metadata:
   image: evaillustr.png
-  
+
 website:
   title: "Introduction to Extreme Value Analysis"
   image: evaillustr.png
@@ -28,7 +31,7 @@ website:
       - href: blockmaxima/index.qmd
         text: Block Maxima Approach
       - href: pot/index.qmd
-        text: Peak-Over-Threshold (POT)
+        text: Threshold Exceedance (POT)
     #   - href: teaching/index.qmd
     #     text: Distributions Fitting
     #   - href: about/index.qmd
@@ -73,7 +76,7 @@ format:
     execute:
       message: false
       echo: false
-      cache: true
+      cache: false
 
 fig-cap-location: bottom
 

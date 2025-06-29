@@ -20,7 +20,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -70,6 +90,12 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
 
 
+<meta property="og:title" content="Introduction to Extreme Value Analysis - Overview, Key Concepts and Objectives">
+<meta property="og:description" content="">
+<meta property="og:image" content="https://diopbachir.github.io/tp_eva/evaillustr.png">
+<meta property="og:site_name" content="Introduction to Extreme Value Analysis">
+<meta property="og:image:height" content="737">
+<meta property="og:image:width" content="1024">
 </head>
 
 <body class="floating nav-fixed slimcontent">
@@ -102,8 +128,8 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Block Maxima Approach</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../pot/pot.html"> 
-<span class="menu-text">Peak-Over-Threshold (POT)</span></a>
+    <a class="nav-link" href="../pot/index.html"> 
+<span class="menu-text">Threshold Exceedance (POT)</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -120,19 +146,20 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#eva-extreme-value-analysis" id="toc-eva-extreme-value-analysis" class="nav-link active" data-scroll-target="#eva-extreme-value-analysis"><span class="header-section-number">1</span> EVA: Extreme Value Analysis</a>
+  <li><a href="#evt-extreme-value-theory" id="toc-evt-extreme-value-theory" class="nav-link active" data-scroll-target="#evt-extreme-value-theory"><span class="header-section-number">1</span> EVT: Extreme Value Theory</a></li>
+  <li><a href="#eva-extreme-value-analysis" id="toc-eva-extreme-value-analysis" class="nav-link" data-scroll-target="#eva-extreme-value-analysis"><span class="header-section-number">2</span> EVA: Extreme Value Analysis</a>
   <ul>
-  <li><a href="#eva-in-hydrology" id="toc-eva-in-hydrology" class="nav-link" data-scroll-target="#eva-in-hydrology"><span class="header-section-number">1.1</span> 🌊 EVA in Hydrology</a></li>
-  <li><a href="#key-concepts-of-eva" id="toc-key-concepts-of-eva" class="nav-link" data-scroll-target="#key-concepts-of-eva"><span class="header-section-number">1.2</span> 📌 Key Concepts of EVA</a>
+  <li><a href="#eva-in-hydrology" id="toc-eva-in-hydrology" class="nav-link" data-scroll-target="#eva-in-hydrology"><span class="header-section-number">2.1</span> 🌊 EVA in Hydrology</a></li>
+  <li><a href="#key-concepts-of-eva" id="toc-key-concepts-of-eva" class="nav-link" data-scroll-target="#key-concepts-of-eva"><span class="header-section-number">2.2</span> 📌 Key Concepts of EVA</a>
   <ul>
-  <li><a href="#block-maxima-approach" id="toc-block-maxima-approach" class="nav-link" data-scroll-target="#block-maxima-approach"><span class="header-section-number">1.2.1</span> 📈 Block Maxima Approach</a></li>
-  <li><a href="#peak-over-threshold-pot-method" id="toc-peak-over-threshold-pot-method" class="nav-link" data-scroll-target="#peak-over-threshold-pot-method"><span class="header-section-number">1.2.2</span> 📉 Peak Over Threshold (POT) Method</a></li>
+  <li><a href="#block-maxima-approach" id="toc-block-maxima-approach" class="nav-link" data-scroll-target="#block-maxima-approach"><span class="header-section-number">2.2.1</span> 📈 Block Maxima Approach</a></li>
+  <li><a href="#peak-over-threshold-pot-method" id="toc-peak-over-threshold-pot-method" class="nav-link" data-scroll-target="#peak-over-threshold-pot-method"><span class="header-section-number">2.2.2</span> 📉 Peak Over Threshold (POT) Method</a></li>
   </ul></li>
-  <li><a href="#objectives-of-eva" id="toc-objectives-of-eva" class="nav-link" data-scroll-target="#objectives-of-eva"><span class="header-section-number">1.3</span> 🎯 Objectives of EVA</a></li>
-  <li><a href="#real-world-applications-of-eva" id="toc-real-world-applications-of-eva" class="nav-link" data-scroll-target="#real-world-applications-of-eva"><span class="header-section-number">1.4</span> 🏗️ Real-world Applications of EVA</a></li>
+  <li><a href="#objectives-of-eva" id="toc-objectives-of-eva" class="nav-link" data-scroll-target="#objectives-of-eva"><span class="header-section-number">2.3</span> 🎯 Objectives of EVA</a></li>
+  <li><a href="#real-world-applications-of-eva" id="toc-real-world-applications-of-eva" class="nav-link" data-scroll-target="#real-world-applications-of-eva"><span class="header-section-number">2.4</span> 🏗️ Real-world Applications of EVA</a></li>
   </ul></li>
-  <li><a href="#evt-extreme-value-theory" id="toc-evt-extreme-value-theory" class="nav-link" data-scroll-target="#evt-extreme-value-theory"><span class="header-section-number">2</span> EVT: Extreme Value Theory</a></li>
   <li><a href="#practical-objectives-of-this-module" id="toc-practical-objectives-of-this-module" class="nav-link" data-scroll-target="#practical-objectives-of-this-module"><span class="header-section-number">3</span> Practical Objectives of this Module</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">4</span> References</a></li>
   </ul>
 </nav>
 </nav>
@@ -162,39 +189,8 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="eva-extreme-value-analysis" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> EVA: Extreme Value Analysis</h1>
-<section id="eva-in-hydrology" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="eva-in-hydrology"><span class="header-section-number">1.1</span> 🌊 EVA in Hydrology</h2>
-<p>EVA is a powerful statistical tool to analyze rare events in hydrology and climate science. It focuses on understanding the frequency and intensity of extreme events.</p>
-</section>
-<section id="key-concepts-of-eva" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="key-concepts-of-eva"><span class="header-section-number">1.2</span> 📌 Key Concepts of EVA</h2>
-<section id="block-maxima-approach" class="level3" data-number="1.2.1">
-<h3 data-number="1.2.1" class="anchored" data-anchor-id="block-maxima-approach"><span class="header-section-number">1.2.1</span> 📈 Block Maxima Approach</h3>
-<p>Selects the maximum value in fixed time blocks (e.g., annual maximum flow or rainfall) → Fits data to distributions like Gumbel or GEV.</p>
-</section>
-<section id="peak-over-threshold-pot-method" class="level3" data-number="1.2.2">
-<h3 data-number="1.2.2" class="anchored" data-anchor-id="peak-over-threshold-pot-method"><span class="header-section-number">1.2.2</span> 📉 Peak Over Threshold (POT) Method</h3>
-<p>Considers all events exceeding a predefined threshold → More data points → Fitted to Generalized Pareto Distribution (GPD).</p>
-</section>
-</section>
-<section id="objectives-of-eva" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="objectives-of-eva"><span class="header-section-number">1.3</span> 🎯 Objectives of EVA</h2>
-<p>🔁 <strong>Estimate Return Periods</strong>: Assess the intensity of rare events expected to be exceeded, on average, once every N years (e.g., for example, a 100-year event corresponds to a 1% annual probability of being exceeded).</p>
-<p>📊 <strong>Construct Frequency Curves</strong>: Fit statistical distributions (e.g., GEV, Gumbel, Log-Pearson Type III) to observed extremes to relate event magnitude to exceedance probability.</p>
-<p>🧰 <strong>Support Risk-Based Design</strong>: Inform engineering design criteria (e.g., for dams, levees, drainage systems) based on scientifically justified extreme thresholds</p>
-</section>
-<section id="real-world-applications-of-eva" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="real-world-applications-of-eva"><span class="header-section-number">1.4</span> 🏗️ Real-world Applications of EVA</h2>
-<p>🏞️ <strong>Infrastructure Design:</strong> Design dams, bridges, culverts based on expected extreme flows.</p>
-<p>💧 <strong>Water Resource Management:</strong> Plan for droughts, reservoir operations, and sustainable use.</p>
-<p>⚠️ <strong>Risk Assessment &amp; Planning:</strong> Develop floodplain zoning, disaster risk reduction strategies.</p>
-<p>🧭 <strong>Policy &amp; Climate Adaptation:</strong> Inform government strategies and early warning systems in a changing climate.</p>
-</section>
-</section>
-<section id="evt-extreme-value-theory" class="level1 page-columns page-full" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> EVT: Extreme Value Theory</h1>
+<section id="evt-extreme-value-theory" class="level1 page-columns page-full" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> EVT: Extreme Value Theory</h1>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <div class="callout callout-style-default callout-note callout-titled">
@@ -210,7 +206,7 @@ Note
 <p><strong>EVA</strong> is based on <strong>EVT</strong></p>
 </div>
 </div>
-</div></div><p>Imagine we have daily observational data for a random variable (e.g., river discharges, precipitations, etc.) for many years. <a href="https://en.wikipedia.org/wiki/Extreme_value_theory">EVT</a> suggests that the extreme values of this variable are asymptotically close to one of three types of extreme value distributions, regardless of the original distribution of daily flows. <a href="https://en.wikipedia.org/wiki/Extreme_value_theory">EVT</a> helps us estimate the probability of rare, high-flow events like floods.</p>
+</div></div><p>Imagine we have daily observational data for a random variable (e.g., river discharges, precipitations, etc.) for many years. <a href="https://en.wikipedia.org/wiki/Extreme_value_theory">EVT</a> suggests that the extreme values of this variable are asymptotically close to one of three types of extreme value distributions, regardless of the original distribution of daily flows (see <span class="citation" data-cites="coles2001">Coles (<a href="#ref-coles2001" role="doc-biblioref">2001</a>)</span> for details). <a href="https://en.wikipedia.org/wiki/Extreme_value_theory">EVT</a> helps us estimate the probability of rare, high-flow events like floods.</p>
 <div>
 
 </div>
@@ -263,6 +259,37 @@ Important
 </div>
 </div>
 </div></div></section>
+<section id="eva-extreme-value-analysis" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> EVA: Extreme Value Analysis</h1>
+<section id="eva-in-hydrology" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="eva-in-hydrology"><span class="header-section-number">2.1</span> 🌊 EVA in Hydrology</h2>
+<p>EVA is a powerful statistical tool to analyze rare events in hydrology and climate science. It focuses on understanding the frequency and intensity of extreme events.</p>
+</section>
+<section id="key-concepts-of-eva" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="key-concepts-of-eva"><span class="header-section-number">2.2</span> 📌 Key Concepts of EVA</h2>
+<section id="block-maxima-approach" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="block-maxima-approach"><span class="header-section-number">2.2.1</span> 📈 Block Maxima Approach</h3>
+<p>Selects the maximum value in fixed time blocks (e.g., annual maximum flow or rainfall) → Fits data to distributions like Gumbel or GEV.</p>
+</section>
+<section id="peak-over-threshold-pot-method" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="peak-over-threshold-pot-method"><span class="header-section-number">2.2.2</span> 📉 Peak Over Threshold (POT) Method</h3>
+<p>Considers all events exceeding a predefined threshold → More data points → Fitted to Generalized Pareto Distribution (GPD).</p>
+</section>
+</section>
+<section id="objectives-of-eva" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="objectives-of-eva"><span class="header-section-number">2.3</span> 🎯 Objectives of EVA</h2>
+<p>🔁 <strong>Estimate Return Periods</strong>: Assess the intensity of rare events expected to be exceeded, on average, once every N years (e.g., for example, a 100-year event corresponds to a 1% annual probability of being exceeded).</p>
+<p>📊 <strong>Construct Frequency Curves</strong>: Fit statistical distributions (e.g., GEV, Gumbel, Log-Pearson Type III) to observed extremes to relate event magnitude to exceedance probability.</p>
+<p>🧰 <strong>Support Risk-Based Design</strong>: Inform engineering design criteria (e.g., for dams, levees, drainage systems) based on scientifically justified extreme thresholds</p>
+</section>
+<section id="real-world-applications-of-eva" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="real-world-applications-of-eva"><span class="header-section-number">2.4</span> 🏗️ Real-world Applications of EVA</h2>
+<p>🏞️ <strong>Infrastructure Design:</strong> Design dams, bridges, culverts based on expected extreme flows.</p>
+<p>💧 <strong>Water Resource Management:</strong> Plan for droughts, reservoir operations, and sustainable use.</p>
+<p>⚠️ <strong>Risk Assessment &amp; Planning:</strong> Develop floodplain zoning, disaster risk reduction strategies.</p>
+<p>🧭 <strong>Policy &amp; Climate Adaptation:</strong> Inform government strategies and early warning systems in a changing climate.</p>
+</section>
+</section>
 <section id="practical-objectives-of-this-module" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Practical Objectives of this Module</h1>
 <p>📊 <strong>Apply sampling approaches for extreme events</strong></p>
@@ -275,6 +302,14 @@ Important
 <p>Evaluate the reliability and meaning of trend detection results under various statistical assumptions.</p>
 <p>💻 <strong>Use open-source R packages for implementation</strong></p>
 <p>Apply all methods in practice using reproducible, open-source tools within the <a href="https://www.r-project.org/">R environment</a>.</p>
+</section>
+<section id="references" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-coles2001" class="csl-entry" role="listitem">
+Coles, S. (2001). <em>An introduction to statistical modeling of extreme values</em> (p. 208). Springer.
+</div>
+</div>
 
 
 </section>
@@ -361,7 +396,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/diopbachir\.github\.io\/tp_eva\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

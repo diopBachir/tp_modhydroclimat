@@ -17,9 +17,9 @@ library(trend)
 library(extRemes)
 ```
 
-# Data Import
+# Data import {#sec-bmdata}
 
-Will work with real-world data, from the **`La Drôme à Luc-en-Diois`** station in France, to analyze flood events using daily streamflow data covering the period from August 1st, 1958, to December 31st, 2020. The metadata of the station are available on the [HydroPortail website (here)](https://hydro.eaufrance.fr/stationhydro/V421401001/fiche).
+Will work with real-world data, from the **`La Drôme à Luc-en-Diois`** station in France, to analyze flood events using daily streamflow data covering the period from August 1st, 1958, to December 31st, 2020. The metadata of the station are available on the [HydroPortail website (here)](https://www.hydro.eaufrance.fr/sitehydro/V4214010/fiche).
 
 Let’s consider the formatted daily streamflow data file for the target catchment. We can read the data into a data frame using the `read.csv()` function. We will also set the column names using the `col.names` argument, and use the `lubridate` library to prepare a time serie.
 
@@ -48,7 +48,7 @@ The output is a data frame (or a matrix) with 22799 rows and 2 columns.
 #| label: tbl-bm_loaddata
 #| tbl-cap: "First (6) lines of the daily streamflow data for Block-Maxima approach"
 
-head(Qdata, 6) %>% knitr::kable(align=rep("c", 2))
+tail(Qdata, 6) %>% knitr::kable(align=rep("c", 2))
 ```
 
 ::: {.column-margin}
@@ -67,13 +67,12 @@ str(Qdata)
 
 :::
 
-# Sampling Extreme Events
+# Extreme events sampling
 
 
+## The block maxima approach
 
-## The Block-Maxima Approach
-
-The **Block-Maxima Approach**, consists of sampling the maximum streamflow value for each year (or block). This method is straightforward to implement and ensures, by construction, that the sampled values are statistically independent, a key requirement in extreme value analysis (EVA).
+The **Block-Maxima Approach [@gumbel1958statistics]**, consists of sampling the maximum streamflow value for each year (or block). This method is straightforward to implement and reduce the possiblity of serial dependence.
 
 ```{r}
 #| echo: false
@@ -127,7 +126,7 @@ ggplot(streamflow, aes(x = date, y = Q)) +
 
 ```
 
-## Exract Annual Maximum Floods (AMF) from the daily streamflow serie
+## Exract annual maximum floods (AMF) from the daily streamflow serie
 
 **1.** To extract annual maximum floods (AMF) from the streamflow series, we need to define a function that returns the maximum value of a block of data:
 
@@ -169,7 +168,7 @@ extractedAMF = extract_annual_max(Qdata)
 head(extractedAMF, 6) %>% knitr::kable(align=rep("c", 2))
 ```
 
-## Display Sampled Events
+## Display sampled vvents
 
 Now, we overlap the extracted **Annual Maximum Flow** with the original daily discharge time serie to visualize the sampling process. We use the functions from the `dplyr` and `ggplot2` library to create the plot.
 
@@ -204,7 +203,7 @@ print(amf.plot)
 
 
 
-# Autocorrelation Testing
+# Autocorrelation testing
 
 ::: {.column-margin}
 ::: {.callout-tip}
@@ -215,7 +214,7 @@ The `acf` function is a R-base function, no installation needed
 :::
 
 
-## What is Autocorrelation?
+## What is autocorrelation? {#sec-autocorrelation}
 
 **`Autocorrelation (or autocovariance)`** of a series refers to the fact that in a time or spatial serie, the measurement of a phenomenon at time t can be correlated with previous measurements (at time t-1, t-2, t-3, etc.) or with subsequent measurements (at t+1, t+2, t+3, ...). An autocorrelated series is thus correlated with itself, with a given lag (please refer [here](https://perso.ens-lyon.fr/lise.vaudor/autocorrelation-de-series-temporelles-ou-spatiales/) for mode details). 
 
@@ -229,7 +228,7 @@ The `acf` function is a R-base function, no installation needed
 * Based on the [autocorrelation function (ACF)](https://medium.com/@kis.andras.nandor/understanding-autocorrelation-and-partial-autocorrelation-functions-acf-and-pacf-2998e7e1bcb5)
 * Helps identify the presence and extent of dependencies over time
 
-📊 **Wald-Wolfowitz Test  [(1940)](https://doi.org/10.1214/aoms/1177731909):**
+📊 **Wald-Wolfowitz Test [@wald_test_1940]:**
 
 * Non-parametric to assess the randomness of a time series
 * Used to detect the absence of randomness in the series
@@ -271,7 +270,6 @@ ggplot(data=bacfdf, mapping=aes(x=lag, y=acf)) +
   theme_minimal() +
   theme(axis.title=element_text(size=10, face="bold", family="Times"),
         axis.text=element_text(size=10, color="black", family="Times"))
-
 ```
 
 ::: {.column-margin}
@@ -282,7 +280,7 @@ Looking at the 95% confidence interval bounds in the correlogram, we can see tha
 :::
 
 
-### Wald-Wolfowitz (WW) Test
+### Wald-Wolfowitz (WW) test {#sec-wwtest}
 
 In the chunk below, we use the `ww.test(...)` function from `{trend}` package to perform the `WW test` at the **0.05 significance level** to test the hypothesis that the maximum annual flood is a random variable.
 
@@ -300,11 +298,53 @@ print(wwtest)
 :::
 :::
 
-# Trend Detection
+# Trend detection {#sec-trend}
 
-## Non-Parametric methods: The Mann-Kendall (MK) test
+## Non-parametric methods
 
-The MK test's null hypothesis (H0) assumes no trend in the data (please see [here](https://vsp.pnnl.gov/help/vsample/design_trend_mann_kendall.htm) for the detailed algorithm). Recommended by the World Meteorological Organization (WMO), it is simple and requires no assumptions about data distribution, which is particularly advantageous for hydroclimatic series that are rarely normally distributed. Additionally, outlier values have very little influence on the results.
+### The Mann-Kendall (MK) test {#sec-mk}
+
+The MK test's null hypothesis (H0) assumes no trend in the data [@mann1945nonparametric; @kendall_rank_1975]. Recommended by the World Meteorological Organization (WMO), it is simple and requires no assumptions about data distribution, which is particularly advantageous for hydroclimatic series that are rarely normally distributed. Additionally, outlier values have very little influence on the results. The Mann-Kendall test statistic $S$ is defined as:
+
+$$
+S = \sum_{i=1}^{n-1} \sum_{j=i+1}^{n} \text{sgn}(x_j - x_i) \tag{1}
+$$
+
+The sign function is given by:
+
+$$
+\text{sgn}(x_j - x_i) =
+\begin{cases}
++1 & \text{if } (x_j - x_i) > 0 \\
+0 & \text{if } (x_j - x_i) = 0 \\
+-1 & \text{if } (x_j - x_i) < 0
+\end{cases} \tag{2}
+$$
+
+where $x_i$ and $x_j$ are values of the variable at time $i$ and $j$, respectively, and $n$ is the total number of observations.
+
+A significance level (commonly $\alpha = 0.05$) and the trend slope indicating the direction and magnitude of the trend are key characteristics of the Mann-Kendall test. If $n > 8$, the test statistic $S$ approximates a normal distribution. In this case, the mean of $S$ is zero and its variance is:
+
+$$
+\text{var}(S) = \frac{n(n - 1)(2n + 5)}{18} \tag{3}
+$$
+
+The standardized test statistic $Z$, which indicates the direction of the trend, is calculated as:
+
+$$
+Z =
+\begin{cases}
+\frac{S - 1}{\sqrt{\text{var}(S)}} & \text{if } S > 0 \\
+0 & \text{if } S = 0 \\
+\frac{S + 1}{\sqrt{\text{var}(S)}} & \text{if } S < 0
+\end{cases} \tag{4}
+$$
+
+The null hypothesis $H_0$ (no trend) is rejected if $|Z| > 1.96$ at the 95% confidence level.
+
+- A **positive trend** is significant if $Z > 1.96$
+- A **negative trend** is significant if $Z < -1.96$
+
 
 We use the `mk.test(...)` function from `{trend}` package to perform the `MK test` at the **0.05 significance level** to test the hypothesis that there is no stationarity in the maximum annual floods serie.
 
@@ -348,6 +388,95 @@ lineplot = ggplot(extractedAMF, aes(Year, AMAX)) +
 print(lineplot)
 ```
 
+### Sen's slope estimator {#sec-sens}
+
+The **non-parametric method of Sen [-@Sen1968]** is commonly combined with the Mann-Kendall test to estimate the slope of the $(\beta)$ of a trend. Sen’s method looks at every pair of data points, calculates the slope between them, then uses the the median of all those slopes as the estimated trend.
+
+$$
+\beta = \text{median} \left( \frac{x_j - x_i}{j - i} \right), \quad , ∀\quad j > i \tag{5}
+$$
+
+To express the Sen's slope as a **percentage change per time step (i.e., relative trend rate per year)**, it can be normalized by the mean:
+
+$$
+\beta (\%) = \left( \frac{\beta}{\bar{x}} \right) \times 100 \tag{6}
+$$
+where $\beta (\%)$ is the relative trend rate per year, $x_i$ and $x_j$ are respectively the observed values at time points $i$ and $j$, and $\bar{x}$ represents the mean value of the variable across the period.
+
+The Sen's slope can be easily computed using the `sens.slope(...)` function from the `{trend}` package, as in the chunk below:
+
+::: {.column-margin}
+::: {.callout-tip}
+## Sen slope
+**`Slope = -0.1187375 :`** the median trend is slightly negative, suggesting a weak decline.
+
+**`p-value = 0.2183:`** this negative trend is not statistically significant.
+:::
+:::
+
+```{r}
+#| echo: true
+
+#compute Sen's slope and intercept
+senslope = trend::sens.slope(x = extractedAMF$AMAX)
+print(senslope)
+```
+
+
+Yet, the `sens.slope(...)` function returns the **absolute** slope (i.e., the median change per time unit). It is more meaningful to express the trend as a **relative percentage** change over the time period. 
+
+To do this, we define a **wrapper function** that calculates the Sen's slope and then converts it into a relative trend rate per time step.
+
+```{r}
+#| echo: true
+#| cache: false
+#| code-fold: true
+#| code-summary: "Show the code"
+
+sens_slope_percent <- function(x, time_step=NULL) 
+{
+  #' Compute Sen's slope as a percentage change over the full time period
+  #' @param x A numeric vector of observations
+  #' @param time_step Optional (e.g., year) used for display purpose only
+  #' @return Relative percent change over the period
+
+  require(trend)
+  
+  result <- sens.slope(x)
+  slope <- result$estimates              # Absolute slope (per time unit)
+  p_val <- result$p.value                # p-value for trend test
+  mean_val <- mean(x, na.rm = TRUE)
+  
+  percent_change <- (slope / mean_val) * 100
+  
+  cat("Absolute Sen's slope: ", round(slope, 4), "\n", sep="")
+  cat("P-value: ", format.pval(p_val, digits = 4), "\n", sep="")
+  if(!is.null(time_step)){
+    cat("Relative trend rate: ", round(percent_change, 2), "%/", time_step, "\n", sep="")
+  }else{
+    cat("Relative trend rate: ", round(percent_change, 2), "%\n", sep="")
+  }
+  
+}
+```
+
+Now, we can compute the **relative Sen's slope** for the annual maximum flow data:
+
+```{r}
+#| echo: true
+
+# compute Sen's slope as a percentage change
+sens_slope_percent(extractedAMF$AMAX, time_step = "year")
+```
+
+::: {.column-margin}
+::: {.callout-tip}
+## Relative Sen's slope
+The annual maximum flow shows a slight decreasing trend of −0.4% per year relative to its long-term average.
+:::
+:::
+
+
 ## Parametric methods
 
 Parametric methods rely on the adjustment of distributions adapted to extremes event (e.g., Generalized Extreme Value, Generalized Pareto Distribution, etc.) in a `non-stationary (NS)` context. 
@@ -356,24 +485,23 @@ Parametric methods rely on the adjustment of distributions adapted to extremes e
 NS is taken into account by allowing the models parameters to vary as a linear function of time or other covariates. Here, the location parameter **`(μ)`** will be expressed as a linear function of time, denoted as **`μ(t)`**, leaving the others parameters constant.
 :::
 
-# Flood Frequency Analysis (FFA)
+# Flood frequency analysis (FFA)
 
 ## Probability distributions
 
 We will compare two probability distributions adapted to the `Block-Maxima Framework`: the Generalized Extreme Value (GEV) and the Gumbel probability distributions.
 
 ::: {.callout-note}
-## GEV Distribution
+## GEV distribution
 
 The Generalized Extreme Value (GEV) distribution is a family of continuous probability distributions developed to combine the Gumbel, Fréchet, and Weibull distributions. According to the Extreme Value Theorem, the GEV distribution is the only possible limit distribution for properly normalized sequences of maxima of independent and identically distributed random variables. The cumulative distribution function (CDF) of the GEV distribution is given by:
 
-$$ F(x; \mu, \sigma, \xi) = \exp\left\{ -\left[ 1 + \xi \left( \frac{x - \mu}{\sigma} \right) \right]^{-1/\xi} \right\} $$
+$$ 
+F(x; \mu, \sigma, \xi) = \exp\left\{ -\left[ 1 + \xi \left( \frac{x - \mu}{\sigma} \right) \right]^{-1/\xi} \right\} 
+\tag{7}
+$$
 
-for $1 + \xi (x - \mu)/\sigma > 0$, where:
-
-* $\mu$ is the location parameter.
-* $\sigma > 0$ is the scale parameter.
-* $\xi$ is the shape parameter.
+for $1 + \xi (x - \mu)/\sigma > 0$, where, $\mu$ is the location parameter, $\sigma > 0$ is the scale parameter, and $\xi$ is the shape parameter.
 
 The shape parameter $\xi$ determines the type of extreme value distribution:
 
@@ -385,7 +513,7 @@ The shape parameter $\xi$ determines the type of extreme value distribution:
 
 ::: {.callout-note}
 
-## Gumbel Distribution
+## Gumbel distribution
 
 The Gumbel distribution is a special case of the GEV distribution when the shape parameter $\xi = 0$. It is often used to model the distribution of the maximum (or minimum) of a number of samples of various distributions. It is one of the three types of extreme value distributions. The cumulative distribution function (CDF) of the Gumbel distribution (Type I Extreme Value distribution) is given by:
 
@@ -407,59 +535,50 @@ The advantage of using **`GMLE`** and **`MLE`** over the **`L-moments`** method 
 
 ## Model selection
 
-To select the best probability distribution, we will use the **`AIC`** and **`AIC`** criteria. The model with the lowest AIC or BIC value will be selected.
-
-::: {.callout-note}
-## AIC (Akaike Information Criterion)
-
-The **`AIC`** balances the goodness of fit of the model with the number of parameters used by the model. This mean that it rewards models that fit the data well but also penalizes models that use too many parameters. The formula for AIC is:
-
-$$ \text{AIC} = 2k - 2\ln(\hat{L}) $$
-
-where:
-
-* $k$ is the number of parameters in the model.
-* $\hat{L}$ is the maximum value of the [likelihood function](https://en.wikipedia.org/wiki/Likelihood_function) for the model.
-
-
-:::
+To select the best probability distribution, we will use the **`AIC`** and **`AIC`** criteria. The model with the lowest **`AIC`** or **`BIC`** value will be selected. The model with the **lowest** **`AIC`** and **`BIC`** values is the best-suited model. **`AIC`** tends to favor models with better fit, even if more complex, while **`BIC`** favors simpler models, especially as sample size grows. Combining these these performance metrics enhances the efficiency of model selection.
 
 ::: {.column-margin}
 ::: {.callout-tip}
-## How to select the best model?
-The model with the lowest **`AIC`** and **`BIC`** values is the best-suited model. **`AIC`** tends to favor models with better fit, even if more complex, while **`BIC`** favors simpler models, especially as sample size grows. Combining these these performance metrics enhances the efficiency of model selection: 
-
+## Joint use of AIC and BIC
 * if both criteria select the same model, it is strongly preferred
 * if not, the choice depends on whether your goal is **predictive accuracy (AIC)** or **model simplicity (BIC)**
 :::
 :::
 
 ::: {.callout-note}
+## AIC (Akaike Information Criterion)
+
+The **`AIC`** balances the goodness of fit of the model with the number of parameters used by the model. This mean that it rewards models that fit the data well but also penalizes models that use too many parameters. The formula for AIC is:
+
+$$ 
+\text{AIC} = 2k - 2\ln(\hat{L}) \tag{8}
+$$
+where $k$ is the number of parameters in the model, $\hat{L}$ is the maximum value of the [likelihood function](https://en.wikipedia.org/wiki/Likelihood_function) for the model.
+
+:::
+
+::: {.callout-note}
 ## BIC (Bayesian Information Criterion)
 
 **`BIC`** penalizes model complexity **more heavily than `AIC`**, especially for larger sample sizes. This means **`BIC`** tends to favor simpler models compared to AIC. The formula for BIC is:
-
-$$ \text{BIC} = k\ln(n) - 2\ln(\hat{L}) $$
-
-where:
-
-* $k$ is the number of parameters in the model.
-* $n$ is the number of data points.
-* $\hat{L}$ is the maximum value of the [likelihood function](https://en.wikipedia.org/wiki/Likelihood_function) for the model.
+$$ 
+\text{BIC} = k\ln(n) - 2\ln(\hat{L}) \tag{9}
+$$
+where: $k$ is the number of parameters in the model, $n$ is the number of data points, and $\hat{L}$ is the maximum value of the [likelihood function](https://en.wikipedia.org/wiki/Likelihood_function) for the model.
 
 :::
 
 
 ## Perform FFA
 
-### Setup utils
+### Setup utils {#sec-utils}
 
 To pretty-print the summary of our models' fitting, we will create a custom function that will take the fitted model as an argument, extract and format key components of the fiited object, and print the output: 
 
 ```{r}
 #| echo: true
 
-pretty_gev_summary = function(fitobj, model) {
+pretty_fit_summary = function(fitobj, model) {
   #' Pretty print summary of a  extreme value model fit
   #'
   #' @param fitobj Fitted model object from extRemes::fevd()
@@ -493,7 +612,7 @@ pretty_gev_summary = function(fitobj, model) {
 
 ## [GEV fitting]{.custom-tabset-title2}
 
-The chunk below use the **` {extRemes} `** library to fit the GEV distribution to the **Annual Maximum Floods** extracted earlier. 
+The chunk below use the **`{extRemes}`** library to fit the GEV distribution to the **Annual Maximum Floods** extracted earlier. 
 
 ```{r}
 #| message: false
@@ -501,17 +620,18 @@ The chunk below use the **` {extRemes} `** library to fit the GEV distribution t
 #| cache: false
 
 # fit the GEV distribution to the AMF
+library(extRemes)
 gevfit = fevd(x=extractedAMF$AMAX, type="GEV", method="GMLE")
 ```
 
-Now, we will print the results of the fit, using the **`pretty_gev_summary()`** function we have defined above. This will show the **AIC** and **BIC** values, as well as the estimated parameters of the fitted GEV distribution.
+Now, we will print the results of the fit, using the **`pretty_fit_summary()`** function we have defined above. This will show the **AIC** and **BIC** values, as well as the estimated parameters of the fitted GEV distribution.
 
 ```{r}
 #| echo: true
 #| cache: false
 
 # show fitting sumary
-gevfit_res = pretty_gev_summary(gevfit, "GEV")
+gevfit_res = pretty_fit_summary(gevfit, "GEV")
 ```
 
 ::: {.column-margin}
@@ -544,7 +664,7 @@ title(main="(b) Q-Q plot")
 
 ## [Gumbel fitting]{.custom-tabset-title2}
 
-The chunk below use the **` {extRemes} `** library to fit the Gumbel distribution to the **Annual Maximum Floods** extracted earlier. 
+The chunk below use the **`{extRemes}`** library to fit the Gumbel distribution to the **Annual Maximum Floods** extracted earlier. 
 
 ```{r}
 #| message: false
@@ -556,17 +676,17 @@ The chunk below use the **` {extRemes} `** library to fit the Gumbel distributio
 gumfit = fevd(x=extractedAMF$AMAX, type="Gumbel", method="GMLE")
 ```
 
-Now, we will print the results of the fit, using the **`pretty_gev_summary()`** function we have defined previously. This will show the **AIC** and **BIC** values, as well as the estimated parameters of the fitted Gumbel distribution.
+Now, we will print the results of the fit, using the **`pretty_fit_summary()`** function we have defined previously. This will show the **AIC** and **BIC** values, as well as the estimated parameters of the fitted Gumbel distribution.
 
 ```{r}
 #| echo: true
 #| cache: false
 
 # show fitting sumary
-gumfit_res = pretty_gev_summary(gumfit, "Gumbel")
+gumfit_res = pretty_fit_summary(gumfit, "Gumbel")
 ```
 
-Finally, we show in @fig-gumfitdiag-stationary, the diagnostics from the GEV distribution fitted to the Annual Maximum Floods:
+Finally, we show in @fig-gumfitdiag-stationary, the diagnostics from the Gumbel distribution fitted to the Annual Maximum Floods:
 
 ```{r}
 #| echo: true
@@ -582,9 +702,9 @@ plot(gumfit, type="qq2", main=NULL)
 title(main="(b) Q-Q plot")
 ```
 
-## [Best-Suited Model]{.custom-tabset-title2}
+## [Best-suited model]{.custom-tabset-title2}
 
-As mentionned previously, the model with the lowest **`AIC`** and **`BIC`** values is the best-suited model. The **`pretty_gev_summary()`** function we have defined previously return a data.frame of **AIC** and **BIC** values for each distribution. Lets compare these values to select the best-suited distribution for the next steps.
+As mentionned previously, the model with the lowest **`AIC`** and **`BIC`** values is the best-suited model. The **`pretty_fit_summary()`** function we have defined previously return a data.frame of **AIC** and **BIC** values for each distribution. Lets compare these values to select the best-suited distribution for the next steps.
 
 ```{r}
 #| echo: true
@@ -619,7 +739,11 @@ Both **AIC and BIC are lower for the GEV model**, which suggests that it provide
 
 #### Parametric trend-detection
 
-When covariates are to be incorporated into EVA, a common approach is to model them within the parameters of the distributions in a **`regression-like manner`**. To perform **`parametric trend detection with the GEV distribution`**, we model **`location parameter (μ)`** as a function of time, transforming the model into a **`non-stationary GEV`**. 
+When covariates are to be incorporated into EVA, a common approach to account for non-stationary is to incorporate covariates within the parameters of the distributions in a **`regression-like manner`**. To perform **parametric trend detection**, we model the **`location parameter (μ)`** as a function of time, transforming the models into **`non-stationary distributions`**. The location parameter of the non-stationnary GEV and Gumbel is computed as follow:
+$$
+\mu (t) = \mu 0 + \mu 1·t \tag{10}
+$$
+where $\mu$ is the time-dependant location parameter, $t$ is the time index, $\mu 0$ is the intercept, and $\mu 1$ is the slope.
 
 ::: {.callout-tip}
 # Trend?
@@ -659,21 +783,19 @@ extractedAMF = data.frame(extractedAMF)
 nsgevfit = fevd(x=AMAX, location.fun=~TimeIndex, data=extractedAMF, type="GEV", method="GMLE")
 ```
 
-Now, we will print the results of the fit, using the **`pretty_gev_summary()`** function we have defined above. This will show the **AIC** and **BIC** values, as well as the estimated parameters of the fitted **`NS-GEV`** distribution.
+Now, we will print the results of the fit, using the **`pretty_fit_summary()`** function we have defined above. This will show the **AIC** and **BIC** values, as well as the estimated parameters of the fitted **`NS-GEV`** distribution.
 
 ```{r}
 #| echo: true
 #| cache: false
 
 # show fitting sumary
-nsgevfit_res = pretty_gev_summary(nsgevfit, "GEV")
+nsgevfit_res = pretty_fit_summary(nsgevfit, "GEV")
 ```
 
 ::: {.column-margin}
 ::: {.callout-tip}
 ## What about the parameters?
-
-**`μ(t) = μ0 + μ1·t`**, THE **`time-varying location parameter`** can be expressed as a simple linear model, where:
 
 * **`mu0 = μ0 = 20.5045:`** is the **`intercept`** of the time-varying location parameter. It represents the baseline magnitude of the annual maximum flood (AMF) at the starting point of the time serie.
 
@@ -697,13 +819,16 @@ plot(nsgevfit, type="qq2", main=NULL)
 title(main="(b) Q-Q plot")
 ```
 
-##### Deviance test
+##### Deviance test {#sec-deviancetest}
 
 ::: {.callout-note}
 ## Mathematical of the deviance test
 As mentionned above, The **Deviance test**, or **Likelihood Ratio (LR)** test, compares two nested models — typically, a simpler (stationary) model and a more complex (non-stationary) model. It helps determine if introducing additional parameters (such as a time-varying location parameter in a GEV model) leads to a statistically significant improvement in model fit. 
 
-$$ D = 2{log(ML_{NSGEV}) - log(ML_{SGEV})} $$
+$$ 
+D = 2{log(ML_{NSGEV}) - log(ML_{SGEV})} 
+\tag{11}
+$$
 
 $D$ represents the deviance test statistic value $(D-statistic)$, $log(ML_{NSGEV})$ and $log(ML_{SGEV})$ are the maximised log-likelihood functions of the $NSGEV$ and the $SGEV$, respectively.
 :::
@@ -716,7 +841,7 @@ The **`likelihood function`** itself measures how well a statistical model expla
 :::
 :::
 
-To perform the **`Deviance test`**, we can use the **`lr.test(...)`** of the **`{extRemes}`**. The **`lr.test(...)`** just requires the previous fitted objects of class **`“fevd”`** from the **`fevd(...)`** function: 
+To perform the **`Deviance test`**, we can use the **`lr.test(...)`** of the **`{extRemes}`**. This function just requires the previous fitted objects of class **`“fevd”`** from the **`fevd(...)`** function: 
 
 * **`gevfit`**: model with fewer parameters (stationary GEV model)
 * **`nsgevfit`**model with more parameters (non-stationary GEV model)
@@ -743,12 +868,12 @@ lr.test(x=gevfit, y=nsgevfit, alpha=0.05, df=1)
 
 
 ::: {.callout-note}
-## Trend Significance
+## Trend significance
 There is **no significant evidence** that the **Non-Stationary GEV model (with a time-varying location parameter)** provides a better fit than the **stationary model**. The trend is not statistically significant (p = 0.6547).
 :::
 
 
-# Trend Analysis Conclusion
+# Trend analysis conclusions
 
 🔎 **Trend Detection Methods Used**
 
@@ -870,7 +995,7 @@ rlplot = dataplot %>%
 print(rlplot)
 ```
 
-@fig-effective-return-levels helps in understanding the variations and trends in flood quantiles across different time periods and stations."
+@fig-effective-return-levels helps in understanding the variations and trends in flood quantiles across different time periods."
 
 ```{r}
 #| cache: false
@@ -900,4 +1025,11 @@ Comparing uncertainty across models (e.g., GEV vs Gumbel) can guide model select
 ::: {.callout-note icon="false"}
 ## 🌊 Want to Go Further? Quantify Your Confidence!
 The simpler way to estimate the uncertainty is to compute a **normalized uncertainty range**, defined as the ratio of the difference between the upper (97.5%) and lower (2.5%) bounds of the confidence interval and the estimated quantile was computed.
+:::
+
+
+# References
+
+
+::: {#refs}
 :::

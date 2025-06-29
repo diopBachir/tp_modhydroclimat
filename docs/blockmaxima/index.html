@@ -54,7 +54,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -147,6 +167,12 @@ window.Quarto = {
 };
 </script>
 
+<meta property="og:title" content="Introduction to Extreme Value Analysis - Flood Frequency Analysis (FFA) with Block-Maxima">
+<meta property="og:description" content="">
+<meta property="og:image" content="https://diopbachir.github.io/tp_eva/evaillustr.png">
+<meta property="og:site_name" content="Introduction to Extreme Value Analysis">
+<meta property="og:image:height" content="737">
+<meta property="og:image:width" content="1024">
 </head>
 
 <body class="floating nav-fixed slimcontent">
@@ -180,7 +206,7 @@ window.Quarto = {
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../pot/index.html"> 
-<span class="menu-text">Peak-Over-Threshold (POT)</span></a>
+<span class="menu-text">Threshold Exceedance (POT)</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -198,34 +224,38 @@ window.Quarto = {
    
   <ul>
   <li><a href="#libraries" id="toc-libraries" class="nav-link active" data-scroll-target="#libraries"><span class="header-section-number">1</span> Libraries</a></li>
-  <li><a href="#data-import" id="toc-data-import" class="nav-link" data-scroll-target="#data-import"><span class="header-section-number">2</span> Data Import</a></li>
-  <li><a href="#sampling-extreme-events" id="toc-sampling-extreme-events" class="nav-link" data-scroll-target="#sampling-extreme-events"><span class="header-section-number">3</span> Sampling Extreme Events</a>
+  <li><a href="#sec-bmdata" id="toc-sec-bmdata" class="nav-link" data-scroll-target="#sec-bmdata"><span class="header-section-number">2</span> Data import</a></li>
+  <li><a href="#extreme-events-sampling" id="toc-extreme-events-sampling" class="nav-link" data-scroll-target="#extreme-events-sampling"><span class="header-section-number">3</span> Extreme events sampling</a>
   <ul>
-  <li><a href="#the-block-maxima-approach" id="toc-the-block-maxima-approach" class="nav-link" data-scroll-target="#the-block-maxima-approach"><span class="header-section-number">3.1</span> The Block-Maxima Approach</a></li>
-  <li><a href="#exract-annual-maximum-floods-amf-from-the-daily-streamflow-serie" id="toc-exract-annual-maximum-floods-amf-from-the-daily-streamflow-serie" class="nav-link" data-scroll-target="#exract-annual-maximum-floods-amf-from-the-daily-streamflow-serie"><span class="header-section-number">3.2</span> Exract Annual Maximum Floods (AMF) from the daily streamflow serie</a></li>
-  <li><a href="#display-sampled-events" id="toc-display-sampled-events" class="nav-link" data-scroll-target="#display-sampled-events"><span class="header-section-number">3.3</span> Display Sampled Events</a></li>
+  <li><a href="#the-block-maxima-approach" id="toc-the-block-maxima-approach" class="nav-link" data-scroll-target="#the-block-maxima-approach"><span class="header-section-number">3.1</span> The block maxima approach</a></li>
+  <li><a href="#exract-annual-maximum-floods-amf-from-the-daily-streamflow-serie" id="toc-exract-annual-maximum-floods-amf-from-the-daily-streamflow-serie" class="nav-link" data-scroll-target="#exract-annual-maximum-floods-amf-from-the-daily-streamflow-serie"><span class="header-section-number">3.2</span> Exract annual maximum floods (AMF) from the daily streamflow serie</a></li>
+  <li><a href="#display-sampled-vvents" id="toc-display-sampled-vvents" class="nav-link" data-scroll-target="#display-sampled-vvents"><span class="header-section-number">3.3</span> Display sampled vvents</a></li>
   </ul></li>
-  <li><a href="#autocorrelation-testing" id="toc-autocorrelation-testing" class="nav-link" data-scroll-target="#autocorrelation-testing"><span class="header-section-number">4</span> Autocorrelation Testing</a>
+  <li><a href="#autocorrelation-testing" id="toc-autocorrelation-testing" class="nav-link" data-scroll-target="#autocorrelation-testing"><span class="header-section-number">4</span> Autocorrelation testing</a>
   <ul>
-  <li><a href="#what-is-autocorrelation" id="toc-what-is-autocorrelation" class="nav-link" data-scroll-target="#what-is-autocorrelation"><span class="header-section-number">4.1</span> What is Autocorrelation?</a>
+  <li><a href="#sec-autocorrelation" id="toc-sec-autocorrelation" class="nav-link" data-scroll-target="#sec-autocorrelation"><span class="header-section-number">4.1</span> What is autocorrelation?</a>
   <ul>
   <li><a href="#correlogram" id="toc-correlogram" class="nav-link" data-scroll-target="#correlogram"><span class="header-section-number">4.1.1</span> Correlogram</a></li>
-  <li><a href="#wald-wolfowitz-ww-test" id="toc-wald-wolfowitz-ww-test" class="nav-link" data-scroll-target="#wald-wolfowitz-ww-test"><span class="header-section-number">4.1.2</span> Wald-Wolfowitz (WW) Test</a></li>
+  <li><a href="#sec-wwtest" id="toc-sec-wwtest" class="nav-link" data-scroll-target="#sec-wwtest"><span class="header-section-number">4.1.2</span> Wald-Wolfowitz (WW) test</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#trend-detection" id="toc-trend-detection" class="nav-link" data-scroll-target="#trend-detection"><span class="header-section-number">5</span> Trend Detection</a>
+  <li><a href="#sec-trend" id="toc-sec-trend" class="nav-link" data-scroll-target="#sec-trend"><span class="header-section-number">5</span> Trend detection</a>
   <ul>
-  <li><a href="#non-parametric-methods-the-mann-kendall-mk-test" id="toc-non-parametric-methods-the-mann-kendall-mk-test" class="nav-link" data-scroll-target="#non-parametric-methods-the-mann-kendall-mk-test"><span class="header-section-number">5.1</span> Non-Parametric methods: The Mann-Kendall (MK) test</a></li>
+  <li><a href="#non-parametric-methods" id="toc-non-parametric-methods" class="nav-link" data-scroll-target="#non-parametric-methods"><span class="header-section-number">5.1</span> Non-parametric methods</a>
+  <ul>
+  <li><a href="#sec-mk" id="toc-sec-mk" class="nav-link" data-scroll-target="#sec-mk"><span class="header-section-number">5.1.1</span> The Mann-Kendall (MK) test</a></li>
+  <li><a href="#sec-sens" id="toc-sec-sens" class="nav-link" data-scroll-target="#sec-sens"><span class="header-section-number">5.1.2</span> Sen’s slope estimator</a></li>
+  </ul></li>
   <li><a href="#parametric-methods" id="toc-parametric-methods" class="nav-link" data-scroll-target="#parametric-methods"><span class="header-section-number">5.2</span> Parametric methods</a></li>
   </ul></li>
-  <li><a href="#flood-frequency-analysis-ffa" id="toc-flood-frequency-analysis-ffa" class="nav-link" data-scroll-target="#flood-frequency-analysis-ffa"><span class="header-section-number">6</span> Flood Frequency Analysis (FFA)</a>
+  <li><a href="#flood-frequency-analysis-ffa" id="toc-flood-frequency-analysis-ffa" class="nav-link" data-scroll-target="#flood-frequency-analysis-ffa"><span class="header-section-number">6</span> Flood frequency analysis (FFA)</a>
   <ul>
   <li><a href="#probability-distributions" id="toc-probability-distributions" class="nav-link" data-scroll-target="#probability-distributions"><span class="header-section-number">6.1</span> Probability distributions</a></li>
   <li><a href="#models-fitting" id="toc-models-fitting" class="nav-link" data-scroll-target="#models-fitting"><span class="header-section-number">6.2</span> Models fitting</a></li>
   <li><a href="#model-selection" id="toc-model-selection" class="nav-link" data-scroll-target="#model-selection"><span class="header-section-number">6.3</span> Model selection</a></li>
   <li><a href="#perform-ffa" id="toc-perform-ffa" class="nav-link" data-scroll-target="#perform-ffa"><span class="header-section-number">6.4</span> Perform FFA</a>
   <ul>
-  <li><a href="#setup-utils" id="toc-setup-utils" class="nav-link" data-scroll-target="#setup-utils"><span class="header-section-number">6.4.1</span> Setup utils</a></li>
+  <li><a href="#sec-utils" id="toc-sec-utils" class="nav-link" data-scroll-target="#sec-utils"><span class="header-section-number">6.4.1</span> Setup utils</a></li>
   <li><a href="#distributions-fitting" id="toc-distributions-fitting" class="nav-link" data-scroll-target="#distributions-fitting"><span class="header-section-number">6.4.2</span> Distributions fitting</a>
   <ul>
   <li><a href="#stationary-context" id="toc-stationary-context" class="nav-link" data-scroll-target="#stationary-context"><span class="header-section-number">6.4.2.1</span> Stationary context</a></li>
@@ -233,18 +263,19 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#creating-covariate" id="toc-creating-covariate" class="nav-link" data-scroll-target="#creating-covariate"><span class="header-section-number">6.4.2.2.1</span> Creating covariate</a></li>
   <li><a href="#non-stationary-gev-fitting" id="toc-non-stationary-gev-fitting" class="nav-link" data-scroll-target="#non-stationary-gev-fitting"><span class="header-section-number">6.4.2.2.2</span> Non-Stationary GEV fitting</a></li>
-  <li><a href="#deviance-test" id="toc-deviance-test" class="nav-link" data-scroll-target="#deviance-test"><span class="header-section-number">6.4.2.2.3</span> Deviance test</a></li>
+  <li><a href="#sec-deviancetest" id="toc-sec-deviancetest" class="nav-link" data-scroll-target="#sec-deviancetest"><span class="header-section-number">6.4.2.2.3</span> Deviance test</a></li>
   </ul></li>
   </ul></li>
   </ul></li>
   </ul></li>
-  <li><a href="#trend-analysis-conclusion" id="toc-trend-analysis-conclusion" class="nav-link" data-scroll-target="#trend-analysis-conclusion"><span class="header-section-number">7</span> Trend Analysis Conclusion</a></li>
+  <li><a href="#trend-analysis-conclusions" id="toc-trend-analysis-conclusions" class="nav-link" data-scroll-target="#trend-analysis-conclusions"><span class="header-section-number">7</span> Trend analysis conclusions</a></li>
   <li><a href="#flood-quantiles-estimation" id="toc-flood-quantiles-estimation" class="nav-link" data-scroll-target="#flood-quantiles-estimation"><span class="header-section-number">8</span> Flood quantiles estimation</a>
   <ul>
   <li><a href="#stationary-context-1" id="toc-stationary-context-1" class="nav-link" data-scroll-target="#stationary-context-1"><span class="header-section-number">8.1</span> Stationary context</a></li>
   <li><a href="#non-stationary-context" id="toc-non-stationary-context" class="nav-link" data-scroll-target="#non-stationary-context"><span class="header-section-number">8.2</span> Non-Stationary context</a></li>
   </ul></li>
   <li><a href="#uncertainty-estimation" id="toc-uncertainty-estimation" class="nav-link" data-scroll-target="#uncertainty-estimation"><span class="header-section-number">9</span> Uncertainty estimation</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">10</span> References</a></li>
   </ul>
 </nav>
 </nav>
@@ -285,9 +316,9 @@ window.Quarto = {
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(extRemes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="data-import" class="level1 page-columns page-full" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Data Import</h1>
-<p>Will work with real-world data, from the <strong><code>La Drôme à Luc-en-Diois</code></strong> station in France, to analyze flood events using daily streamflow data covering the period from August 1st, 1958, to December 31st, 2020. The metadata of the station are available on the <a href="https://hydro.eaufrance.fr/stationhydro/V421401001/fiche">HydroPortail website (here)</a>.</p>
+<section id="sec-bmdata" class="level1 page-columns page-full" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Data import</h1>
+<p>Will work with real-world data, from the <strong><code>La Drôme à Luc-en-Diois</code></strong> station in France, to analyze flood events using daily streamflow data covering the period from August 1st, 1958, to December 31st, 2020. The metadata of the station are available on the <a href="https://www.hydro.eaufrance.fr/sitehydro/V4214010/fiche">HydroPortail website (here)</a>.</p>
 <p>Let’s consider the formatted daily streamflow data file for the target catchment. We can read the data into a data frame using the <code>read.csv()</code> function. We will also set the column names using the <code>col.names</code> argument, and use the <code>lubridate</code> library to prepare a time serie.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
@@ -314,34 +345,41 @@ Table&nbsp;1: First (6) lines of the daily streamflow data for Block-Maxima appr
 <table class="do-not-create-environment cell table table-sm table-striped small">
 <thead>
 <tr class="header">
+<th style="text-align: left;"></th>
 <th style="text-align: center;">Date</th>
 <th style="text-align: center;">Q</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;">1958-08-01</td>
-<td style="text-align: center;">0.2357639</td>
+<td style="text-align: left;">22794</td>
+<td style="text-align: center;">2020-12-26</td>
+<td style="text-align: center;">2.326204</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">1958-08-02</td>
-<td style="text-align: center;">0.1841204</td>
+<td style="text-align: left;">22795</td>
+<td style="text-align: center;">2020-12-27</td>
+<td style="text-align: center;">2.173519</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">1958-08-03</td>
-<td style="text-align: center;">0.1437037</td>
+<td style="text-align: left;">22796</td>
+<td style="text-align: center;">2020-12-28</td>
+<td style="text-align: center;">2.193727</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">1958-08-04</td>
-<td style="text-align: center;">0.1437037</td>
+<td style="text-align: left;">22797</td>
+<td style="text-align: center;">2020-12-29</td>
+<td style="text-align: center;">2.090440</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">1958-08-05</td>
-<td style="text-align: center;">0.1437037</td>
+<td style="text-align: left;">22798</td>
+<td style="text-align: center;">2020-12-30</td>
+<td style="text-align: center;">1.966944</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">1958-08-06</td>
-<td style="text-align: center;">0.1437037</td>
+<td style="text-align: left;">22799</td>
+<td style="text-align: center;">2020-12-31</td>
+<td style="text-align: center;">1.854676</td>
 </tr>
 </tbody>
 </table>
@@ -374,11 +412,11 @@ Note
 </div>
 </div>
 </div></div></section>
-<section id="sampling-extreme-events" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Sampling Extreme Events</h1>
+<section id="extreme-events-sampling" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Extreme events sampling</h1>
 <section id="the-block-maxima-approach" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="the-block-maxima-approach"><span class="header-section-number">3.1</span> The Block-Maxima Approach</h2>
-<p>The <strong>Block-Maxima Approach</strong>, consists of sampling the maximum streamflow value for each year (or block). This method is straightforward to implement and ensures, by construction, that the sampled values are statistically independent, a key requirement in extreme value analysis (EVA).</p>
+<h2 data-number="3.1" class="anchored" data-anchor-id="the-block-maxima-approach"><span class="header-section-number">3.1</span> The block maxima approach</h2>
+<p>The <strong>Block-Maxima Approach <span class="citation" data-cites="gumbel1958statistics">(<a href="#ref-gumbel1958statistics" role="doc-biblioref">Gumbel, 1958</a>)</span></strong>, consists of sampling the maximum streamflow value for each year (or block). This method is straightforward to implement and reduce the possiblity of serial dependence.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-bm_illust" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -395,7 +433,7 @@ Figure&nbsp;1: Illustration of the Block-Maxima Approach: Daily Streamflow with 
 </div>
 </section>
 <section id="exract-annual-maximum-floods-amf-from-the-daily-streamflow-serie" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="exract-annual-maximum-floods-amf-from-the-daily-streamflow-serie"><span class="header-section-number">3.2</span> Exract Annual Maximum Floods (AMF) from the daily streamflow serie</h2>
+<h2 data-number="3.2" class="anchored" data-anchor-id="exract-annual-maximum-floods-amf-from-the-daily-streamflow-serie"><span class="header-section-number">3.2</span> Exract annual maximum floods (AMF) from the daily streamflow serie</h2>
 <p><strong>1.</strong> To extract annual maximum floods (AMF) from the streamflow series, we need to define a function that returns the maximum value of a block of data:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>extract_annual_max <span class="ot">=</span> <span class="cf">function</span>(df) </span>
@@ -468,8 +506,8 @@ Table&nbsp;2: First (6) rows of the AMF extracted using the Block-Maxima approac
 </div>
 </div>
 </section>
-<section id="display-sampled-events" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="display-sampled-events"><span class="header-section-number">3.3</span> Display Sampled Events</h2>
+<section id="display-sampled-vvents" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="display-sampled-vvents"><span class="header-section-number">3.3</span> Display sampled vvents</h2>
 <p>Now, we overlap the extracted <strong>Annual Maximum Flow</strong> with the original daily discharge time serie to visualize the sampling process. We use the functions from the <code>dplyr</code> and <code>ggplot2</code> library to create the plot.</p>
 <div class="cell">
 <details class="code-fold">
@@ -501,7 +539,7 @@ Figure&nbsp;2: Daily streamflow time serie (blue) and with Extracted Annual Peak
 </section>
 </section>
 <section id="autocorrelation-testing" class="level1 page-columns page-full" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Autocorrelation Testing</h1>
+<h1 data-number="4"><span class="header-section-number">4</span> Autocorrelation testing</h1>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -517,8 +555,8 @@ Recall
 <p>The <code>extractedAMF</code> variable used in the following code blocs is created previously in the <strong>Sampling Events</strong> section The <code>acf</code> function is a R-base function, no installation needed</p>
 </div>
 </div>
-</div></div><section id="what-is-autocorrelation" class="level2 page-columns page-full" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="what-is-autocorrelation"><span class="header-section-number">4.1</span> What is Autocorrelation?</h2>
+</div></div><section id="sec-autocorrelation" class="level2 page-columns page-full" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="sec-autocorrelation"><span class="header-section-number">4.1</span> What is autocorrelation?</h2>
 <p><strong><code>Autocorrelation (or autocovariance)</code></strong> of a series refers to the fact that in a time or spatial serie, the measurement of a phenomenon at time t can be correlated with previous measurements (at time t-1, t-2, t-3, etc.) or with subsequent measurements (at t+1, t+2, t+3, …). An autocorrelated series is thus correlated with itself, with a given lag (please refer <a href="https://perso.ens-lyon.fr/lise.vaudor/autocorrelation-de-series-temporelles-ou-spatiales/">here</a> for mode details).</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -536,7 +574,7 @@ To assess autocorrelation, two methods will be used in this lab
 <li>Based on the <a href="https://medium.com/@kis.andras.nandor/understanding-autocorrelation-and-partial-autocorrelation-functions-acf-and-pacf-2998e7e1bcb5">autocorrelation function (ACF)</a></li>
 <li>Helps identify the presence and extent of dependencies over time</li>
 </ul>
-<p>📊 <strong>Wald-Wolfowitz Test <a href="https://doi.org/10.1214/aoms/1177731909">(1940)</a>:</strong></p>
+<p>📊 <strong>Wald-Wolfowitz Test <span class="citation" data-cites="wald_test_1940">(<a href="#ref-wald_test_1940" role="doc-biblioref">Wald &amp; Wolfowitz, 1940</a>)</span>:</strong></p>
 <ul>
 <li>Non-parametric to assess the randomness of a time series</li>
 <li>Used to detect the absence of randomness in the series</li>
@@ -599,8 +637,8 @@ Interpretation
 </div>
 </div>
 </div></div></section>
-<section id="wald-wolfowitz-ww-test" class="level3 page-columns page-full" data-number="4.1.2">
-<h3 data-number="4.1.2" class="anchored" data-anchor-id="wald-wolfowitz-ww-test"><span class="header-section-number">4.1.2</span> Wald-Wolfowitz (WW) Test</h3>
+<section id="sec-wwtest" class="level3 page-columns page-full" data-number="4.1.2">
+<h3 data-number="4.1.2" class="anchored" data-anchor-id="sec-wwtest"><span class="header-section-number">4.1.2</span> Wald-Wolfowitz (WW) test</h3>
 <p>In the chunk below, we use the <code>ww.test(...)</code> function from <code>{trend}</code> package to perform the <code>WW test</code> at the <strong>0.05 significance level</strong> to test the hypothesis that the maximum annual flood is a random variable.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>wwtest <span class="ot">=</span> trend<span class="sc">::</span><span class="fu">ww.test</span>(extractedAMF<span class="sc">$</span>AMAX)</span>
@@ -633,11 +671,44 @@ Interpretation
 </div></div></section>
 </section>
 </section>
-<section id="trend-detection" class="level1 page-columns page-full" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Trend Detection</h1>
-<section id="non-parametric-methods-the-mann-kendall-mk-test" class="level2 page-columns page-full" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="non-parametric-methods-the-mann-kendall-mk-test"><span class="header-section-number">5.1</span> Non-Parametric methods: The Mann-Kendall (MK) test</h2>
-<p>The MK test’s null hypothesis (H0) assumes no trend in the data (please see <a href="https://vsp.pnnl.gov/help/vsample/design_trend_mann_kendall.htm">here</a> for the detailed algorithm). Recommended by the World Meteorological Organization (WMO), it is simple and requires no assumptions about data distribution, which is particularly advantageous for hydroclimatic series that are rarely normally distributed. Additionally, outlier values have very little influence on the results.</p>
+<section id="sec-trend" class="level1 page-columns page-full" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Trend detection</h1>
+<section id="non-parametric-methods" class="level2 page-columns page-full" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="non-parametric-methods"><span class="header-section-number">5.1</span> Non-parametric methods</h2>
+<section id="sec-mk" class="level3 page-columns page-full" data-number="5.1.1">
+<h3 data-number="5.1.1" class="anchored" data-anchor-id="sec-mk"><span class="header-section-number">5.1.1</span> The Mann-Kendall (MK) test</h3>
+<p>The MK test’s null hypothesis (H0) assumes no trend in the data <span class="citation" data-cites="mann1945nonparametric kendall_rank_1975">(<a href="#ref-mann1945nonparametric" role="doc-biblioref">Mann, 1945</a>; <a href="#ref-kendall_rank_1975" role="doc-biblioref">Kendall, 1975</a>)</span>. Recommended by the World Meteorological Organization (WMO), it is simple and requires no assumptions about data distribution, which is particularly advantageous for hydroclimatic series that are rarely normally distributed. Additionally, outlier values have very little influence on the results. The Mann-Kendall test statistic <span class="math inline">S</span> is defined as:</p>
+<p><span class="math display">
+S = \sum_{i=1}^{n-1} \sum_{j=i+1}^{n} \text{sgn}(x_j - x_i) \tag{1}
+</span></p>
+<p>The sign function is given by:</p>
+<p><span class="math display">
+\text{sgn}(x_j - x_i) =
+\begin{cases}
++1 &amp; \text{if } (x_j - x_i) &gt; 0 \\
+0 &amp; \text{if } (x_j - x_i) = 0 \\
+-1 &amp; \text{if } (x_j - x_i) &lt; 0
+\end{cases} \tag{2}
+</span></p>
+<p>where <span class="math inline">x_i</span> and <span class="math inline">x_j</span> are values of the variable at time <span class="math inline">i</span> and <span class="math inline">j</span>, respectively, and <span class="math inline">n</span> is the total number of observations.</p>
+<p>A significance level (commonly <span class="math inline">\alpha = 0.05</span>) and the trend slope indicating the direction and magnitude of the trend are key characteristics of the Mann-Kendall test. If <span class="math inline">n &gt; 8</span>, the test statistic <span class="math inline">S</span> approximates a normal distribution. In this case, the mean of <span class="math inline">S</span> is zero and its variance is:</p>
+<p><span class="math display">
+\text{var}(S) = \frac{n(n - 1)(2n + 5)}{18} \tag{3}
+</span></p>
+<p>The standardized test statistic <span class="math inline">Z</span>, which indicates the direction of the trend, is calculated as:</p>
+<p><span class="math display">
+Z =
+\begin{cases}
+\frac{S - 1}{\sqrt{\text{var}(S)}} &amp; \text{if } S &gt; 0 \\
+0 &amp; \text{if } S = 0 \\
+\frac{S + 1}{\sqrt{\text{var}(S)}} &amp; \text{if } S &lt; 0
+\end{cases} \tag{4}
+</span></p>
+<p>The null hypothesis <span class="math inline">H_0</span> (no trend) is rejected if <span class="math inline">|Z| &gt; 1.96</span> at the 95% confidence level.</p>
+<ul>
+<li>A <strong>positive trend</strong> is significant if <span class="math inline">Z &gt; 1.96</span></li>
+<li>A <strong>negative trend</strong> is significant if <span class="math inline">Z &lt; -1.96</span></li>
+</ul>
 <p>We use the <code>mk.test(...)</code> function from <code>{trend}</code> package to perform the <code>MK test</code> at the <strong>0.05 significance level</strong> to test the hypothesis that there is no stationarity in the maximum annual floods serie.</p>
 
 <div class="no-row-height column-margin column-container"><div class="">
@@ -709,6 +780,110 @@ Figure&nbsp;4: Evolution of the annual peak flood over time.
 </div>
 </div>
 </section>
+<section id="sec-sens" class="level3 page-columns page-full" data-number="5.1.2">
+<h3 data-number="5.1.2" class="anchored" data-anchor-id="sec-sens"><span class="header-section-number">5.1.2</span> Sen’s slope estimator</h3>
+<p>The <strong>non-parametric method of Sen <span class="citation" data-cites="Sen1968">(<a href="#ref-Sen1968" role="doc-biblioref">1968</a>)</span></strong> is commonly combined with the Mann-Kendall test to estimate the slope of the <span class="math inline">(\beta)</span> of a trend. Sen’s method looks at every pair of data points, calculates the slope between them, then uses the the median of all those slopes as the estimated trend.</p>
+<p><span class="math display">
+\beta = \text{median} \left( \frac{x_j - x_i}{j - i} \right), \quad , ∀\quad j &gt; i \tag{5}
+</span></p>
+<p>To express the Sen’s slope as a <strong>percentage change per time step (i.e., relative trend rate per year)</strong>, it can be normalized by the mean:</p>
+<p><span class="math display">
+\beta (\%) = \left( \frac{\beta}{\bar{x}} \right) \times 100 \tag{6}
+</span> where <span class="math inline">\beta (\%)</span> is the relative trend rate per year, <span class="math inline">x_i</span> and <span class="math inline">x_j</span> are respectively the observed values at time points <span class="math inline">i</span> and <span class="math inline">j</span>, and <span class="math inline">\bar{x}</span> represents the mean value of the variable across the period.</p>
+<p>The Sen’s slope can be easily computed using the <code>sens.slope(...)</code> function from the <code>{trend}</code> package, as in the chunk below:</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Sen slope
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong><code>Slope = -0.1187375 :</code></strong> the median trend is slightly negative, suggesting a weak decline.</p>
+<p><strong><code>p-value = 0.2183:</code></strong> this negative trend is not statistically significant.</p>
+</div>
+</div>
+</div></div><div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#compute Sen's slope and intercept</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>senslope <span class="ot">=</span> trend<span class="sc">::</span><span class="fu">sens.slope</span>(<span class="at">x =</span> extractedAMF<span class="sc">$</span>AMAX)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(senslope)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Sen's slope
+
+data:  extractedAMF$AMAX
+z = -1.231, n = 60, p-value = 0.2183
+alternative hypothesis: true z is not equal to 0
+95 percent confidence interval:
+ -0.3115676  0.0768529
+sample estimates:
+Sen's slope 
+ -0.1187375 </code></pre>
+</div>
+</div>
+<p>Yet, the <code>sens.slope(...)</code> function returns the <strong>absolute</strong> slope (i.e., the median change per time unit). It is more meaningful to express the trend as a <strong>relative percentage</strong> change over the time period.</p>
+<p>To do this, we define a <strong>wrapper function</strong> that calculates the Sen’s slope and then converts it into a relative trend rate per time step.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>sens_slope_percent <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">time_step=</span><span class="cn">NULL</span>) </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#' Compute Sen's slope as a percentage change over the full time period</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#' @param x A numeric vector of observations</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#' @param time_step Optional (e.g., year) used for display purpose only</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#' @return Relative percent change over the period</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">require</span>(trend)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">sens.slope</span>(x)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  slope <span class="ot">&lt;-</span> result<span class="sc">$</span>estimates              <span class="co"># Absolute slope (per time unit)</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  p_val <span class="ot">&lt;-</span> result<span class="sc">$</span>p.value                <span class="co"># p-value for trend test</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  mean_val <span class="ot">&lt;-</span> <span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  percent_change <span class="ot">&lt;-</span> (slope <span class="sc">/</span> mean_val) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Absolute Sen's slope: "</span>, <span class="fu">round</span>(slope, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"P-value: "</span>, <span class="fu">format.pval</span>(p_val, <span class="at">digits =</span> <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span><span class="fu">is.null</span>(time_step)){</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"Relative trend rate: "</span>, <span class="fu">round</span>(percent_change, <span class="dv">2</span>), <span class="st">"%/"</span>, time_step, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>  }<span class="cf">else</span>{</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"Relative trend rate: "</span>, <span class="fu">round</span>(percent_change, <span class="dv">2</span>), <span class="st">"%</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Now, we can compute the <strong>relative Sen’s slope</strong> for the annual maximum flow data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute Sen's slope as a percentage change</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sens_slope_percent</span>(extractedAMF<span class="sc">$</span>AMAX, <span class="at">time_step =</span> <span class="st">"year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Absolute Sen's slope: -0.1187
+P-value: 0.2183
+Relative trend rate: -0.4%/year</code></pre>
+</div>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Relative Sen’s slope
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The annual maximum flow shows a slight decreasing trend of −0.4% per year relative to its long-term average.</p>
+</div>
+</div>
+</div></div></section>
+</section>
 <section id="parametric-methods" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="parametric-methods"><span class="header-section-number">5.2</span> Parametric methods</h2>
 <p>Parametric methods rely on the adjustment of distributions adapted to extremes event (e.g., Generalized Extreme Value, Generalized Pareto Distribution, etc.) in a <code>non-stationary (NS)</code> context.</p>
@@ -728,7 +903,7 @@ Note
 </section>
 </section>
 <section id="flood-frequency-analysis-ffa" class="level1 page-columns page-full" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Flood Frequency Analysis (FFA)</h1>
+<h1 data-number="6"><span class="header-section-number">6</span> Flood frequency analysis (FFA)</h1>
 <section id="probability-distributions" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="probability-distributions"><span class="header-section-number">6.1</span> Probability distributions</h2>
 <p>We will compare two probability distributions adapted to the <code>Block-Maxima Framework</code>: the Generalized Extreme Value (GEV) and the Gumbel probability distributions.</p>
@@ -738,18 +913,16 @@ Note
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-GEV Distribution
+GEV distribution
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <p>The Generalized Extreme Value (GEV) distribution is a family of continuous probability distributions developed to combine the Gumbel, Fréchet, and Weibull distributions. According to the Extreme Value Theorem, the GEV distribution is the only possible limit distribution for properly normalized sequences of maxima of independent and identically distributed random variables. The cumulative distribution function (CDF) of the GEV distribution is given by:</p>
-<p><span class="math display"> F(x; \mu, \sigma, \xi) = \exp\left\{ -\left[ 1 + \xi \left( \frac{x - \mu}{\sigma} \right) \right]^{-1/\xi} \right\} </span></p>
-<p>for <span class="math inline">1 + \xi (x - \mu)/\sigma &gt; 0</span>, where:</p>
-<ul>
-<li><span class="math inline">\mu</span> is the location parameter.</li>
-<li><span class="math inline">\sigma &gt; 0</span> is the scale parameter.</li>
-<li><span class="math inline">\xi</span> is the shape parameter.</li>
-</ul>
+<p><span class="math display">
+F(x; \mu, \sigma, \xi) = \exp\left\{ -\left[ 1 + \xi \left( \frac{x - \mu}{\sigma} \right) \right]^{-1/\xi} \right\}
+\tag{7}
+</span></p>
+<p>for <span class="math inline">1 + \xi (x - \mu)/\sigma &gt; 0</span>, where, <span class="math inline">\mu</span> is the location parameter, <span class="math inline">\sigma &gt; 0</span> is the scale parameter, and <span class="math inline">\xi</span> is the shape parameter.</p>
 <p>The shape parameter <span class="math inline">\xi</span> determines the type of extreme value distribution:</p>
 <ul>
 <li>If <span class="math inline">\xi &gt; 0</span>, the distribution is a Fréchet type.</li>
@@ -764,7 +937,7 @@ GEV Distribution
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Gumbel Distribution
+Gumbel distribution
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -794,26 +967,7 @@ Why the <strong><code>GML</code></strong> method?
 </section>
 <section id="model-selection" class="level2 page-columns page-full" data-number="6.3">
 <h2 data-number="6.3" class="anchored" data-anchor-id="model-selection"><span class="header-section-number">6.3</span> Model selection</h2>
-<p>To select the best probability distribution, we will use the <strong><code>AIC</code></strong> and <strong><code>AIC</code></strong> criteria. The model with the lowest AIC or BIC value will be selected.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-AIC (Akaike Information Criterion)
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The <strong><code>AIC</code></strong> balances the goodness of fit of the model with the number of parameters used by the model. This mean that it rewards models that fit the data well but also penalizes models that use too many parameters. The formula for AIC is:</p>
-<p><span class="math display"> \text{AIC} = 2k - 2\ln(\hat{L}) </span></p>
-<p>where:</p>
-<ul>
-<li><span class="math inline">k</span> is the number of parameters in the model.</li>
-<li><span class="math inline">\hat{L}</span> is the maximum value of the <a href="https://en.wikipedia.org/wiki/Likelihood_function">likelihood function</a> for the model.</li>
-</ul>
-</div>
-</div>
+<p>To select the best probability distribution, we will use the <strong><code>AIC</code></strong> and <strong><code>AIC</code></strong> criteria. The model with the lowest <strong><code>AIC</code></strong> or <strong><code>BIC</code></strong> value will be selected. The model with the <strong>lowest</strong> <strong><code>AIC</code></strong> and <strong><code>BIC</code></strong> values is the best-suited model. <strong><code>AIC</code></strong> tends to favor models with better fit, even if more complex, while <strong><code>BIC</code></strong> favors simpler models, especially as sample size grows. Combining these these performance metrics enhances the efficiency of model selection.</p>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -822,11 +976,10 @@ AIC (Akaike Information Criterion)
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-How to select the best model?
+Joint use of AIC and BIC
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The model with the lowest <strong><code>AIC</code></strong> and <strong><code>BIC</code></strong> values is the best-suited model. <strong><code>AIC</code></strong> tends to favor models with better fit, even if more complex, while <strong><code>BIC</code></strong> favors simpler models, especially as sample size grows. Combining these these performance metrics enhances the efficiency of model selection:</p>
 <ul>
 <li>if both criteria select the same model, it is strongly preferred</li>
 <li>if not, the choice depends on whether your goal is <strong>predictive accuracy (AIC)</strong> or <strong>model simplicity (BIC)</strong></li>
@@ -839,50 +992,61 @@ How to select the best model?
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
+AIC (Akaike Information Criterion)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <strong><code>AIC</code></strong> balances the goodness of fit of the model with the number of parameters used by the model. This mean that it rewards models that fit the data well but also penalizes models that use too many parameters. The formula for AIC is:</p>
+<p><span class="math display">
+\text{AIC} = 2k - 2\ln(\hat{L}) \tag{8}
+</span> where <span class="math inline">k</span> is the number of parameters in the model, <span class="math inline">\hat{L}</span> is the maximum value of the <a href="https://en.wikipedia.org/wiki/Likelihood_function">likelihood function</a> for the model.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
 BIC (Bayesian Information Criterion)
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong><code>BIC</code></strong> penalizes model complexity <strong>more heavily than <code>AIC</code></strong>, especially for larger sample sizes. This means <strong><code>BIC</code></strong> tends to favor simpler models compared to AIC. The formula for BIC is:</p>
-<p><span class="math display"> \text{BIC} = k\ln(n) - 2\ln(\hat{L}) </span></p>
-<p>where:</p>
-<ul>
-<li><span class="math inline">k</span> is the number of parameters in the model.</li>
-<li><span class="math inline">n</span> is the number of data points.</li>
-<li><span class="math inline">\hat{L}</span> is the maximum value of the <a href="https://en.wikipedia.org/wiki/Likelihood_function">likelihood function</a> for the model.</li>
-</ul>
+<p><strong><code>BIC</code></strong> penalizes model complexity <strong>more heavily than <code>AIC</code></strong>, especially for larger sample sizes. This means <strong><code>BIC</code></strong> tends to favor simpler models compared to AIC. The formula for BIC is: <span class="math display">
+\text{BIC} = k\ln(n) - 2\ln(\hat{L}) \tag{9}
+</span> where: <span class="math inline">k</span> is the number of parameters in the model, <span class="math inline">n</span> is the number of data points, and <span class="math inline">\hat{L}</span> is the maximum value of the <a href="https://en.wikipedia.org/wiki/Likelihood_function">likelihood function</a> for the model.</p>
 </div>
 </div>
 </section>
 <section id="perform-ffa" class="level2 page-columns page-full" data-number="6.4">
 <h2 data-number="6.4" class="anchored" data-anchor-id="perform-ffa"><span class="header-section-number">6.4</span> Perform FFA</h2>
-<section id="setup-utils" class="level3" data-number="6.4.1">
-<h3 data-number="6.4.1" class="anchored" data-anchor-id="setup-utils"><span class="header-section-number">6.4.1</span> Setup utils</h3>
+<section id="sec-utils" class="level3" data-number="6.4.1">
+<h3 data-number="6.4.1" class="anchored" data-anchor-id="sec-utils"><span class="header-section-number">6.4.1</span> Setup utils</h3>
 <p>To pretty-print the summary of our models’ fitting, we will create a custom function that will take the fitted model as an argument, extract and format key components of the fiited object, and print the output:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>pretty_gev_summary <span class="ot">=</span> <span class="cf">function</span>(fitobj, model) {</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#' Pretty print summary of a  extreme value model fit</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#'</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#' @param fitobj Fitted model object from extRemes::fevd()</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#' @param model Character string describing the model (e.g., "GEV")</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"==="</span>, model, <span class="st">" Fit Summary ===</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Estimated Parameters</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Estimated Parameters:</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  params <span class="ot">=</span> fitobj<span class="sc">$</span>results<span class="sc">$</span>par</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">round</span>(params, <span class="dv">4</span>))</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Log-likelihood, AIC, and BIC</span></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  look <span class="ot">=</span> <span class="fu">summary</span>(fitobj, <span class="at">silent=</span><span class="cn">TRUE</span>)</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Model Fit Criteria:</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"LogLik: %.2f</span><span class="sc">\n</span><span class="st">"</span>, look<span class="sc">$</span>nllh))</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"AIC: %.2f</span><span class="sc">\n</span><span class="st">"</span>, look<span class="sc">$</span>AIC))</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"BIC: %.2f</span><span class="sc">\n</span><span class="st">"</span>, look<span class="sc">$</span>BIC))</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return the AIC and BIC values for further comparison</span></span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">data.frame</span>(<span class="at">Model=</span>model, <span class="at">Crit=</span><span class="fu">c</span>(<span class="st">"AIC"</span>, <span class="st">"BIC"</span>), <span class="at">Value=</span><span class="fu">c</span>(look<span class="sc">$</span>AIC, look<span class="sc">$</span>BIC)))</span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>pretty_fit_summary <span class="ot">=</span> <span class="cf">function</span>(fitobj, model) {</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#' Pretty print summary of a  extreme value model fit</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#'</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#' @param fitobj Fitted model object from extRemes::fevd()</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#' @param model Character string describing the model (e.g., "GEV")</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"==="</span>, model, <span class="st">" Fit Summary ===</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Estimated Parameters</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Estimated Parameters:</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  params <span class="ot">=</span> fitobj<span class="sc">$</span>results<span class="sc">$</span>par</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">round</span>(params, <span class="dv">4</span>))</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Log-likelihood, AIC, and BIC</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  look <span class="ot">=</span> <span class="fu">summary</span>(fitobj, <span class="at">silent=</span><span class="cn">TRUE</span>)</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Model Fit Criteria:</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"LogLik: %.2f</span><span class="sc">\n</span><span class="st">"</span>, look<span class="sc">$</span>nllh))</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"AIC: %.2f</span><span class="sc">\n</span><span class="st">"</span>, look<span class="sc">$</span>AIC))</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"BIC: %.2f</span><span class="sc">\n</span><span class="st">"</span>, look<span class="sc">$</span>BIC))</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return the AIC and BIC values for further comparison</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">data.frame</span>(<span class="at">Model=</span>model, <span class="at">Crit=</span><span class="fu">c</span>(<span class="st">"AIC"</span>, <span class="st">"BIC"</span>), <span class="at">Value=</span><span class="fu">c</span>(look<span class="sc">$</span>AIC, look<span class="sc">$</span>BIC)))</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="distributions-fitting" class="level3 page-columns page-full" data-number="6.4.2">
@@ -920,18 +1084,19 @@ What about the parameters?
 </div>
 </div>
 </div></div></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true"><span class="custom-tabset-title2">GEV fitting</span></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false"><span class="custom-tabset-title2">Gumbel fitting</span></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false"><span class="custom-tabset-title2">Best-Suited Model</span></a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true"><span class="custom-tabset-title2">GEV fitting</span></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false"><span class="custom-tabset-title2">Gumbel fitting</span></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false"><span class="custom-tabset-title2">Best-suited model</span></a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <p>The chunk below use the <strong><code>{extRemes}</code></strong> library to fit the GEV distribution to the <strong>Annual Maximum Floods</strong> extracted earlier.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit the GEV distribution to the AMF</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>gevfit <span class="ot">=</span> <span class="fu">fevd</span>(<span class="at">x=</span>extractedAMF<span class="sc">$</span>AMAX, <span class="at">type=</span><span class="st">"GEV"</span>, <span class="at">method=</span><span class="st">"GMLE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit the GEV distribution to the AMF</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(extRemes)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>gevfit <span class="ot">=</span> <span class="fu">fevd</span>(<span class="at">x=</span>extractedAMF<span class="sc">$</span>AMAX, <span class="at">type=</span><span class="st">"GEV"</span>, <span class="at">method=</span><span class="st">"GMLE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Now, we will print the results of the fit, using the <strong><code>pretty_gev_summary()</code></strong> function we have defined above. This will show the <strong>AIC</strong> and <strong>BIC</strong> values, as well as the estimated parameters of the fitted GEV distribution.</p>
+<p>Now, we will print the results of the fit, using the <strong><code>pretty_fit_summary()</code></strong> function we have defined above. This will show the <strong>AIC</strong> and <strong>BIC</strong> values, as well as the estimated parameters of the fitted GEV distribution.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show fitting sumary</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>gevfit_res <span class="ot">=</span> <span class="fu">pretty_gev_summary</span>(gevfit, <span class="st">"GEV"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show fitting sumary</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>gevfit_res <span class="ot">=</span> <span class="fu">pretty_fit_summary</span>(gevfit, <span class="st">"GEV"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>=== GEV  Fit Summary ===
 
@@ -948,11 +1113,11 @@ BIC: 501.59</code></pre>
 
 <p>Finally, we show in <a href="#fig-gevfitdiag-stationary" class="quarto-xref">Figure&nbsp;5</a>, the diagnostics from the GEV distribution fitted to the Annual Maximum Floods: density plot of empirical data and fitted GEV df (top-left), and quantiles from a sample drawn from the fitted GEV against the empirical data quantiles with 95% confidence bands (top-right).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show diagnostic plots of the GEV distribution fitting</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gevfit, <span class="at">type=</span><span class="st">"density"</span>, <span class="at">main=</span><span class="st">"(a) Density plot"</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">043</span>))</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gevfit, <span class="at">type=</span><span class="st">"qq2"</span>, <span class="at">main=</span><span class="cn">NULL</span>)</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main=</span><span class="st">"(b) Q-Q plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show diagnostic plots of the GEV distribution fitting</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gevfit, <span class="at">type=</span><span class="st">"density"</span>, <span class="at">main=</span><span class="st">"(a) Density plot"</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">043</span>))</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gevfit, <span class="at">type=</span><span class="st">"qq2"</span>, <span class="at">main=</span><span class="cn">NULL</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main=</span><span class="st">"(b) Q-Q plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-gevfitdiag-stationary" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -970,13 +1135,13 @@ Figure&nbsp;5: Diagnostic plots for the Generalized Extreme Value (GEV) distribu
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <p>The chunk below use the <strong><code>{extRemes}</code></strong> library to fit the Gumbel distribution to the <strong>Annual Maximum Floods</strong> extracted earlier.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit the Gumbel distribution to the AMF</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>gumfit <span class="ot">=</span> <span class="fu">fevd</span>(<span class="at">x=</span>extractedAMF<span class="sc">$</span>AMAX, <span class="at">type=</span><span class="st">"Gumbel"</span>, <span class="at">method=</span><span class="st">"GMLE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit the Gumbel distribution to the AMF</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>gumfit <span class="ot">=</span> <span class="fu">fevd</span>(<span class="at">x=</span>extractedAMF<span class="sc">$</span>AMAX, <span class="at">type=</span><span class="st">"Gumbel"</span>, <span class="at">method=</span><span class="st">"GMLE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Now, we will print the results of the fit, using the <strong><code>pretty_gev_summary()</code></strong> function we have defined previously. This will show the <strong>AIC</strong> and <strong>BIC</strong> values, as well as the estimated parameters of the fitted Gumbel distribution.</p>
+<p>Now, we will print the results of the fit, using the <strong><code>pretty_fit_summary()</code></strong> function we have defined previously. This will show the <strong>AIC</strong> and <strong>BIC</strong> values, as well as the estimated parameters of the fitted Gumbel distribution.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show fitting sumary</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>gumfit_res <span class="ot">=</span> <span class="fu">pretty_gev_summary</span>(gumfit, <span class="st">"Gumbel"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show fitting sumary</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>gumfit_res <span class="ot">=</span> <span class="fu">pretty_fit_summary</span>(gumfit, <span class="st">"Gumbel"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>=== Gumbel  Fit Summary ===
 
@@ -990,13 +1155,13 @@ AIC: 502.80
 BIC: 506.99</code></pre>
 </div>
 </div>
-<p>Finally, we show in <a href="#fig-gumfitdiag-stationary" class="quarto-xref">Figure&nbsp;6</a>, the diagnostics from the GEV distribution fitted to the Annual Maximum Floods:</p>
+<p>Finally, we show in <a href="#fig-gumfitdiag-stationary" class="quarto-xref">Figure&nbsp;6</a>, the diagnostics from the Gumbel distribution fitted to the Annual Maximum Floods:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show diagnostic plots of the GEV distribution fitting</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gumfit, <span class="at">type=</span><span class="st">"density"</span>, <span class="at">main=</span><span class="st">"(a) Density plot"</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">035</span>))</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gumfit, <span class="at">type=</span><span class="st">"qq2"</span>, <span class="at">main=</span><span class="cn">NULL</span>)</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main=</span><span class="st">"(b) Q-Q plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show diagnostic plots of the GEV distribution fitting</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gumfit, <span class="at">type=</span><span class="st">"density"</span>, <span class="at">main=</span><span class="st">"(a) Density plot"</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">035</span>))</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gumfit, <span class="at">type=</span><span class="st">"qq2"</span>, <span class="at">main=</span><span class="cn">NULL</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main=</span><span class="st">"(b) Q-Q plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-gumfitdiag-stationary" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1012,10 +1177,10 @@ Figure&nbsp;6: Diagnostic plots for the Gumbel distribution fitted to the Annual
 </div>
 </div>
 <div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
-<p>As mentionned previously, the model with the lowest <strong><code>AIC</code></strong> and <strong><code>BIC</code></strong> values is the best-suited model. The <strong><code>pretty_gev_summary()</code></strong> function we have defined previously return a data.frame of <strong>AIC</strong> and <strong>BIC</strong> values for each distribution. Lets compare these values to select the best-suited distribution for the next steps.</p>
+<p>As mentionned previously, the model with the lowest <strong><code>AIC</code></strong> and <strong><code>BIC</code></strong> values is the best-suited model. The <strong><code>pretty_fit_summary()</code></strong> function we have defined previously return a data.frame of <strong>AIC</strong> and <strong>BIC</strong> values for each distribution. Lets compare these values to select the best-suited distribution for the next steps.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(gevfit_res)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(gumfit_res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(gevfit_res)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(gumfit_res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="tbl-bm_aicbictable" class="quarto-layout-panel anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -1099,7 +1264,9 @@ Table&nbsp;3: Table of AIC and BIC values for each distribution
 </section>
 <section id="parametric-trend-detection" class="level4 page-columns page-full" data-number="6.4.2.2">
 <h4 data-number="6.4.2.2" class="anchored" data-anchor-id="parametric-trend-detection"><span class="header-section-number">6.4.2.2</span> Parametric trend-detection</h4>
-<p>When covariates are to be incorporated into EVA, a common approach is to model them within the parameters of the distributions in a <strong><code>regression-like manner</code></strong>. To perform <strong><code>parametric trend detection with the GEV distribution</code></strong>, we model <strong><code>location parameter (μ)</code></strong> as a function of time, transforming the model into a <strong><code>non-stationary GEV</code></strong>.</p>
+<p>When covariates are to be incorporated into EVA, a common approach to account for non-stationary is to incorporate covariates within the parameters of the distributions in a <strong><code>regression-like manner</code></strong>. To perform <strong>parametric trend detection</strong>, we model the <strong><code>location parameter (μ)</code></strong> as a function of time, transforming the models into <strong><code>non-stationary distributions</code></strong>. The location parameter of the non-stationnary GEV and Gumbel is computed as follow: <span class="math display">
+\mu (t) = \mu 0 + \mu 1·t \tag{10}
+</span> where <span class="math inline">\mu</span> is the time-dependant location parameter, <span class="math inline">t</span> is the time index, <span class="math inline">\mu 0</span> is the intercept, and <span class="math inline">\mu 1</span> is the slope.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1132,9 +1299,9 @@ Note
 </div>
 </div>
 </div></div><div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add time index to use for non-stationary context fitting</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>extractedAMF[[<span class="st">"TimeIndex"</span>]] <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(extractedAMF)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">tibble</span>(extractedAMF), <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add time index to use for non-stationary context fitting</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>extractedAMF[[<span class="st">"TimeIndex"</span>]] <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(extractedAMF)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">tibble</span>(extractedAMF), <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 5 × 4
    Year Date        AMAX TimeIndex
@@ -1151,14 +1318,14 @@ Note
 <h5 data-number="6.4.2.2.2" class="anchored" data-anchor-id="non-stationary-gev-fitting"><span class="header-section-number">6.4.2.2.2</span> Non-Stationary GEV fitting</h5>
 <p>The chunk below use the <strong><code>{extRemes}</code></strong> library to fit the <strong><code>Non-Stationary GEV (NS-GEV) distribution</code></strong> to the <strong>Annual Maximum Floods</strong> extracted earlier.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit the GEV distribution to the AMF</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>extractedAMF <span class="ot">=</span> <span class="fu">data.frame</span>(extractedAMF)</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>nsgevfit <span class="ot">=</span> <span class="fu">fevd</span>(<span class="at">x=</span>AMAX, <span class="at">location.fun=</span><span class="sc">~</span>TimeIndex, <span class="at">data=</span>extractedAMF, <span class="at">type=</span><span class="st">"GEV"</span>, <span class="at">method=</span><span class="st">"GMLE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit the GEV distribution to the AMF</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>extractedAMF <span class="ot">=</span> <span class="fu">data.frame</span>(extractedAMF)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>nsgevfit <span class="ot">=</span> <span class="fu">fevd</span>(<span class="at">x=</span>AMAX, <span class="at">location.fun=</span><span class="sc">~</span>TimeIndex, <span class="at">data=</span>extractedAMF, <span class="at">type=</span><span class="st">"GEV"</span>, <span class="at">method=</span><span class="st">"GMLE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Now, we will print the results of the fit, using the <strong><code>pretty_gev_summary()</code></strong> function we have defined above. This will show the <strong>AIC</strong> and <strong>BIC</strong> values, as well as the estimated parameters of the fitted <strong><code>NS-GEV</code></strong> distribution.</p>
+<p>Now, we will print the results of the fit, using the <strong><code>pretty_fit_summary()</code></strong> function we have defined above. This will show the <strong>AIC</strong> and <strong>BIC</strong> values, as well as the estimated parameters of the fitted <strong><code>NS-GEV</code></strong> distribution.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show fitting sumary</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>nsgevfit_res <span class="ot">=</span> <span class="fu">pretty_gev_summary</span>(nsgevfit, <span class="st">"GEV"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show fitting sumary</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>nsgevfit_res <span class="ot">=</span> <span class="fu">pretty_fit_summary</span>(nsgevfit, <span class="st">"GEV"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>=== GEV  Fit Summary ===
 
@@ -1184,7 +1351,6 @@ What about the parameters?
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong><code>μ(t) = μ0 + μ1·t</code></strong>, THE <strong><code>time-varying location parameter</code></strong> can be expressed as a simple linear model, where:</p>
 <ul>
 <li><p><strong><code>mu0 = μ0 = 20.5045:</code></strong> is the <strong><code>intercept</code></strong> of the time-varying location parameter. It represents the baseline magnitude of the annual maximum flood (AMF) at the starting point of the time serie.</p></li>
 <li><p><strong><code>mu1 = μ1 = –0.0276:</code></strong> is the <strong><code>slope</code></strong> of the location parameter with respect to time. It indicates a decreasing trend in the location (i.e., central tendency) of the AMF over time. Specifically, for each unit increase in time (i.e., each year), the location parameter decreases by <span class="math inline">0.0276m^3.s^{-1}</span>. This suggests that the typical magnitude of extreme floods has been gradually declining over the observation period.</p></li>
@@ -1193,11 +1359,11 @@ What about the parameters?
 </div>
 </div></div><p>Finally, we show in <a href="#fig-gevfitdiag-ns" class="quarto-xref">Figure&nbsp;7</a>, the diagnostics from the <strong><code>NS-GEV</code></strong> distribution fitted to the Annual Maximum Floods: density plot of empirical data and fitted GEV df (top-left), quantiles from a sample drawn from the fitted GEV against the empirical data quantiles with 95% confidence bands (top-right).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show diagnostic plots of the GEV distribution fitting</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(nsgevfit, <span class="at">type=</span><span class="st">"density"</span>, <span class="at">main=</span><span class="st">"(a) Density plot"</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">4</span>))</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(nsgevfit, <span class="at">type=</span><span class="st">"qq2"</span>, <span class="at">main=</span><span class="cn">NULL</span>)</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main=</span><span class="st">"(b) Q-Q plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show diagnostic plots of the GEV distribution fitting</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(nsgevfit, <span class="at">type=</span><span class="st">"density"</span>, <span class="at">main=</span><span class="st">"(a) Density plot"</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">4</span>))</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(nsgevfit, <span class="at">type=</span><span class="st">"qq2"</span>, <span class="at">main=</span><span class="cn">NULL</span>)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main=</span><span class="st">"(b) Q-Q plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-gevfitdiag-ns" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1212,8 +1378,8 @@ Figure&nbsp;7: Diagnostic plots for the Non-Stationary Generalized Extreme Value
 </div>
 </div>
 </section>
-<section id="deviance-test" class="level5 page-columns page-full" data-number="6.4.2.2.3">
-<h5 data-number="6.4.2.2.3" class="anchored" data-anchor-id="deviance-test"><span class="header-section-number">6.4.2.2.3</span> Deviance test</h5>
+<section id="sec-deviancetest" class="level5 page-columns page-full" data-number="6.4.2.2.3">
+<h5 data-number="6.4.2.2.3" class="anchored" data-anchor-id="sec-deviancetest"><span class="header-section-number">6.4.2.2.3</span> Deviance test</h5>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1225,7 +1391,10 @@ Mathematical of the deviance test
 </div>
 <div class="callout-body-container callout-body">
 <p>As mentionned above, The <strong>Deviance test</strong>, or <strong>Likelihood Ratio (LR)</strong> test, compares two nested models — typically, a simpler (stationary) model and a more complex (non-stationary) model. It helps determine if introducing additional parameters (such as a time-varying location parameter in a GEV model) leads to a statistically significant improvement in model fit.</p>
-<p><span class="math display"> D = 2{log(ML_{NSGEV}) - log(ML_{SGEV})} </span></p>
+<p><span class="math display">
+D = 2{log(ML_{NSGEV}) - log(ML_{SGEV})}
+\tag{11}
+</span></p>
 <p><span class="math inline">D</span> represents the deviance test statistic value <span class="math inline">(D-statistic)</span>, <span class="math inline">log(ML_{NSGEV})</span> and <span class="math inline">log(ML_{SGEV})</span> are the maximised log-likelihood functions of the <span class="math inline">NSGEV</span> and the <span class="math inline">SGEV</span>, respectively.</p>
 </div>
 </div>
@@ -1244,15 +1413,15 @@ log-likelihood function
 <p>The <strong><code>likelihood function</code></strong> itself measures how well a statistical model explains observed data by giving, for a set of parameters, the probability (or probability density) of observing the data under the model.</p>
 </div>
 </div>
-</div></div><p>To perform the <strong><code>Deviance test</code></strong>, we can use the <strong><code>lr.test(...)</code></strong> of the <strong><code>{extRemes}</code></strong>. The <strong><code>lr.test(...)</code></strong> just requires the previous fitted objects of class <strong><code>“fevd”</code></strong> from the <strong><code>fevd(...)</code></strong> function:</p>
+</div></div><p>To perform the <strong><code>Deviance test</code></strong>, we can use the <strong><code>lr.test(...)</code></strong> of the <strong><code>{extRemes}</code></strong>. This function just requires the previous fitted objects of class <strong><code>“fevd”</code></strong> from the <strong><code>fevd(...)</code></strong> function:</p>
 <ul>
 <li><strong><code>gevfit</code></strong>: model with fewer parameters (stationary GEV model)</li>
 <li><strong><code>nsgevfit</code></strong>model with more parameters (non-stationary GEV model)</li>
 </ul>
 <p>The null hypothesis of the <strong>Deviance test</strong> is that <strong>simpler model is sufficient</strong> — i.e., no trend (e.g., the location parameter μ is constant over time). Letting <strong><code>c.alpha</code></strong> be the <strong><code>(1 - alpha)</code></strong> quantile of the <strong><code>chi-square distribution</code></strong> with degrees of freedom equal to the difference in the number of model parameters, the null hypothesis that <span class="math inline">D = 0</span> is rejected if <span class="math inline">D &gt; c.alpha</span> (i.e., in favor of model Non-Stationary GEV model).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># applying the Deviance test</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lr.test</span>(<span class="at">x=</span>gevfit, <span class="at">y=</span>nsgevfit, <span class="at">alpha=</span><span class="fl">0.05</span>, <span class="at">df=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># applying the Deviance test</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lr.test</span>(<span class="at">x=</span>gevfit, <span class="at">y=</span>nsgevfit, <span class="at">alpha=</span><span class="fl">0.05</span>, <span class="at">df=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Likelihood-ratio Test
@@ -1288,7 +1457,7 @@ Interpretation
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Trend Significance
+Trend significance
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1300,8 +1469,8 @@ Trend Significance
 </section>
 </section>
 </section>
-<section id="trend-analysis-conclusion" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> Trend Analysis Conclusion</h1>
+<section id="trend-analysis-conclusions" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Trend analysis conclusions</h1>
 <p>🔎 <strong>Trend Detection Methods Used</strong></p>
 <ul>
 <li>Parametric: <strong><code>Non-stationary GEV model</code></strong> with <strong>time-varying location parameter</strong></li>
@@ -1339,12 +1508,12 @@ Note
 </div>
 </div>
 </div></div><div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># specific return periods (e.g., 10, 20 years)</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>rperiods <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">50</span>, <span class="dv">100</span>)</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="co"># compute return levels (with 95% confidence intervals)</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>rlevels <span class="ot">=</span> <span class="fu">return.level</span>(gevfit, <span class="at">return.period=</span>rperiods, <span class="at">do.ci=</span><span class="cn">TRUE</span>)</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="co"># print results</span></span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rlevels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># specific return periods (e.g., 10, 20 years)</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>rperiods <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">50</span>, <span class="dv">100</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="co"># compute return levels (with 95% confidence intervals)</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>rlevels <span class="ot">=</span> <span class="fu">return.level</span>(gevfit, <span class="at">return.period=</span>rperiods, <span class="at">do.ci=</span><span class="cn">TRUE</span>)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="co"># print results</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rlevels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>fevd(x = extractedAMF$AMAX, type = "GEV", method = "GMLE")
 
@@ -1410,22 +1579,22 @@ Note
 </div>
 </div>
 </div></div><div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># specific return periods (e.g., 10, 20 years)</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>rperiods <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">50</span>, <span class="dv">100</span>)</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="co"># compute return levels (with 95% confidence intervals)</span></span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>rlevels <span class="ot">=</span> <span class="fu">return.level</span>(nsgevfit, <span class="at">return.period=</span>rperiods)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># specific return periods (e.g., 10, 20 years)</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>rperiods <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">50</span>, <span class="dv">100</span>)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="co"># compute return levels (with 95% confidence intervals)</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>rlevels <span class="ot">=</span> <span class="fu">return.level</span>(nsgevfit, <span class="at">return.period=</span>rperiods)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>For easy visualization, we will plot the <strong><code>effective return levels</code></strong> for each year over time period. Lets convert the output of <strong><code>return.level(...)</code></strong> into a clean data.frame :</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to data.frame</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>df_rlevels <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">year=</span>extractedAMF<span class="sc">$</span>Year,</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Q2=</span>rlevels[, <span class="dv">1</span>],</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Q5=</span>rlevels[, <span class="dv">2</span>],</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Q10=</span>rlevels[, <span class="dv">3</span>],</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Q20=</span>rlevels[, <span class="dv">4</span>],</span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Q50=</span>rlevels[, <span class="dv">5</span>],</span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Q100=</span>rlevels[, <span class="dv">6</span>])</span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_rlevels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to data.frame</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>df_rlevels <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">year=</span>extractedAMF<span class="sc">$</span>Year,</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Q2=</span>rlevels[, <span class="dv">1</span>],</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Q5=</span>rlevels[, <span class="dv">2</span>],</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Q10=</span>rlevels[, <span class="dv">3</span>],</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Q20=</span>rlevels[, <span class="dv">4</span>],</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Q50=</span>rlevels[, <span class="dv">5</span>],</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Q100=</span>rlevels[, <span class="dv">6</span>])</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_rlevels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  year       Q2       Q5      Q10      Q20      Q50     Q100
 1 1958 24.36654 40.19203 54.81061 73.04541 104.8170 136.6172
@@ -1438,25 +1607,25 @@ Note
 </div>
 <p>Now, we tranform the data into a long (tidy) format suitable for plotting multiple lines with <strong><code>ggplot</code></strong>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>dataplot <span class="ot">=</span> df_rlevels <span class="sc">|&gt;</span> <span class="fu">pivot_longer</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="at">names_to=</span><span class="st">"RL"</span>, <span class="at">values_to=</span><span class="st">"Q"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>dataplot <span class="ot">=</span> df_rlevels <span class="sc">|&gt;</span> <span class="fu">pivot_longer</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="at">names_to=</span><span class="st">"RL"</span>, <span class="at">values_to=</span><span class="st">"Q"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Finally, we plot the <strong><code>effective return levels</code></strong>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>rlplot <span class="ot">=</span> dataplot <span class="sc">%&gt;%</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>         <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>year, <span class="at">y=</span>Q, <span class="at">color=</span>RL, <span class="at">group=</span>RL)) <span class="sc">+</span></span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>         <span class="fu">geom_line</span>(<span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>         <span class="fu">scale_x_continuous</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>)) <span class="sc">+</span></span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>         <span class="fu">scale_y_continuous</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">150</span>), <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">25</span>, <span class="dv">200</span>, <span class="at">by=</span><span class="dv">25</span>)) <span class="sc">+</span></span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>         <span class="fu">guides</span>(<span class="at">color=</span><span class="fu">guide_legend</span>(<span class="at">keywidth=</span><span class="dv">3</span>)) <span class="sc">+</span></span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>         <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>         <span class="fu">theme</span>(<span class="at">legend.text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>),</span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">axis.title=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>),</span>
-<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">axis.text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>, <span class="at">color=</span><span class="st">"black"</span>)) <span class="sc">+</span></span>
-<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>         <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"Time (Year)"</span>, <span class="at">y=</span><span class="st">"Return level (Q)"</span>, <span class="at">color=</span><span class="cn">NULL</span>)</span>
-<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>           </span>
-<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rlplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>rlplot <span class="ot">=</span> dataplot <span class="sc">%&gt;%</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>         <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>year, <span class="at">y=</span>Q, <span class="at">color=</span>RL, <span class="at">group=</span>RL)) <span class="sc">+</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>         <span class="fu">geom_line</span>(<span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>         <span class="fu">scale_x_continuous</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>)) <span class="sc">+</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>         <span class="fu">scale_y_continuous</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">150</span>), <span class="at">breaks=</span><span class="fu">seq</span>(<span class="dv">25</span>, <span class="dv">200</span>, <span class="at">by=</span><span class="dv">25</span>)) <span class="sc">+</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>         <span class="fu">guides</span>(<span class="at">color=</span><span class="fu">guide_legend</span>(<span class="at">keywidth=</span><span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>         <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>         <span class="fu">theme</span>(<span class="at">legend.text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>),</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">axis.title=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>),</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">axis.text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>, <span class="at">color=</span><span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>         <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"Time (Year)"</span>, <span class="at">y=</span><span class="st">"Return level (Q)"</span>, <span class="at">color=</span><span class="cn">NULL</span>)</span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rlplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><a href="#fig-effective-return-levels" class="quarto-xref">Figure&nbsp;8</a> helps in understanding the variations and trends in flood quantiles across different time periods and stations.”</p>
+<p><a href="#fig-effective-return-levels" class="quarto-xref">Figure&nbsp;8</a> helps in understanding the variations and trends in flood quantiles across different time periods.”</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-effective-return-levels" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -1493,6 +1662,26 @@ Figure&nbsp;8: Effective return levels from the NS-GEV model. Each line represen
 </div>
 <div class="callout-body-container callout-body">
 <p>The simpler way to estimate the uncertainty is to compute a <strong>normalized uncertainty range</strong>, defined as the ratio of the difference between the upper (97.5%) and lower (2.5%) bounds of the confidence interval and the estimated quantile was computed.</p>
+</div>
+</div>
+</section>
+<section id="references" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-gumbel1958statistics" class="csl-entry" role="listitem">
+Gumbel, E. J. (1958). <em>Statistics of extremes</em>. Columbia University Press. <a href="https://doi.org/10.7312/gumb92958">https://doi.org/10.7312/gumb92958</a>
+</div>
+<div id="ref-kendall_rank_1975" class="csl-entry" role="listitem">
+Kendall, M. G. (1975). <em>Rank correlation methods</em> (4th ed., 2d impression). Griffin London.
+</div>
+<div id="ref-mann1945nonparametric" class="csl-entry" role="listitem">
+Mann, H. B. (1945). Nonparametric tests against trend. <em>Econometrica: Journal of the Econometric Society</em>, 245–259.
+</div>
+<div id="ref-Sen1968" class="csl-entry" role="listitem">
+Sen, P. K. (1968). Estimates of the regression coefficient based on kendall’s tau. <em>Journal of the American Statistical Association</em>, <em>63</em>(324), 1379–1389. <a href="https://doi.org/10.1080/01621459.1968.10480934">https://doi.org/10.1080/01621459.1968.10480934</a>
+</div>
+<div id="ref-wald_test_1940" class="csl-entry" role="listitem">
+Wald, A., &amp; Wolfowitz, J. (1940). On a test whether two samples are from the same population. <em>The Annals of Mathematical Statistics</em>, <em>11</em>(2), 147–162. <a href="https://doi.org/10.1214/aoms/1177731909">https://doi.org/10.1214/aoms/1177731909</a>
 </div>
 </div>
 
@@ -1581,7 +1770,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/diopbachir\.github\.io\/tp_eva\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

@@ -20,11 +20,11 @@ Understanding the probabilistic behavior of extreme observations and tail phenom
 ## [Yves Tramblay ![ORCID icon](https://img.shields.io/badge/ORCID-0000--0003--0481--5330-a6ce39?logo=orcid&style=flat&logoColor=white)](http://orcid.org/0000-0003-0481-5330)
 
 ::: {.small}
-Research scientist at IRD since 2013. Works on hydrological hazards in Mediterranean regions and climate change impacts.
+Research scientist at IRD since 2013, works on hydrological hazards in Mediterranean regions and climate change impacts.
 
 ## [Serigne Bassirou Diop ![ORCID icon](https://img.shields.io/badge/ORCID-0009--0002--8743--3660-a6ce39?logo=orcid&style=flat&logoColor=white)](https://orcid.org/0009-0002-8743-3660)
 
-PhD researcher on flood modeling and climate change, with a strong interest in hydrology, statistical modelling, and machine learning.
+PhD researcher on flood modeling and climate change.
 
 :::
 
