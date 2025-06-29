@@ -12,7 +12,9 @@ website:
   title: "Introduction to Extreme Value Analysis"
   image: evaillustr.png
   open-graph: true
-  site-url: https://diopbachir.github.io/tp_eva/
+  favicon: evaillustr.png
+  twitter-card: true
+  site-url: https://diopbachir.github.io/tp_eva/index.html
   back-to-top-navigation: true
   page-navigation: true
   search: 
