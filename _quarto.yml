@@ -10,9 +10,10 @@ metadata:
 
 website:
   title: "Introduction to Extreme Value Analysis"
-  image: evaillustr.png
-  open-graph: true
-  favicon: evaillustr.png
+  image: https://github.com/diopBachir/tp_eva/blob/master/docs/evaillustr.png
+  open-graph: 
+     locale: fr_FR
+  favicon: https://github.com/diopBachir/tp_eva/blob/master/docs/evaillustr.png
   twitter-card: true
   site-url: https://diopbachir.github.io/tp_eva/index.html
   back-to-top-navigation: true
