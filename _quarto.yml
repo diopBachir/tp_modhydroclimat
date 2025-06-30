@@ -5,15 +5,17 @@ project:
 bibliography: references.bib
 csl: apa.csl # optional, for styling
 
-metadata:
-  image: https://github.com/diopBachir/tp_eva/blob/master/docs/evaillustr.png
+image: https://github.com/diopBachir/tp_eva/blob/master/docs/evaillustr.png
 
 website:
   title: "Introduction to Extreme Value Analysis"
-  image: https://github.com/diopBachir/tp_eva/blob/master/docs/evaillustr.png
+  image: evaillustr.png
   open-graph: 
+     title: "Introduction to Extreme Value Analysis"
+     description: "A comprehensive guide to extreme value analysis"
+     image: evaillustr.png
      locale: fr_FR
-  favicon: https://github.com/diopBachir/tp_eva/blob/master/docs/evaillustr.png
+  favicon: evaillustr.png
   twitter-card: true
   site-url: https://diopbachir.github.io/tp_eva/index.html
   back-to-top-navigation: true
