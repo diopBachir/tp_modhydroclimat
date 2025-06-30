@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: e23f23bc-0567-46f4-b576-2e370aa97cbf
+      url: 'https://sbdiop.quarto.pub/intro-eva'

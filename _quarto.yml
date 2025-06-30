@@ -82,6 +82,7 @@ format:
       message: false
       echo: false
       cache: false
+      freeze: auto
 
 fig-cap-location: bottom
 

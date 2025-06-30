@@ -1,1 +1,1 @@
-Sitemap: https://diopbachir.github.io/tp_eva/index.html/sitemap.xml
+Sitemap: https://sbdiop.quarto.pub/intro-eva/sitemap.xml
