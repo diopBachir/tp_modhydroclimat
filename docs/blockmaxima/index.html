@@ -792,8 +792,8 @@ Figure&nbsp;4: Evolution of the annual peak flood over time.
 </span></p>
 <p>To express the Sen’s slope as a <strong>percentage change per time step (i.e., relative trend rate per year)</strong>, it can be normalized by the mean:</p>
 <p><span class="math display">
-\beta (\%) = \left( \frac{\beta}{\bar{x}} \right) \times 100 \tag{6}
-</span> where <span class="math inline">\beta (\%)</span> is the relative trend rate per year, <span class="math inline">x_i</span> and <span class="math inline">x_j</span> are respectively the observed values at time points <span class="math inline">i</span> and <span class="math inline">j</span>, and <span class="math inline">\bar{x}</span> represents the mean value of the variable across the period.</p>
+\%\beta = \left( N \cdot \frac{\beta}{\bar{x}} \right) \times 100 \tag{6}
+</span> where <span class="math inline">\%\beta</span> is the relative trend rate over the period, and <span class="math inline">\bar{x}</span> represents the mean value of the variable across the period, <span class="math inline">N</span> is the number of data points (i.e., the length of period).</p>
 <p>The Sen’s slope can be easily computed using the <code>sens.slope(...)</code> function from the <code>{trend}</code> package, as in the chunk below:</p>
 
 <div class="no-row-height column-margin column-container"><div class="">
@@ -807,7 +807,7 @@ Sen slope
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong><code>Slope = -0.1187375 :</code></strong> the median trend is slightly negative, suggesting a weak decline.</p>
+<p><strong><code>Slope = -0.1187375 :</code></strong> the median trend is slightly negative, suggesting a weak decline of <span class="math inline">-0.11 \quad mm/year</span>.</p>
 <p><strong><code>p-value = 0.2183:</code></strong> this negative trend is not statistically significant.</p>
 </div>
 </div>
@@ -843,22 +843,18 @@ Sen's slope
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">require</span>(trend)</span>
 <span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">sens.slope</span>(x)</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  slope <span class="ot">&lt;-</span> result<span class="sc">$</span>estimates              <span class="co"># Absolute slope (per time unit)</span></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  p_val <span class="ot">&lt;-</span> result<span class="sc">$</span>p.value                <span class="co"># p-value for trend test</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  mean_val <span class="ot">&lt;-</span> <span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  percent_change <span class="ot">&lt;-</span> (slope <span class="sc">/</span> mean_val) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Absolute Sen's slope: "</span>, <span class="fu">round</span>(slope, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"P-value: "</span>, <span class="fu">format.pval</span>(p_val, <span class="at">digits =</span> <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span><span class="fu">is.null</span>(time_step)){</span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"Relative trend rate: "</span>, <span class="fu">round</span>(percent_change, <span class="dv">2</span>), <span class="st">"%/"</span>, time_step, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>  }<span class="cf">else</span>{</span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"Relative trend rate: "</span>, <span class="fu">round</span>(percent_change, <span class="dv">2</span>), <span class="st">"%</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  N <span class="ot">=</span> <span class="fu">length</span>(x)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">sens.slope</span>(x)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  slope <span class="ot">&lt;-</span> result<span class="sc">$</span>estimates              <span class="co"># Absolute slope (per time unit)</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  p_val <span class="ot">&lt;-</span> result<span class="sc">$</span>p.value                <span class="co"># p-value for trend test</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  mean_val <span class="ot">&lt;-</span> <span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  percent_change <span class="ot">&lt;-</span> (N <span class="sc">*</span> slope) <span class="sc">/</span> mean_val <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Absolute Sen's slope: "</span>, <span class="fu">round</span>(slope, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"P-value: "</span>, <span class="fu">format.pval</span>(p_val, <span class="at">digits =</span> <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Relative trend rate: "</span>, <span class="fu">round</span>(percent_change, <span class="dv">2</span>), <span class="st">"%/"</span>, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Now, we can compute the <strong>relative Sen’s slope</strong> for the annual maximum flow data:</p>
@@ -868,7 +864,7 @@ Sen's slope
 <div class="cell-output cell-output-stdout">
 <pre><code>Absolute Sen's slope: -0.1187
 P-value: 0.2183
-Relative trend rate: -0.4%/year</code></pre>
+Relative trend rate: -23.97%/</code></pre>
 </div>
 </div>
 
@@ -883,7 +879,7 @@ Relative Sen’s slope
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The annual maximum flow shows a slight decreasing trend of −0.4% per year relative to its long-term average.</p>
+<p>The annual maximum flow shows a decreasing trend of −24% relative to its long-term average.</p>
 </div>
 </div>
 </div></div></section>
@@ -1774,7 +1770,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/422774bf-444b-4eea-82c2-98644a70d53e\.netlify\.app\/");
+      var filterRegex = new RegExp("https:\/\/diopbachir\.github\.io\/tp_eva\/index\.html");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

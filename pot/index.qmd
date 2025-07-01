@@ -543,21 +543,17 @@ sens_slope_percent <- function(x, time_step=NULL)
 
   require(trend)
   
+  N = length(x)
   result <- sens.slope(x)
   slope <- result$estimates              # Absolute slope (per time unit)
   p_val <- result$p.value                # p-value for trend test
   mean_val <- mean(x, na.rm = TRUE)
   
-  percent_change <- (slope / mean_val) * 100
+  percent_change <- (N * slope) / mean_val * 100
   
   cat("Absolute Sen's slope: ", round(slope, 4), "\n", sep="")
   cat("P-value: ", format.pval(p_val, digits = 4), "\n", sep="")
-  if(!is.null(time_step)){
-    cat("Relative trend rate: ", round(percent_change, 2), "%/", time_step, "\n", sep="")
-  }else{
-    cat("Relative trend rate: ", round(percent_change, 2), "%\n", sep="")
-  }
-  
+  cat("Relative trend rate: ", round(percent_change, 2), "%/", "\n", sep="")
 }
 ```
 
@@ -572,7 +568,7 @@ sens_slope_percent(peaks_final$Q)
 ::: {.column-margin}
 ::: {.callout-tip}
 ## Relative Sen's slope
-The threshold exceedances serie show a slight decreasing trend with a **slope of -0.0017 rate**, which is equivalent to **−0.01% relative to its long-term average**. Yet, this negative trend is not significative given the **p-value of 0.5059**.
+The threshold exceedance show a slight decreasing trend with a **slope of -0.0017 mm/year**, which is equivalent to a overall decrease of **-2.45%% relative to its long-term average**. Yet, this negative trend is not significative given the **p-value of 0.5059**.
 :::
 :::
 

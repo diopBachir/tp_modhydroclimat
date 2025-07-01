@@ -399,16 +399,16 @@ $$
 To express the Sen's slope as a **percentage change per time step (i.e., relative trend rate per year)**, it can be normalized by the mean:
 
 $$
-\beta (\%) = \left( \frac{\beta}{\bar{x}} \right) \times 100 \tag{6}
+\%\beta = \left( N \cdot \frac{\beta}{\bar{x}} \right) \times 100 \tag{6}
 $$
-where $\beta (\%)$ is the relative trend rate per year, $x_i$ and $x_j$ are respectively the observed values at time points $i$ and $j$, and $\bar{x}$ represents the mean value of the variable across the period.
+where $\%\beta$ is the relative trend rate over the period, and $\bar{x}$ represents the mean value of the variable across the period, $N$ is the number of data points (i.e., the length of period).
 
 The Sen's slope can be easily computed using the `sens.slope(...)` function from the `{trend}` package, as in the chunk below:
 
 ::: {.column-margin}
 ::: {.callout-tip}
 ## Sen slope
-**`Slope = -0.1187375 :`** the median trend is slightly negative, suggesting a weak decline.
+**`Slope = -0.1187375 :`** the median trend is slightly negative, suggesting a weak decline of $-0.11 \quad mm/year$.
 
 **`p-value = 0.2183:`** this negative trend is not statistically significant.
 :::
@@ -442,21 +442,17 @@ sens_slope_percent <- function(x, time_step=NULL)
 
   require(trend)
   
+  N = length(x)
   result <- sens.slope(x)
   slope <- result$estimates              # Absolute slope (per time unit)
   p_val <- result$p.value                # p-value for trend test
   mean_val <- mean(x, na.rm = TRUE)
   
-  percent_change <- (slope / mean_val) * 100
+  percent_change <- (N * slope) / mean_val * 100
   
   cat("Absolute Sen's slope: ", round(slope, 4), "\n", sep="")
   cat("P-value: ", format.pval(p_val, digits = 4), "\n", sep="")
-  if(!is.null(time_step)){
-    cat("Relative trend rate: ", round(percent_change, 2), "%/", time_step, "\n", sep="")
-  }else{
-    cat("Relative trend rate: ", round(percent_change, 2), "%\n", sep="")
-  }
-  
+  cat("Relative trend rate: ", round(percent_change, 2), "%/", "\n", sep="")
 }
 ```
 
@@ -472,7 +468,7 @@ sens_slope_percent(extractedAMF$AMAX, time_step = "year")
 ::: {.column-margin}
 ::: {.callout-tip}
 ## Relative Sen's slope
-The annual maximum flow shows a slight decreasing trend of −0.4% per year relative to its long-term average.
+The annual maximum flow shows a decreasing trend of −24% relative to its long-term average.
 :::
 :::
 

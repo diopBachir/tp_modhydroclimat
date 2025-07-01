@@ -6,12 +6,6 @@ title: Overview, Key Concepts and Objectives
 
 # EVT: Extreme Value Theory
 
-::: {.column-margin}
-::: {.callout-note}
-**EVA** is based on **EVT**
-:::
-:::
-
 Imagine we have daily observational data for a random variable (e.g., river discharges, precipitations, etc.) for many years. [EVT](https://en.wikipedia.org/wiki/Extreme_value_theory) suggests that the extreme values of this variable are asymptotically close to one of three types of extreme value distributions, regardless of the original distribution of daily flows (see @coles2001 for details). [EVT](https://en.wikipedia.org/wiki/Extreme_value_theory) helps us estimate the probability of rare, high-flow events like floods.
 
 ```{r}
@@ -97,6 +91,12 @@ p1; p2; p3
 
 
 # EVA: Extreme Value Analysis
+
+::: {.column-margin}
+::: {.callout-note}
+**EVA** is based on **EVT**
+:::
+:::
 
 ## 🌊 EVA in Hydrology
 
