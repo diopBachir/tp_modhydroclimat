@@ -250,3 +250,17 @@ div.quarto-layout-row:nth-child(2) > div:nth-child(1) {
 //   padding: 0 2rem !important;
 //   width: 100vw;
 // }
+
+.download-btn {
+  display: inline-block;
+  background-color: #3f9943;
+  color: white;
+  padding: 10px 16px;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+.download-btn:hover {
+  background-color: #1b5e20;
+}

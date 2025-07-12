@@ -6,7 +6,7 @@ title: Overview, Key Concepts and Objectives
 
 # EVT: Extreme Value Theory
 
-Imagine we have daily observational data for a random variable (e.g., river discharges, precipitations, etc.) for many years. [EVT](https://en.wikipedia.org/wiki/Extreme_value_theory) suggests that the extreme values of this variable are asymptotically close to one of three types of extreme value distributions, regardless of the original distribution of daily flows (see @coles2001 for details). [EVT](https://en.wikipedia.org/wiki/Extreme_value_theory) helps us estimate the probability of rare, high-flow events like floods.
+Imagine we have daily observational data for a random variable (e.g., river discharge) for many years. [EVT](https://en.wikipedia.org/wiki/Extreme_value_theory) suggests that the extreme values of this variable are asymptotically close to one of three types of extreme value distributions, regardless of the original distribution of daily observations (see @coles2001 for details). [EVT](https://en.wikipedia.org/wiki/Extreme_value_theory) helps us estimate the probability of rare, high-flow events like floods.
 
 ```{r}
 #| echo: false
@@ -83,12 +83,6 @@ p3 <- ggplot(df_maxima, aes(x = value)) +
 p1; p2; p3
 ```
 
-::: {.column-margin}
-::: {.callout-important}
-**Independance (absence of autocorrelation)** and **Stationarity** of extreme value time series are the underlying assumptions of EVA.
-:::
-:::
-
 
 # EVA: Extreme Value Analysis
 
@@ -101,6 +95,12 @@ p1; p2; p3
 ## 🌊 EVA in Hydrology
 
 EVA is a powerful statistical tool to analyze rare events in hydrology and climate science. It focuses on understanding the frequency and intensity of extreme events.
+
+::: {.column-margin}
+::: {.callout-important}
+**Independance (absence of autocorrelation)** and **Stationarity** of extreme value time series are the underlying assumptions of EVA.
+:::
+:::
 
 ## 📌 Key Concepts of EVA
 

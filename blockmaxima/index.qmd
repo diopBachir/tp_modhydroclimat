@@ -19,7 +19,11 @@ library(extRemes)
 
 # Data import {#sec-bmdata}
 
-Will work with real-world data, from the **`La Drôme à Luc-en-Diois`** station in France, to analyze flood events using daily streamflow data covering the period from August 1st, 1958, to December 31st, 2020. The metadata of the station are available on the [HydroPortail website (here)](https://www.hydro.eaufrance.fr/sitehydro/V4214010/fiche).
+::: {.callout-note icon="false"}
+Download the Data
+
+<a href="https://github.com/diopBachir/tp_eva/blob/master/blockmaxima/data/discharge.csv" download class="download-btn">📥 Download CSV</a>
+:::
 
 Let’s consider the formatted daily streamflow data file for the target catchment. We can read the data into a data frame using the `read.csv()` function. We will also set the column names using the `col.names` argument, and use the `lubridate` library to prepare a time serie.
 

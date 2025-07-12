@@ -51,6 +51,12 @@ $$
 
 Will work with the same data used in the [**block maxima section**](../blockmaxima/index.qmd#sec-bmdata), from the **`La Drôme à Luc-en-Diois`** station in France. 
 
+::: {.callout-note icon="false"}
+Download the Data
+
+<a href="https://github.com/diopBachir/tp_eva/blob/master/pot/data/discharge.csv" download class="download-btn">📥 Download CSV</a>
+:::
+
 ```{r}
 #| echo: true
 #| eval: true
