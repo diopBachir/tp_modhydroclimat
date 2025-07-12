@@ -20,7 +20,7 @@ library(extRemes)
 # Data import {#sec-bmdata}
 
 ::: {.callout-note icon="false"}
-## Download the Data used in this Section
+## Download the data used in this section
 
 <a href="https://github.com/diopBachir/tp_eva/blob/master/blockmaxima/data/discharge.csv" download class="download-btn">📥 Download CSV</a>
 :::
@@ -33,15 +33,15 @@ Let’s consider the formatted daily streamflow data file for the target catchme
 
 library(lubridate)
 
-filename = './data/discharge.csv'
-Qdata = read.csv(filename, col.names = c("Year", "Month", "Day", "Q"))  
+filename <- "./data/discharge.csv"
+Qdata <- read.csv(filename, col.names = c("Year", "Month", "Day", "Q"))
 
 # construct time serie
-Qdata$Date = paste(Qdata[["Year"]], Qdata[["Month"]], Qdata[["Day"]], sep="-")
-Qdata$Date  = ymd(Qdata$Date)
+Qdata$Date <- paste(Qdata[["Year"]], Qdata[["Month"]], Qdata[["Day"]], sep = "-")
+Qdata$Date <- ymd(Qdata$Date)
 
 # final time serie
-Qdata = Qdata[, c("Date", "Q")]
+Qdata <- Qdata[, c("Date", "Q")]
 ```
 
 The output is a data frame (or a matrix) with 22799 rows and 2 columns.
@@ -52,7 +52,7 @@ The output is a data frame (or a matrix) with 22799 rows and 2 columns.
 #| label: tbl-bm_loaddata
 #| tbl-cap: "First (6) lines of the daily streamflow data for Block-Maxima approach"
 
-tail(Qdata, 6) %>% knitr::kable(align=rep("c", 2))
+tail(Qdata, 6) %>% knitr::kable(align = rep("c", 2))
 ```
 
 ::: {.column-margin}
@@ -64,7 +64,7 @@ We can display the structure of the data frame using the `str()` function.
 #| echo: true
 #| eval: true
 
-str(Qdata)  
+str(Qdata)
 ```
 
 :::
@@ -89,43 +89,45 @@ The **Block-Maxima Approach [@gumbel1958statistics]**, consists of sampling the 
 library(ggplot2)
 library(dplyr)
 library(lubridate)
-library(scales)  # for better date formatting
+library(scales) # for better date formatting
 
 # Simulate daily streamflow data
 set.seed(42)
-dates = seq.Date(from = as.Date("1958-08-01"), to = as.Date("1962-07-31"), by = "day")
-Q = rgamma(length(dates), shape = 3, scale = 10)
-streamflow = tibble(date = dates, Q = Q)
+dates <- seq.Date(from = as.Date("1958-08-01"), to = as.Date("1962-07-31"), by = "day")
+Q <- rgamma(length(dates), shape = 3, scale = 10)
+streamflow <- tibble(date = dates, Q = Q)
 
 # Define hydrological year starting August 1
-streamflow = streamflow %>%
-  mutate(hydro_year = if_else(month(date) >= 8, year(date) + 1, year(date)),
-         hydro_year_start = as.Date(paste0(hydro_year - 1, "-08-01")))
+streamflow <- streamflow %>%
+    mutate(
+        hydro_year = if_else(month(date) >= 8, year(date) + 1, year(date)),
+        hydro_year_start = as.Date(paste0(hydro_year - 1, "-08-01"))
+    )
 
 # Extract block maxima per hydrological year
-maxima = streamflow %>%
-  group_by(hydro_year) %>%
-  filter(Q == max(Q)) %>%
-  ungroup()
+maxima <- streamflow %>%
+    group_by(hydro_year) %>%
+    filter(Q == max(Q)) %>%
+    ungroup()
 
 # Get unique hydrological year start dates for vertical lines
-hydro_year_starts = unique(streamflow$hydro_year_start)
+hydro_year_starts <- unique(streamflow$hydro_year_start)
 
 # Plot with enhancements
 ggplot(streamflow, aes(x = date, y = Q)) +
-  geom_line(color = "steelblue", size = 0.3, alpha = 0.8) +
-  geom_point(data = maxima, aes(x = date, y = Q), color = "red", size = .7, shape = 8) +
-  geom_vline(xintercept = hydro_year_starts, linetype = "dashed", color = "gray40", alpha = 0.6) +
-  scale_x_date(date_breaks = "1 years", date_labels = "%Y") +
-  labs(
-    x = "Date",
-    y = "Streamflow (Q)"
-  ) +
-  theme_minimal(base_size = 5) +
-  theme(
-    axis.title = element_text(size=5, face="bold"),
-    axis.text = element_text(size=5, color="black"),
-  )
+    geom_line(color = "steelblue", size = 0.3, alpha = 0.8) +
+    geom_point(data = maxima, aes(x = date, y = Q), color = "red", size = .7, shape = 8) +
+    geom_vline(xintercept = hydro_year_starts, linetype = "dashed", color = "gray40", alpha = 0.6) +
+    scale_x_date(date_breaks = "1 years", date_labels = "%Y") +
+    labs(
+        x = "Date",
+        y = "Streamflow (Q)"
+    ) +
+    theme_minimal(base_size = 5) +
+    theme(
+        axis.title = element_text(size = 5, face = "bold"),
+        axis.text = element_text(size = 5, color = "black"),
+    )
 
 
 ```
@@ -140,15 +142,14 @@ ggplot(streamflow, aes(x = date, y = Q)) +
 #| message: false
 #| warning: false
 
-extract_annual_max = function(df) 
-{
+extract_annual_max <- function(df) {
     df %>%
-    mutate(Year = year(Date)) %>%    # extract year from Date
-    group_by(Year) %>%
-    filter(Q == max(Q)) %>%          # keep only max flow per year
-    slice(1) %>%                     # in case of ties, keep first max
-    ungroup() %>%
-    select(Year, Date, AMAX=Q)
+        mutate(Year = year(Date)) %>% # extract year from Date
+        group_by(Year) %>%
+        filter(Q == max(Q)) %>% # keep only max flow per year
+        slice(1) %>% # in case of ties, keep first max
+        ungroup() %>%
+        select(Year, Date, AMAX = Q)
 }
 ```
 
@@ -160,7 +161,7 @@ extract_annual_max = function(df)
 #| message: false
 #| warning: false
 
-extractedAMF = extract_annual_max(Qdata)
+extractedAMF <- extract_annual_max(Qdata)
 ```
 
 ```{r}
@@ -169,10 +170,10 @@ extractedAMF = extract_annual_max(Qdata)
 #| label: tbl-bm_extract
 #| tbl-cap: "First (6) rows of the AMF extracted using the Block-Maxima approach"
 
-head(extractedAMF, 6) %>% knitr::kable(align=rep("c", 2))
+head(extractedAMF, 6) %>% knitr::kable(align = rep("c", 2))
 ```
 
-## Display sampled vvents
+## Display sampled events
 
 Now, we overlap the extracted **Annual Maximum Flow** with the original daily discharge time serie to visualize the sampling process. We use the functions from the `dplyr` and `ggplot2` library to create the plot.
 
@@ -184,13 +185,15 @@ Now, we overlap the extracted **Annual Maximum Flow** with the original daily di
 #| code-fold: true
 #| code-summary: "Show the code"
 
-amf.plot = ggplot() +
-           geom_line(data=Qdata, aes(x=Date, y=Q), color="steelblue", size=0.7, alpha=0.8) +
-           geom_point(data=extractedAMF, aes(x=Date, y=AMAX), color ="red", size=1.2) +
-           labs(x="Date", y="Discharge (Q)") +
-           theme_minimal(base_size = 13) +
-           theme(axis.title=element_text(size=12, face="bold"),
-                 axis.text=element_text(size=12, color="black"))
+amf.plot <- ggplot() +
+    geom_line(data = Qdata, aes(x = Date, y = Q), color = "steelblue", size = 0.7, alpha = 0.8) +
+    geom_point(data = extractedAMF, aes(x = Date, y = AMAX), color = "red", size = 1.2) +
+    labs(x = "Date", y = "Discharge (Q)") +
+    theme_minimal(base_size = 13) +
+    theme(
+        axis.title = element_text(size = 12, face = "bold"),
+        axis.text = element_text(size = 12, color = "black")
+    )
 print(amf.plot)
 ```
 
@@ -220,7 +223,7 @@ The `acf` function is a R-base function, no installation needed
 
 ## What is autocorrelation? {#sec-autocorrelation}
 
-**`Autocorrelation (or autocovariance)`** of a series refers to the fact that in a time or spatial serie, the measurement of a phenomenon at time t can be correlated with previous measurements (at time t-1, t-2, t-3, etc.) or with subsequent measurements (at t+1, t+2, t+3, ...). An autocorrelated series is thus correlated with itself, with a given lag (please refer [here](https://perso.ens-lyon.fr/lise.vaudor/autocorrelation-de-series-temporelles-ou-spatiales/) for mode details). 
+**`Autocorrelation (or autocovariance)`** refers to the fact that in a time or spatial serie, the measurement of a phenomenon at time t can be correlated with previous measurements (at time t-1, t-2, t-3, etc.) or with subsequent measurements (at t+1, t+2, t+3, ...). An autocorrelated series is thus correlated with itself, with a given lag (please refer [here](https://perso.ens-lyon.fr/lise.vaudor/autocorrelation-de-series-temporelles-ou-spatiales/) for more details). 
 
 ::: {.callout-note}
 
@@ -234,8 +237,8 @@ The `acf` function is a R-base function, no installation needed
 
 📊 **Wald-Wolfowitz Test [@wald_test_1940]:**
 
-* Non-parametric to assess the randomness of a time series
-* Used to detect the absence of randomness in the series
+* Non-parametric to assess the randomness of a time serie
+* Used to detect the absence of randomness in the serie
 * **Null hypothesis: The sequence of observations is random**
 
 :::
@@ -256,24 +259,26 @@ If you execute the above given chunk, it generates the @fig-acfplot as output:
 #| fig-cap: "Autocorrelation (at different lags) of Annual Maximum Flood (AMAX). The red line represents the 95% confidence interval."
 
 # compute autocorrelation lag
-bacf = acf(extractedAMF$AMAX, plot = FALSE)
-bacfdf = with(bacf, data.frame(lag, acf))
+bacf <- acf(extractedAMF$AMAX, plot = FALSE)
+bacfdf <- with(bacf, data.frame(lag, acf))
 
 # confidence interval
-n = length(extractedAMF$AMAX)
-conf_limit = 1.96 / sqrt(n)
+n <- length(extractedAMF$AMAX)
+conf_limit <- 1.96 / sqrt(n)
 
 # correlogram
 library(ggplot2)
-ggplot(data=bacfdf, mapping=aes(x=lag, y=acf)) +
-  geom_hline(aes(yintercept=0)) +
-  geom_bar(stat="identity", position="identity", width=.2) +
-  geom_hline(yintercept=conf_limit, linetype="dashed", color="red") +
-  geom_hline(yintercept=-conf_limit, linetype="dashed", color="red") +
-  labs(y="ACF", x="Lag") +
-  theme_minimal() +
-  theme(axis.title=element_text(size=10, face="bold", family="Times"),
-        axis.text=element_text(size=10, color="black", family="Times"))
+ggplot(data = bacfdf, mapping = aes(x = lag, y = acf)) +
+    geom_hline(aes(yintercept = 0)) +
+    geom_bar(stat = "identity", position = "identity", width = .2) +
+    geom_hline(yintercept = conf_limit, linetype = "dashed", color = "red") +
+    geom_hline(yintercept = -conf_limit, linetype = "dashed", color = "red") +
+    labs(y = "ACF", x = "Lag") +
+    theme_minimal() +
+    theme(
+        axis.title = element_text(size = 10, face = "bold", family = "Times"),
+        axis.text = element_text(size = 10, color = "black", family = "Times")
+    )
 ```
 
 ::: {.column-margin}
@@ -286,12 +291,12 @@ Looking at the 95% confidence interval bounds in the correlogram, we can see tha
 
 ### Wald-Wolfowitz (WW) test {#sec-wwtest}
 
-In the chunk below, we use the `ww.test(...)` function from `{trend}` package to perform the `WW test` at the **0.05 significance level** to test the hypothesis that the maximum annual flood is a random variable.
+In the chunk below, we use the `ww.test(...)` function from `{trend}` package to perform the `WW test` at the **0.05 significance level**, to test the hypothesis that the maximum annual flood is a random variable.
 
 ```{r}
 #| echo: true
 
-wwtest = trend::ww.test(extractedAMF$AMAX)
+wwtest <- trend::ww.test(extractedAMF$AMAX)
 print(wwtest)
 ```
 
@@ -308,13 +313,13 @@ print(wwtest)
 
 ### The Mann-Kendall (MK) test {#sec-mk}
 
-The MK test's null hypothesis (H0) assumes no trend in the data [@mann1945nonparametric; @kendall_rank_1975]. Recommended by the World Meteorological Organization (WMO), it is simple and requires no assumptions about data distribution, which is particularly advantageous for hydroclimatic series that are rarely normally distributed. Additionally, outlier values have very little influence on the results. The Mann-Kendall test statistic $S$ is defined as:
+The MK test's null hypothesis (H0) assumes no trend in the data [@mann1945nonparametric; @kendall_rank_1975]. Recommended by the World Meteorological Organization (WMO), it is simple and requires no assumptions about data distribution, which is particularly advantageous for hydroclimatic series that **are rarely normally distributed**. Additionally, outlier values have very little influence on the results. The Mann-Kendall test statistic $S$ is defined as:
 
 $$
 S = \sum_{i=1}^{n-1} \sum_{j=i+1}^{n} \text{sgn}(x_j - x_i) \tag{1}
 $$
 
-The sign function is given by:
+The sign function $sgn())$ is given by:
 
 $$
 \text{sgn}(x_j - x_i) =
@@ -360,7 +365,7 @@ We use the `mk.test(...)` function from `{trend}` package to perform the `MK tes
 
 ```{r}
 #| echo: true
-mktest = trend::mk.test(extractedAMF$AMAX)
+mktest <- trend::mk.test(extractedAMF$AMAX)
 print(mktest)
 ```
 
@@ -375,7 +380,7 @@ print(mktest)
 :::
 :::
 
-@fig-amfevolution shows the data points and a red line indicating the overall linear trend. The Mann-Kendall test result (p-value = 0.2183) indicates that this visually apparent (decreasing) linear trend is not statistically significant at the 0.05 significance level.
+@fig-amfevolution shows the evolution of the AMF over time and a red line indicating the overall linear trend. The Mann-Kendall test result (p-value = 0.2183) indicates that this visually apparent (decreasing) linear trend is not statistically significant at the 0.05 significance level.
 
 ```{r}
 #| echo: true
@@ -386,21 +391,21 @@ print(mktest)
 #| label: fig-amfevolution
 #| fig-cap: "Evolution of the annual peak flood over time."
 
-lineplot = ggplot(extractedAMF, aes(Year, AMAX)) +
-           geom_line(color="blue", linewidth=1) +
-           geom_smooth(color="red", linewidth=1, method="lm", se=F)
+lineplot <- ggplot(extractedAMF, aes(Year, AMAX)) +
+    geom_line(color = "blue", linewidth = 1) +
+    geom_smooth(color = "red", linewidth = 1, method = "lm", se = F)
 print(lineplot)
 ```
 
 ### Sen's slope estimator {#sec-sens}
 
-The **non-parametric method of Sen [-@Sen1968]** is commonly combined with the Mann-Kendall test to estimate the slope of the $(\beta)$ of a trend. Sen’s method looks at every pair of data points, calculates the slope between them, then uses the the median of all those slopes as the estimated trend.
+The **non-parametric method of Sen [-@Sen1968]**,  also referred to as the **Theil–Sen estimator**, is commonly combined with the Mann-Kendall test to estimate the slope $(\beta)$ of the of a trend. Sen’s algorithm looks at every pair of data points, calculates the slope between them, then uses the the median of all those slopes as the estimated trend.
 
 $$
 \beta = \text{median} \left( \frac{x_j - x_i}{j - i} \right), \quad , ∀\quad j > i \tag{5}
 $$
 
-To express the Sen's slope as a **percentage change per time step (i.e., relative trend rate per year)**, it can be normalized by the mean:
+To express the Sen's slope as a **percentage change over the period**, it can be normalized by the mean:
 
 $$
 \%\beta = \left( N \cdot \frac{\beta}{\bar{x}} \right) \times 100 \tag{6}
@@ -421,15 +426,15 @@ The Sen's slope can be easily computed using the `sens.slope(...)` function from
 ```{r}
 #| echo: true
 
-#compute Sen's slope and intercept
-senslope = trend::sens.slope(x = extractedAMF$AMAX)
+# compute Sen's slope and intercept
+senslope <- trend::sens.slope(x = extractedAMF$AMAX)
 print(senslope)
 ```
 
 
 Yet, the `sens.slope(...)` function returns the **absolute** slope (i.e., the median change per time unit). It is more meaningful to express the trend as a **relative percentage** change over the time period. 
 
-To do this, we define a **wrapper function** that calculates the Sen's slope and then converts it into a relative trend rate per time step.
+To do this, we define a **wrapper function** that calculates the Sen's slope and then converts it into a relative trend rate.
 
 ```{r}
 #| echo: true
@@ -437,26 +442,25 @@ To do this, we define a **wrapper function** that calculates the Sen's slope and
 #| code-fold: true
 #| code-summary: "Show the code"
 
-sens_slope_percent <- function(x, time_step=NULL) 
-{
-  #' Compute Sen's slope as a percentage change over the full time period
-  #' @param x A numeric vector of observations
-  #' @param time_step Optional (e.g., year) used for display purpose only
-  #' @return Relative percent change over the period
+sens_slope_percent <- function(x, time_step = NULL) {
+    #' Compute Sen's slope as a percentage change over the full time period
+    #' @param x A numeric vector of observations
+    #' @param time_step Optional (e.g., year) used for display purpose only
+    #' @return Relative percent change over the period
 
-  require(trend)
-  
-  N = length(x)
-  result <- sens.slope(x)
-  slope <- result$estimates              # Absolute slope (per time unit)
-  p_val <- result$p.value                # p-value for trend test
-  mean_val <- mean(x, na.rm = TRUE)
-  
-  percent_change <- (N * slope) / mean_val * 100
-  
-  cat("Absolute Sen's slope: ", round(slope, 4), "\n", sep="")
-  cat("P-value: ", format.pval(p_val, digits = 4), "\n", sep="")
-  cat("Relative trend rate: ", round(percent_change, 2), "%/", "\n", sep="")
+    require(trend)
+
+    N <- length(x)
+    result <- sens.slope(x)
+    slope <- result$estimates # Absolute slope (per time unit)
+    p_val <- result$p.value # p-value for trend test
+    mean_val <- mean(x, na.rm = TRUE)
+
+    percent_change <- (N * slope) / mean_val * 100
+
+    cat("Absolute Sen's slope: ", round(slope, 4), "\n", sep = "")
+    cat("P-value: ", format.pval(p_val, digits = 4), "\n", sep = "")
+    cat("Relative trend rate: ", round(percent_change, 2), "%/", "\n", sep = "")
 }
 ```
 
@@ -489,19 +493,19 @@ NS is taken into account by allowing the models parameters to vary as a linear f
 
 ## Probability distributions
 
-We will compare two probability distributions adapted to the `Block-Maxima Framework`: the Generalized Extreme Value (GEV) and the Gumbel probability distributions.
+We will compare two probability distributions adapted to the **`Block-Maxima Framework`**: the **Generalized Extreme Value (GEV)** and the **Gumbel** probability distributions.
 
 ::: {.callout-note}
 ## GEV distribution
 
-The Generalized Extreme Value (GEV) distribution is a family of continuous probability distributions developed to combine the Gumbel, Fréchet, and Weibull distributions. According to the Extreme Value Theorem, the GEV distribution is the only possible limit distribution for properly normalized sequences of maxima of independent and identically distributed random variables. The cumulative distribution function (CDF) of the GEV distribution is given by:
+The Generalized Extreme Value (GEV) distribution is a family of continuous probability distributions developed to combine the **Gumbel**, **Fréchet**, and **Weibull** distributions. According to the [**Extreme Value Theorem**](../overview/index.qmd#sec-evt), the **GEV** distribution is the only possible limit distribution for properly normalized sequences of maxima of independent and identically distributed random variables. The **cumulative distribution function (CDF)** of the **GEV** distribution is given by:
 
 $$ 
-F(x; \mu, \sigma, \xi) = \exp\left\{ -\left[ 1 + \xi \left( \frac{x - \mu}{\sigma} \right) \right]^{-1/\xi} \right\} 
+F(x; \mu, \alpha, \xi) = \exp\left\{ -\left[ 1 + \xi \left( \frac{x - \mu}{\alpha} \right) \right]^{-1/\xi} \right\} 
 \tag{7}
 $$
 
-for $1 + \xi (x - \mu)/\sigma > 0$, where, $\mu$ is the location parameter, $\sigma > 0$ is the scale parameter, and $\xi$ is the shape parameter.
+for $1 + \xi (x - \mu)/\alpha > 0$, where, $\mu$ is the location parameter, $\alpha > 0$ is the scale parameter, and $\xi$ is the shape parameter.
 
 The shape parameter $\xi$ determines the type of extreme value distribution:
 
@@ -515,7 +519,13 @@ The shape parameter $\xi$ determines the type of extreme value distribution:
 
 ## Gumbel distribution
 
-The Gumbel distribution is a special case of the GEV distribution when the shape parameter $\xi = 0$. It is often used to model the distribution of the maximum (or minimum) of a number of samples of various distributions. It is one of the three types of extreme value distributions. The cumulative distribution function (CDF) of the Gumbel distribution (Type I Extreme Value distribution) is given by:
+The **Gumbel** distribution is a special case of the GEV distribution when the shape parameter $\xi = 0$. It is often used to model the distribution of the maximum (or minimum) of a number of samples of various distributions. The **cumulative distribution function (CDF)** of the **Gumbel** distribution is given by:
+
+$$
+F(x; \mu, \alpha) = \exp\left\{ -\exp\left[ -\frac{x - \mu}{\alpha} \right] \right\}
+\tag{8}
+$$ 
+where $\mu$ is the location parameter, $\alpha > 0$ is the scale parameter, and $x$ is the variable
 
 :::
 
@@ -535,7 +545,7 @@ The advantage of using **`GMLE`** and **`MLE`** over the **`L-moments`** method 
 
 ## Model selection
 
-To select the best probability distribution, we will use the **`AIC`** and **`AIC`** criteria. The model with the lowest **`AIC`** or **`BIC`** value will be selected. The model with the **lowest** **`AIC`** and **`BIC`** values is the best-suited model. **`AIC`** tends to favor models with better fit, even if more complex, while **`BIC`** favors simpler models, especially as sample size grows. Combining these these performance metrics enhances the efficiency of model selection.
+To select the best probability distribution, we will use the **`AIC`** and **`AIC`** criteria. The model with the **lowest** **`AIC`** and **`BIC`** values is the best-suited model. **`AIC`** tends to favor models with better fit, even if more complex, while **`BIC`** favors simpler models, especially as sample size grows. Combining these these performance metrics enhances the efficiency of model selection.
 
 ::: {.column-margin}
 ::: {.callout-tip}
@@ -551,7 +561,7 @@ To select the best probability distribution, we will use the **`AIC`** and **`AI
 The **`AIC`** balances the goodness of fit of the model with the number of parameters used by the model. This mean that it rewards models that fit the data well but also penalizes models that use too many parameters. The formula for AIC is:
 
 $$ 
-\text{AIC} = 2k - 2\ln(\hat{L}) \tag{8}
+\text{AIC} = 2k - 2\ln(\hat{L}) \tag{9}
 $$
 where $k$ is the number of parameters in the model, $\hat{L}$ is the maximum value of the [likelihood function](https://en.wikipedia.org/wiki/Likelihood_function) for the model.
 
@@ -562,7 +572,7 @@ where $k$ is the number of parameters in the model, $\hat{L}$ is the maximum val
 
 **`BIC`** penalizes model complexity **more heavily than `AIC`**, especially for larger sample sizes. This means **`BIC`** tends to favor simpler models compared to AIC. The formula for BIC is:
 $$ 
-\text{BIC} = k\ln(n) - 2\ln(\hat{L}) \tag{9}
+\text{BIC} = k\ln(n) - 2\ln(\hat{L}) \tag{10}
 $$
 where: $k$ is the number of parameters in the model, $n$ is the number of data points, and $\hat{L}$ is the maximum value of the [likelihood function](https://en.wikipedia.org/wiki/Likelihood_function) for the model.
 
@@ -741,9 +751,9 @@ Both **AIC and BIC are lower for the GEV model**, which suggests that it provide
 
 When covariates are to be incorporated into EVA, a common approach to account for non-stationary is to incorporate covariates within the parameters of the distributions in a **`regression-like manner`**. To perform **parametric trend detection**, we model the **`location parameter (μ)`** as a function of time, transforming the models into **`non-stationary distributions`**. The location parameter of the non-stationnary GEV and Gumbel is computed as follow:
 $$
-\mu (t) = \mu 0 + \mu 1·t \tag{10}
+\mu (t) = \mu 0 + \mu 1·t \tag{11}
 $$
-where $\mu$ is the time-dependant location parameter, $t$ is the time index, $\mu 0$ is the intercept, and $\mu 1$ is the slope.
+where $\mu (t)$ is the time-dependant location parameter, $t$ is the time index, $\mu 0$ is the intercept, and $\mu 1$ is the slope.
 
 ::: {.callout-tip}
 # Trend?
@@ -799,7 +809,7 @@ nsgevfit_res = pretty_fit_summary(nsgevfit, "GEV")
 
 * **`mu0 = μ0 = 20.5045:`** is the **`intercept`** of the time-varying location parameter. It represents the baseline magnitude of the annual maximum flood (AMF) at the starting point of the time serie.
 
-* **`mu1 = μ1 = –0.0276:`** is the **`slope`** of the location parameter with respect to time. It indicates a decreasing trend in the location (i.e., central tendency) of the AMF over time. Specifically, for each unit increase in time (i.e., each year), the location parameter decreases by $0.0276m^3.s^{-1}$. This suggests that the typical magnitude of extreme floods has been gradually declining over the observation period.
+* **`mu1 = μ1 = –0.0276:`** is the **`slope`** of the location parameter with respect to time. It indicates a decreasing trend in the location (i.e., central tendency) of the AMF over time. Specifically, for each unit increase in time (i.e., each year), the location parameter decreases by $0.0276\,mm$. This suggests that the typical magnitude of extreme floods has been gradually declining over the observation period.
 :::
 :::
 
@@ -827,7 +837,7 @@ As mentionned above, The **Deviance test**, or **Likelihood Ratio (LR)** test, c
 
 $$ 
 D = 2{log(ML_{NSGEV}) - log(ML_{SGEV})} 
-\tag{11}
+\tag{12}
 $$
 
 $D$ represents the deviance test statistic value $(D-statistic)$, $log(ML_{NSGEV})$ and $log(ML_{SGEV})$ are the maximised log-likelihood functions of the $NSGEV$ and the $SGEV$, respectively.
@@ -1024,7 +1034,13 @@ Comparing uncertainty across models (e.g., GEV vs Gumbel) can guide model select
 
 ::: {.callout-note icon="false"}
 ## 🌊 Want to Go Further? Quantify Your Confidence!
-The simpler way to estimate the uncertainty is to compute a **normalized uncertainty range**, defined as the ratio of the difference between the upper (97.5%) and lower (2.5%) bounds of the confidence interval and the estimated quantile was computed.
+The simpler way to estimate the uncertainty is to compute a **normalized uncertainty range**, as defined below:
+
+$$ 
+\text{Unc [-]} = \frac{Q_{97.5} - Q_{2.5}}{Q_{est}} 
+\tag{13}
+$$
+where $Q_{97.5}$ is the upper (97.5%) bound of the confidence interval, $Q_{2.5}$ is the lower (2.5%) bound of the confidence interval, $Q_{est}$ is the estimated quantile.
 :::
 
 

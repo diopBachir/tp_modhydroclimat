@@ -233,7 +233,7 @@ window.Quarto = {
   <ul>
   <li><a href="#the-block-maxima-approach" id="toc-the-block-maxima-approach" class="nav-link" data-scroll-target="#the-block-maxima-approach"><span class="header-section-number">3.1</span> The block maxima approach</a></li>
   <li><a href="#exract-annual-maximum-floods-amf-from-the-daily-streamflow-serie" id="toc-exract-annual-maximum-floods-amf-from-the-daily-streamflow-serie" class="nav-link" data-scroll-target="#exract-annual-maximum-floods-amf-from-the-daily-streamflow-serie"><span class="header-section-number">3.2</span> Exract annual maximum floods (AMF) from the daily streamflow serie</a></li>
-  <li><a href="#display-sampled-vvents" id="toc-display-sampled-vvents" class="nav-link" data-scroll-target="#display-sampled-vvents"><span class="header-section-number">3.3</span> Display sampled vvents</a></li>
+  <li><a href="#display-sampled-events" id="toc-display-sampled-events" class="nav-link" data-scroll-target="#display-sampled-events"><span class="header-section-number">3.3</span> Display sampled events</a></li>
   </ul></li>
   <li><a href="#autocorrelation-testing" id="toc-autocorrelation-testing" class="nav-link" data-scroll-target="#autocorrelation-testing"><span class="header-section-number">4</span> Autocorrelation testing</a>
   <ul>
@@ -328,7 +328,7 @@ window.Quarto = {
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Download the Data used in this Section
+Download the data used in this section
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -339,15 +339,15 @@ Download the Data used in this Section
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>filename <span class="ot">=</span> <span class="st">'./data/discharge.csv'</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>Qdata <span class="ot">=</span> <span class="fu">read.csv</span>(filename, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"Month"</span>, <span class="st">"Day"</span>, <span class="st">"Q"</span>))  </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>filename <span class="ot">&lt;-</span> <span class="st">"./data/discharge.csv"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>Qdata <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(filename, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"Month"</span>, <span class="st">"Day"</span>, <span class="st">"Q"</span>))</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># construct time serie</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>Qdata<span class="sc">$</span>Date <span class="ot">=</span> <span class="fu">paste</span>(Qdata[[<span class="st">"Year"</span>]], Qdata[[<span class="st">"Month"</span>]], Qdata[[<span class="st">"Day"</span>]], <span class="at">sep=</span><span class="st">"-"</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>Qdata<span class="sc">$</span>Date  <span class="ot">=</span> <span class="fu">ymd</span>(Qdata<span class="sc">$</span>Date)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>Qdata<span class="sc">$</span>Date <span class="ot">&lt;-</span> <span class="fu">paste</span>(Qdata[[<span class="st">"Year"</span>]], Qdata[[<span class="st">"Month"</span>]], Qdata[[<span class="st">"Day"</span>]], <span class="at">sep =</span> <span class="st">"-"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>Qdata<span class="sc">$</span>Date <span class="ot">&lt;-</span> <span class="fu">ymd</span>(Qdata<span class="sc">$</span>Date)</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># final time serie</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>Qdata <span class="ot">=</span> Qdata[, <span class="fu">c</span>(<span class="st">"Date"</span>, <span class="st">"Q"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>Qdata <span class="ot">&lt;-</span> Qdata[, <span class="fu">c</span>(<span class="st">"Date"</span>, <span class="st">"Q"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The output is a data frame (or a matrix) with 22799 rows and 2 columns.</p>
 <div class="cell">
@@ -418,7 +418,7 @@ Note
 <div class="callout-body-container callout-body">
 <p>We can display the structure of the data frame using the <code>str()</code> function.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(Qdata)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(Qdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>'data.frame':   22799 obs. of  2 variables:
  $ Date: Date, format: "1958-08-01" "1958-08-02" ...
@@ -452,20 +452,19 @@ Figure&nbsp;1: Illustration of the Block-Maxima Approach: Daily Streamflow with 
 <h2 data-number="3.2" class="anchored" data-anchor-id="exract-annual-maximum-floods-amf-from-the-daily-streamflow-serie"><span class="header-section-number">3.2</span> Exract annual maximum floods (AMF) from the daily streamflow serie</h2>
 <p><strong>1.</strong> To extract annual maximum floods (AMF) from the streamflow series, we need to define a function that returns the maximum value of a block of data:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>extract_annual_max <span class="ot">=</span> <span class="cf">function</span>(df) </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    df <span class="sc">%&gt;%</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Year =</span> <span class="fu">year</span>(Date)) <span class="sc">%&gt;%</span>    <span class="co"># extract year from Date</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(Year) <span class="sc">%&gt;%</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Q <span class="sc">==</span> <span class="fu">max</span>(Q)) <span class="sc">%&gt;%</span>          <span class="co"># keep only max flow per year</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span>                     <span class="co"># in case of ties, keep first max</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(Year, Date, <span class="at">AMAX=</span>Q)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>extract_annual_max <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    df <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">Year =</span> <span class="fu">year</span>(Date)) <span class="sc">%&gt;%</span> <span class="co"># extract year from Date</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">group_by</span>(Year) <span class="sc">%&gt;%</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(Q <span class="sc">==</span> <span class="fu">max</span>(Q)) <span class="sc">%&gt;%</span> <span class="co"># keep only max flow per year</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span> <span class="co"># in case of ties, keep first max</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(Year, Date, <span class="at">AMAX =</span> Q)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>2.</strong> Now, we apply the function to the data to extract AMF for each year:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>extractedAMF <span class="ot">=</span> <span class="fu">extract_annual_max</span>(Qdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>extractedAMF <span class="ot">&lt;-</span> <span class="fu">extract_annual_max</span>(Qdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div id="tbl-bm_extract" class="cell quarto-float anchored">
@@ -522,20 +521,22 @@ Table&nbsp;2: First (6) rows of the AMF extracted using the Block-Maxima approac
 </div>
 </div>
 </section>
-<section id="display-sampled-vvents" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="display-sampled-vvents"><span class="header-section-number">3.3</span> Display sampled vvents</h2>
+<section id="display-sampled-events" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="display-sampled-events"><span class="header-section-number">3.3</span> Display sampled events</h2>
 <p>Now, we overlap the extracted <strong>Annual Maximum Flow</strong> with the original daily discharge time serie to visualize the sampling process. We use the functions from the <code>dplyr</code> and <code>ggplot2</code> library to create the plot.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>amf.plot <span class="ot">=</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_line</span>(<span class="at">data=</span>Qdata, <span class="fu">aes</span>(<span class="at">x=</span>Date, <span class="at">y=</span>Q), <span class="at">color=</span><span class="st">"steelblue"</span>, <span class="at">size=</span><span class="fl">0.7</span>, <span class="at">alpha=</span><span class="fl">0.8</span>) <span class="sc">+</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_point</span>(<span class="at">data=</span>extractedAMF, <span class="fu">aes</span>(<span class="at">x=</span>Date, <span class="at">y=</span>AMAX), <span class="at">color =</span><span class="st">"red"</span>, <span class="at">size=</span><span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"Date"</span>, <span class="at">y=</span><span class="st">"Discharge (Q)"</span>) <span class="sc">+</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>           <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>) <span class="sc">+</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>           <span class="fu">theme</span>(<span class="at">axis.title=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>, <span class="at">face=</span><span class="st">"bold"</span>),</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">axis.text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>, <span class="at">color=</span><span class="st">"black"</span>))</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(amf.plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>amf.plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">data =</span> Qdata, <span class="fu">aes</span>(<span class="at">x =</span> Date, <span class="at">y =</span> Q), <span class="at">color =</span> <span class="st">"steelblue"</span>, <span class="at">size =</span> <span class="fl">0.7</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">data =</span> extractedAMF, <span class="fu">aes</span>(<span class="at">x =</span> Date, <span class="at">y =</span> AMAX), <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Date"</span>, <span class="at">y =</span> <span class="st">"Discharge (Q)"</span>) <span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>) <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>, <span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>, <span class="at">color =</span> <span class="st">"black"</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(amf.plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
@@ -573,7 +574,7 @@ Recall
 </div>
 </div></div><section id="sec-autocorrelation" class="level2 page-columns page-full" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="sec-autocorrelation"><span class="header-section-number">4.1</span> What is autocorrelation?</h2>
-<p><strong><code>Autocorrelation (or autocovariance)</code></strong> of a series refers to the fact that in a time or spatial serie, the measurement of a phenomenon at time t can be correlated with previous measurements (at time t-1, t-2, t-3, etc.) or with subsequent measurements (at t+1, t+2, t+3, …). An autocorrelated series is thus correlated with itself, with a given lag (please refer <a href="https://perso.ens-lyon.fr/lise.vaudor/autocorrelation-de-series-temporelles-ou-spatiales/">here</a> for mode details).</p>
+<p><strong><code>Autocorrelation (or autocovariance)</code></strong> refers to the fact that in a time or spatial serie, the measurement of a phenomenon at time t can be correlated with previous measurements (at time t-1, t-2, t-3, etc.) or with subsequent measurements (at t+1, t+2, t+3, …). An autocorrelated series is thus correlated with itself, with a given lag (please refer <a href="https://perso.ens-lyon.fr/lise.vaudor/autocorrelation-de-series-temporelles-ou-spatiales/">here</a> for more details).</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -592,8 +593,8 @@ To assess autocorrelation, two methods will be used in this lab
 </ul>
 <p>📊 <strong>Wald-Wolfowitz Test <span class="citation" data-cites="wald_test_1940">(<a href="#ref-wald_test_1940" role="doc-biblioref">Wald &amp; Wolfowitz, 1940</a>)</span>:</strong></p>
 <ul>
-<li>Non-parametric to assess the randomness of a time series</li>
-<li>Used to detect the absence of randomness in the series</li>
+<li>Non-parametric to assess the randomness of a time serie</li>
+<li>Used to detect the absence of randomness in the serie</li>
 <li><strong>Null hypothesis: The sequence of observations is random</strong></li>
 </ul>
 </div>
@@ -605,24 +606,26 @@ To assess autocorrelation, two methods will be used in this lab
 <details class="code-fold">
 <summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute autocorrelation lag</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>bacf <span class="ot">=</span> <span class="fu">acf</span>(extractedAMF<span class="sc">$</span>AMAX, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>bacfdf <span class="ot">=</span> <span class="fu">with</span>(bacf, <span class="fu">data.frame</span>(lag, acf))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>bacf <span class="ot">&lt;-</span> <span class="fu">acf</span>(extractedAMF<span class="sc">$</span>AMAX, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>bacfdf <span class="ot">&lt;-</span> <span class="fu">with</span>(bacf, <span class="fu">data.frame</span>(lag, acf))</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># confidence interval</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">length</span>(extractedAMF<span class="sc">$</span>AMAX)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>conf_limit <span class="ot">=</span> <span class="fl">1.96</span> <span class="sc">/</span> <span class="fu">sqrt</span>(n)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(extractedAMF<span class="sc">$</span>AMAX)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>conf_limit <span class="ot">&lt;-</span> <span class="fl">1.96</span> <span class="sc">/</span> <span class="fu">sqrt</span>(n)</span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># correlogram</span></span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>bacfdf, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>lag, <span class="at">y=</span>acf)) <span class="sc">+</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept=</span><span class="dv">0</span>)) <span class="sc">+</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">"identity"</span>, <span class="at">position=</span><span class="st">"identity"</span>, <span class="at">width=</span>.<span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span>conf_limit, <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">color=</span><span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="sc">-</span>conf_limit, <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">color=</span><span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y=</span><span class="st">"ACF"</span>, <span class="at">x=</span><span class="st">"Lag"</span>) <span class="sc">+</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.title=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">10</span>, <span class="at">face=</span><span class="st">"bold"</span>, <span class="at">family=</span><span class="st">"Times"</span>),</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">10</span>, <span class="at">color=</span><span class="st">"black"</span>, <span class="at">family=</span><span class="st">"Times"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> bacfdf, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> lag, <span class="at">y =</span> acf)) <span class="sc">+</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept =</span> <span class="dv">0</span>)) <span class="sc">+</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"identity"</span>, <span class="at">width =</span> .<span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> conf_limit, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="sc">-</span>conf_limit, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"ACF"</span>, <span class="at">x =</span> <span class="st">"Lag"</span>) <span class="sc">+</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">family =</span> <span class="st">"Times"</span>),</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">family =</span> <span class="st">"Times"</span>)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div id="fig-acfplot" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -655,9 +658,9 @@ Interpretation
 </div></div></section>
 <section id="sec-wwtest" class="level3 page-columns page-full" data-number="4.1.2">
 <h3 data-number="4.1.2" class="anchored" data-anchor-id="sec-wwtest"><span class="header-section-number">4.1.2</span> Wald-Wolfowitz (WW) test</h3>
-<p>In the chunk below, we use the <code>ww.test(...)</code> function from <code>{trend}</code> package to perform the <code>WW test</code> at the <strong>0.05 significance level</strong> to test the hypothesis that the maximum annual flood is a random variable.</p>
+<p>In the chunk below, we use the <code>ww.test(...)</code> function from <code>{trend}</code> package to perform the <code>WW test</code> at the <strong>0.05 significance level</strong>, to test the hypothesis that the maximum annual flood is a random variable.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>wwtest <span class="ot">=</span> trend<span class="sc">::</span><span class="fu">ww.test</span>(extractedAMF<span class="sc">$</span>AMAX)</span>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>wwtest <span class="ot">&lt;-</span> trend<span class="sc">::</span><span class="fu">ww.test</span>(extractedAMF<span class="sc">$</span>AMAX)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(wwtest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -693,11 +696,11 @@ Interpretation
 <h2 data-number="5.1" class="anchored" data-anchor-id="non-parametric-methods"><span class="header-section-number">5.1</span> Non-parametric methods</h2>
 <section id="sec-mk" class="level3 page-columns page-full" data-number="5.1.1">
 <h3 data-number="5.1.1" class="anchored" data-anchor-id="sec-mk"><span class="header-section-number">5.1.1</span> The Mann-Kendall (MK) test</h3>
-<p>The MK test’s null hypothesis (H0) assumes no trend in the data <span class="citation" data-cites="mann1945nonparametric kendall_rank_1975">(<a href="#ref-mann1945nonparametric" role="doc-biblioref">Mann, 1945</a>; <a href="#ref-kendall_rank_1975" role="doc-biblioref">Kendall, 1975</a>)</span>. Recommended by the World Meteorological Organization (WMO), it is simple and requires no assumptions about data distribution, which is particularly advantageous for hydroclimatic series that are rarely normally distributed. Additionally, outlier values have very little influence on the results. The Mann-Kendall test statistic <span class="math inline">S</span> is defined as:</p>
+<p>The MK test’s null hypothesis (H0) assumes no trend in the data <span class="citation" data-cites="mann1945nonparametric kendall_rank_1975">(<a href="#ref-mann1945nonparametric" role="doc-biblioref">Mann, 1945</a>; <a href="#ref-kendall_rank_1975" role="doc-biblioref">Kendall, 1975</a>)</span>. Recommended by the World Meteorological Organization (WMO), it is simple and requires no assumptions about data distribution, which is particularly advantageous for hydroclimatic series that <strong>are rarely normally distributed</strong>. Additionally, outlier values have very little influence on the results. The Mann-Kendall test statistic <span class="math inline">S</span> is defined as:</p>
 <p><span class="math display">
 S = \sum_{i=1}^{n-1} \sum_{j=i+1}^{n} \text{sgn}(x_j - x_i) \tag{1}
 </span></p>
-<p>The sign function is given by:</p>
+<p>The sign function <span class="math inline">sgn())</span> is given by:</p>
 <p><span class="math display">
 \text{sgn}(x_j - x_i) =
 \begin{cases}
@@ -742,7 +745,7 @@ Note
 </div>
 </div>
 </div></div><div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mktest <span class="ot">=</span> trend<span class="sc">::</span><span class="fu">mk.test</span>(extractedAMF<span class="sc">$</span>AMAX)</span>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mktest <span class="ot">&lt;-</span> trend<span class="sc">::</span><span class="fu">mk.test</span>(extractedAMF<span class="sc">$</span>AMAX)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(mktest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -773,13 +776,13 @@ Interpretation
 <p><strong><code>z = -1.231:</code></strong> the calculated test statistic (a z-score). A negative value suggests a potential decreasing trend, while a positive value suggests a potential increasing trend.</p>
 </div>
 </div>
-</div></div><p><a href="#fig-amfevolution" class="quarto-xref">Figure&nbsp;4</a> shows the data points and a red line indicating the overall linear trend. The Mann-Kendall test result (p-value = 0.2183) indicates that this visually apparent (decreasing) linear trend is not statistically significant at the 0.05 significance level.</p>
+</div></div><p><a href="#fig-amfevolution" class="quarto-xref">Figure&nbsp;4</a> shows the evolution of the AMF over time and a red line indicating the overall linear trend. The Mann-Kendall test result (p-value = 0.2183) indicates that this visually apparent (decreasing) linear trend is not statistically significant at the 0.05 significance level.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>lineplot <span class="ot">=</span> <span class="fu">ggplot</span>(extractedAMF, <span class="fu">aes</span>(Year, AMAX)) <span class="sc">+</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_line</span>(<span class="at">color=</span><span class="st">"blue"</span>, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_smooth</span>(<span class="at">color=</span><span class="st">"red"</span>, <span class="at">linewidth=</span><span class="dv">1</span>, <span class="at">method=</span><span class="st">"lm"</span>, <span class="at">se=</span>F)</span>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>lineplot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(extractedAMF, <span class="fu">aes</span>(Year, AMAX)) <span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">color =</span> <span class="st">"red"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>, <span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> F)</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(lineplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
@@ -798,11 +801,11 @@ Figure&nbsp;4: Evolution of the annual peak flood over time.
 </section>
 <section id="sec-sens" class="level3 page-columns page-full" data-number="5.1.2">
 <h3 data-number="5.1.2" class="anchored" data-anchor-id="sec-sens"><span class="header-section-number">5.1.2</span> Sen’s slope estimator</h3>
-<p>The <strong>non-parametric method of Sen <span class="citation" data-cites="Sen1968">(<a href="#ref-Sen1968" role="doc-biblioref">1968</a>)</span></strong> is commonly combined with the Mann-Kendall test to estimate the slope of the <span class="math inline">(\beta)</span> of a trend. Sen’s method looks at every pair of data points, calculates the slope between them, then uses the the median of all those slopes as the estimated trend.</p>
+<p>The <strong>non-parametric method of Sen <span class="citation" data-cites="Sen1968">(<a href="#ref-Sen1968" role="doc-biblioref">1968</a>)</span></strong>, also referred to as the <strong>Theil–Sen estimator</strong>, is commonly combined with the Mann-Kendall test to estimate the slope <span class="math inline">(\beta)</span> of the of a trend. Sen’s algorithm looks at every pair of data points, calculates the slope between them, then uses the the median of all those slopes as the estimated trend.</p>
 <p><span class="math display">
 \beta = \text{median} \left( \frac{x_j - x_i}{j - i} \right), \quad , ∀\quad j &gt; i \tag{5}
 </span></p>
-<p>To express the Sen’s slope as a <strong>percentage change per time step (i.e., relative trend rate per year)</strong>, it can be normalized by the mean:</p>
+<p>To express the Sen’s slope as a <strong>percentage change over the period</strong>, it can be normalized by the mean:</p>
 <p><span class="math display">
 \%\beta = \left( N \cdot \frac{\beta}{\bar{x}} \right) \times 100 \tag{6}
 </span> where <span class="math inline">\%\beta</span> is the relative trend rate over the period, and <span class="math inline">\bar{x}</span> represents the mean value of the variable across the period, <span class="math inline">N</span> is the number of data points (i.e., the length of period).</p>
@@ -824,8 +827,8 @@ Sen slope
 </div>
 </div>
 </div></div><div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#compute Sen's slope and intercept</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>senslope <span class="ot">=</span> trend<span class="sc">::</span><span class="fu">sens.slope</span>(<span class="at">x =</span> extractedAMF<span class="sc">$</span>AMAX)</span>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute Sen's slope and intercept</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>senslope <span class="ot">&lt;-</span> trend<span class="sc">::</span><span class="fu">sens.slope</span>(<span class="at">x =</span> extractedAMF<span class="sc">$</span>AMAX)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(senslope)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -842,31 +845,30 @@ Sen's slope
 </div>
 </div>
 <p>Yet, the <code>sens.slope(...)</code> function returns the <strong>absolute</strong> slope (i.e., the median change per time unit). It is more meaningful to express the trend as a <strong>relative percentage</strong> change over the time period.</p>
-<p>To do this, we define a <strong>wrapper function</strong> that calculates the Sen’s slope and then converts it into a relative trend rate per time step.</p>
+<p>To do this, we define a <strong>wrapper function</strong> that calculates the Sen’s slope and then converts it into a relative trend rate.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>sens_slope_percent <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">time_step=</span><span class="cn">NULL</span>) </span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#' Compute Sen's slope as a percentage change over the full time period</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#' @param x A numeric vector of observations</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#' @param time_step Optional (e.g., year) used for display purpose only</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#' @return Relative percent change over the period</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">require</span>(trend)</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  N <span class="ot">=</span> <span class="fu">length</span>(x)</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">sens.slope</span>(x)</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  slope <span class="ot">&lt;-</span> result<span class="sc">$</span>estimates              <span class="co"># Absolute slope (per time unit)</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  p_val <span class="ot">&lt;-</span> result<span class="sc">$</span>p.value                <span class="co"># p-value for trend test</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  mean_val <span class="ot">&lt;-</span> <span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  percent_change <span class="ot">&lt;-</span> (N <span class="sc">*</span> slope) <span class="sc">/</span> mean_val <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Absolute Sen's slope: "</span>, <span class="fu">round</span>(slope, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"P-value: "</span>, <span class="fu">format.pval</span>(p_val, <span class="at">digits =</span> <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Relative trend rate: "</span>, <span class="fu">round</span>(percent_change, <span class="dv">2</span>), <span class="st">"%/"</span>, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep=</span><span class="st">""</span>)</span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>sens_slope_percent <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">time_step =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">#' Compute Sen's slope as a percentage change over the full time period</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">#' @param x A numeric vector of observations</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">#' @param time_step Optional (e.g., year) used for display purpose only</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">#' @return Relative percent change over the period</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">require</span>(trend)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    N <span class="ot">&lt;-</span> <span class="fu">length</span>(x)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    result <span class="ot">&lt;-</span> <span class="fu">sens.slope</span>(x)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    slope <span class="ot">&lt;-</span> result<span class="sc">$</span>estimates <span class="co"># Absolute slope (per time unit)</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    p_val <span class="ot">&lt;-</span> result<span class="sc">$</span>p.value <span class="co"># p-value for trend test</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    mean_val <span class="ot">&lt;-</span> <span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    percent_change <span class="ot">&lt;-</span> (N <span class="sc">*</span> slope) <span class="sc">/</span> mean_val <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"Absolute Sen's slope: "</span>, <span class="fu">round</span>(slope, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep =</span> <span class="st">""</span>)</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"P-value: "</span>, <span class="fu">format.pval</span>(p_val, <span class="at">digits =</span> <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep =</span> <span class="st">""</span>)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"Relative trend rate: "</span>, <span class="fu">round</span>(percent_change, <span class="dv">2</span>), <span class="st">"%/"</span>, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="at">sep =</span> <span class="st">""</span>)</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Now, we can compute the <strong>relative Sen’s slope</strong> for the annual maximum flow data:</p>
@@ -918,7 +920,7 @@ Note
 <h1 data-number="6"><span class="header-section-number">6</span> Flood frequency analysis (FFA)</h1>
 <section id="probability-distributions" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="probability-distributions"><span class="header-section-number">6.1</span> Probability distributions</h2>
-<p>We will compare two probability distributions adapted to the <code>Block-Maxima Framework</code>: the Generalized Extreme Value (GEV) and the Gumbel probability distributions.</p>
+<p>We will compare two probability distributions adapted to the <strong><code>Block-Maxima Framework</code></strong>: the <strong>Generalized Extreme Value (GEV)</strong> and the <strong>Gumbel</strong> probability distributions.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -929,12 +931,12 @@ GEV distribution
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The Generalized Extreme Value (GEV) distribution is a family of continuous probability distributions developed to combine the Gumbel, Fréchet, and Weibull distributions. According to the Extreme Value Theorem, the GEV distribution is the only possible limit distribution for properly normalized sequences of maxima of independent and identically distributed random variables. The cumulative distribution function (CDF) of the GEV distribution is given by:</p>
+<p>The Generalized Extreme Value (GEV) distribution is a family of continuous probability distributions developed to combine the <strong>Gumbel</strong>, <strong>Fréchet</strong>, and <strong>Weibull</strong> distributions. According to the <a href="../overview/index.html#sec-evt"><strong>Extreme Value Theorem</strong></a>, the <strong>GEV</strong> distribution is the only possible limit distribution for properly normalized sequences of maxima of independent and identically distributed random variables. The <strong>cumulative distribution function (CDF)</strong> of the <strong>GEV</strong> distribution is given by:</p>
 <p><span class="math display">
-F(x; \mu, \sigma, \xi) = \exp\left\{ -\left[ 1 + \xi \left( \frac{x - \mu}{\sigma} \right) \right]^{-1/\xi} \right\}
+F(x; \mu, \alpha, \xi) = \exp\left\{ -\left[ 1 + \xi \left( \frac{x - \mu}{\alpha} \right) \right]^{-1/\xi} \right\}
 \tag{7}
 </span></p>
-<p>for <span class="math inline">1 + \xi (x - \mu)/\sigma &gt; 0</span>, where, <span class="math inline">\mu</span> is the location parameter, <span class="math inline">\sigma &gt; 0</span> is the scale parameter, and <span class="math inline">\xi</span> is the shape parameter.</p>
+<p>for <span class="math inline">1 + \xi (x - \mu)/\alpha &gt; 0</span>, where, <span class="math inline">\mu</span> is the location parameter, <span class="math inline">\alpha &gt; 0</span> is the scale parameter, and <span class="math inline">\xi</span> is the shape parameter.</p>
 <p>The shape parameter <span class="math inline">\xi</span> determines the type of extreme value distribution:</p>
 <ul>
 <li>If <span class="math inline">\xi &gt; 0</span>, the distribution is a Fréchet type.</li>
@@ -953,7 +955,11 @@ Gumbel distribution
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The Gumbel distribution is a special case of the GEV distribution when the shape parameter <span class="math inline">\xi = 0</span>. It is often used to model the distribution of the maximum (or minimum) of a number of samples of various distributions. It is one of the three types of extreme value distributions. The cumulative distribution function (CDF) of the Gumbel distribution (Type I Extreme Value distribution) is given by:</p>
+<p>The <strong>Gumbel</strong> distribution is a special case of the GEV distribution when the shape parameter <span class="math inline">\xi = 0</span>. It is often used to model the distribution of the maximum (or minimum) of a number of samples of various distributions. The <strong>cumulative distribution function (CDF)</strong> of the <strong>Gumbel</strong> distribution is given by:</p>
+<p><span class="math display">
+F(x; \mu, \alpha) = \exp\left\{ -\exp\left[ -\frac{x - \mu}{\alpha} \right] \right\}
+\tag{8}
+</span> where <span class="math inline">\mu</span> is the location parameter, <span class="math inline">\alpha &gt; 0</span> is the scale parameter, and <span class="math inline">x</span> is the variable</p>
 </div>
 </div>
 </section>
@@ -979,7 +985,7 @@ Why the <strong><code>GML</code></strong> method?
 </section>
 <section id="model-selection" class="level2 page-columns page-full" data-number="6.3">
 <h2 data-number="6.3" class="anchored" data-anchor-id="model-selection"><span class="header-section-number">6.3</span> Model selection</h2>
-<p>To select the best probability distribution, we will use the <strong><code>AIC</code></strong> and <strong><code>AIC</code></strong> criteria. The model with the lowest <strong><code>AIC</code></strong> or <strong><code>BIC</code></strong> value will be selected. The model with the <strong>lowest</strong> <strong><code>AIC</code></strong> and <strong><code>BIC</code></strong> values is the best-suited model. <strong><code>AIC</code></strong> tends to favor models with better fit, even if more complex, while <strong><code>BIC</code></strong> favors simpler models, especially as sample size grows. Combining these these performance metrics enhances the efficiency of model selection.</p>
+<p>To select the best probability distribution, we will use the <strong><code>AIC</code></strong> and <strong><code>AIC</code></strong> criteria. The model with the <strong>lowest</strong> <strong><code>AIC</code></strong> and <strong><code>BIC</code></strong> values is the best-suited model. <strong><code>AIC</code></strong> tends to favor models with better fit, even if more complex, while <strong><code>BIC</code></strong> favors simpler models, especially as sample size grows. Combining these these performance metrics enhances the efficiency of model selection.</p>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -1010,7 +1016,7 @@ AIC (Akaike Information Criterion)
 <div class="callout-body-container callout-body">
 <p>The <strong><code>AIC</code></strong> balances the goodness of fit of the model with the number of parameters used by the model. This mean that it rewards models that fit the data well but also penalizes models that use too many parameters. The formula for AIC is:</p>
 <p><span class="math display">
-\text{AIC} = 2k - 2\ln(\hat{L}) \tag{8}
+\text{AIC} = 2k - 2\ln(\hat{L}) \tag{9}
 </span> where <span class="math inline">k</span> is the number of parameters in the model, <span class="math inline">\hat{L}</span> is the maximum value of the <a href="https://en.wikipedia.org/wiki/Likelihood_function">likelihood function</a> for the model.</p>
 </div>
 </div>
@@ -1025,7 +1031,7 @@ BIC (Bayesian Information Criterion)
 </div>
 <div class="callout-body-container callout-body">
 <p><strong><code>BIC</code></strong> penalizes model complexity <strong>more heavily than <code>AIC</code></strong>, especially for larger sample sizes. This means <strong><code>BIC</code></strong> tends to favor simpler models compared to AIC. The formula for BIC is: <span class="math display">
-\text{BIC} = k\ln(n) - 2\ln(\hat{L}) \tag{9}
+\text{BIC} = k\ln(n) - 2\ln(\hat{L}) \tag{10}
 </span> where: <span class="math inline">k</span> is the number of parameters in the model, <span class="math inline">n</span> is the number of data points, and <span class="math inline">\hat{L}</span> is the maximum value of the <a href="https://en.wikipedia.org/wiki/Likelihood_function">likelihood function</a> for the model.</p>
 </div>
 </div>
@@ -1277,8 +1283,8 @@ Table&nbsp;3: Table of AIC and BIC values for each distribution
 <section id="parametric-trend-detection" class="level4 page-columns page-full" data-number="6.4.2.2">
 <h4 data-number="6.4.2.2" class="anchored" data-anchor-id="parametric-trend-detection"><span class="header-section-number">6.4.2.2</span> Parametric trend-detection</h4>
 <p>When covariates are to be incorporated into EVA, a common approach to account for non-stationary is to incorporate covariates within the parameters of the distributions in a <strong><code>regression-like manner</code></strong>. To perform <strong>parametric trend detection</strong>, we model the <strong><code>location parameter (μ)</code></strong> as a function of time, transforming the models into <strong><code>non-stationary distributions</code></strong>. The location parameter of the non-stationnary GEV and Gumbel is computed as follow: <span class="math display">
-\mu (t) = \mu 0 + \mu 1·t \tag{10}
-</span> where <span class="math inline">\mu</span> is the time-dependant location parameter, <span class="math inline">t</span> is the time index, <span class="math inline">\mu 0</span> is the intercept, and <span class="math inline">\mu 1</span> is the slope.</p>
+\mu (t) = \mu 0 + \mu 1·t \tag{11}
+</span> where <span class="math inline">\mu (t)</span> is the time-dependant location parameter, <span class="math inline">t</span> is the time index, <span class="math inline">\mu 0</span> is the intercept, and <span class="math inline">\mu 1</span> is the slope.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1365,7 +1371,7 @@ What about the parameters?
 <div class="callout-body-container callout-body">
 <ul>
 <li><p><strong><code>mu0 = μ0 = 20.5045:</code></strong> is the <strong><code>intercept</code></strong> of the time-varying location parameter. It represents the baseline magnitude of the annual maximum flood (AMF) at the starting point of the time serie.</p></li>
-<li><p><strong><code>mu1 = μ1 = –0.0276:</code></strong> is the <strong><code>slope</code></strong> of the location parameter with respect to time. It indicates a decreasing trend in the location (i.e., central tendency) of the AMF over time. Specifically, for each unit increase in time (i.e., each year), the location parameter decreases by <span class="math inline">0.0276m^3.s^{-1}</span>. This suggests that the typical magnitude of extreme floods has been gradually declining over the observation period.</p></li>
+<li><p><strong><code>mu1 = μ1 = –0.0276:</code></strong> is the <strong><code>slope</code></strong> of the location parameter with respect to time. It indicates a decreasing trend in the location (i.e., central tendency) of the AMF over time. Specifically, for each unit increase in time (i.e., each year), the location parameter decreases by <span class="math inline">0.0276\,mm</span>. This suggests that the typical magnitude of extreme floods has been gradually declining over the observation period.</p></li>
 </ul>
 </div>
 </div>
@@ -1405,7 +1411,7 @@ Mathematical of the deviance test
 <p>As mentionned above, The <strong>Deviance test</strong>, or <strong>Likelihood Ratio (LR)</strong> test, compares two nested models — typically, a simpler (stationary) model and a more complex (non-stationary) model. It helps determine if introducing additional parameters (such as a time-varying location parameter in a GEV model) leads to a statistically significant improvement in model fit.</p>
 <p><span class="math display">
 D = 2{log(ML_{NSGEV}) - log(ML_{SGEV})}
-\tag{11}
+\tag{12}
 </span></p>
 <p><span class="math inline">D</span> represents the deviance test statistic value <span class="math inline">(D-statistic)</span>, <span class="math inline">log(ML_{NSGEV})</span> and <span class="math inline">log(ML_{SGEV})</span> are the maximised log-likelihood functions of the <span class="math inline">NSGEV</span> and the <span class="math inline">SGEV</span>, respectively.</p>
 </div>
@@ -1673,7 +1679,11 @@ Figure&nbsp;8: Effective return levels from the NS-GEV model. Each line represen
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The simpler way to estimate the uncertainty is to compute a <strong>normalized uncertainty range</strong>, defined as the ratio of the difference between the upper (97.5%) and lower (2.5%) bounds of the confidence interval and the estimated quantile was computed.</p>
+<p>The simpler way to estimate the uncertainty is to compute a <strong>normalized uncertainty range</strong>, as defined below:</p>
+<p><span class="math display">
+\text{Unc [-]} = \frac{Q_{97.5} - Q_{2.5}}{Q_{est}}
+\tag{13}
+</span> where <span class="math inline">Q_{97.5}</span> is the upper (97.5%) bound of the confidence interval, <span class="math inline">Q_{2.5}</span> is the lower (2.5%) bound of the confidence interval, <span class="math inline">Q_{est}</span> is the estimated quantile.</p>
 </div>
 </div>
 </section>
