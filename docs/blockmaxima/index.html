@@ -322,7 +322,19 @@ window.Quarto = {
 </section>
 <section id="sec-bmdata" class="level1 page-columns page-full" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Data import</h1>
-<p>Will work with real-world data, from the <strong><code>La Drôme à Luc-en-Diois</code></strong> station in France, to analyze flood events using daily streamflow data covering the period from August 1st, 1958, to December 31st, 2020. The metadata of the station are available on the <a href="https://www.hydro.eaufrance.fr/sitehydro/V4214010/fiche">HydroPortail website (here)</a>.</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Download the Data used in this Section
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="https://github.com/diopBachir/tp_eva/blob/master/blockmaxima/data/discharge.csv" download="" class="download-btn">📥 Download CSV</a></p>
+</div>
+</div>
 <p>Let’s consider the formatted daily streamflow data file for the target catchment. We can read the data into a data frame using the <code>read.csv()</code> function. We will also set the column names using the <code>col.names</code> argument, and use the <code>lubridate</code> library to prepare a time serie.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>

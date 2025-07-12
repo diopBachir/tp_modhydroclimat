@@ -325,7 +325,20 @@ F(x) =
 </section>
 <section id="data-import" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Data import</h1>
-<p>Will work with the same data used in the <a href="../blockmaxima/index.html#sec-bmdata"><strong>block maxima section</strong></a>, from the <strong><code>La Drôme à Luc-en-Diois</code></strong> station in France.</p>
+<p>We will be working with the same data used in the <a href="../blockmaxima/index.html#sec-bmdata"><strong>block maxima section</strong></a>, from the <strong><code>La Drôme à Luc-en-Diois</code></strong> station in France.</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Download the Data used in this Section
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="https://github.com/diopBachir/tp_eva/blob/master/pot/data/discharge.csv" download="" class="download-btn">📥 Download CSV</a></p>
+</div>
+</div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>filename <span class="ot">=</span> <span class="st">'./data/discharge.csv'</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>Qdata <span class="ot">=</span> <span class="fu">read.csv</span>(filename, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"Month"</span>, <span class="st">"Day"</span>, <span class="st">"Q"</span>))  </span>

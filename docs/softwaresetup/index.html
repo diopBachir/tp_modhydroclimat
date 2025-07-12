@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Introduction to Extreme Value Analysis - Software, Setup and Libraries (Packages)</title>
+<title>Introduction to Extreme Value Analysis - Data, Software, Setup and Libraries (Packages)</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -110,7 +110,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta property="og:image" content="https://github.com/diopBachir/tp_eva/blob/master/docs/evaillustr.png">
 <meta property="og:site_name" content="Introduction to Extreme Value Analysis">
 <meta property="og:locale" content="fr_FR">
-<meta name="twitter:title" content="Introduction to Extreme Value Analysis - Software, Setup and Libraries (Packages)">
+<meta name="twitter:title" content="Introduction to Extreme Value Analysis - Data, Software, Setup and Libraries (Packages)">
 <meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://github.com/diopBachir/tp_eva/blob/master/docs/evaillustr.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -164,13 +164,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#r-environment-rstudio-ide" id="toc-r-environment-rstudio-ide" class="nav-link active" data-scroll-target="#r-environment-rstudio-ide"><span class="header-section-number">1</span> R (environment) &amp; Rstudio (IDE)</a>
+  <li><a href="#get-the-data-used" id="toc-get-the-data-used" class="nav-link active" data-scroll-target="#get-the-data-used"><span class="header-section-number">1</span> Get the Data Used</a></li>
+  <li><a href="#r-environment-rstudio-ide" id="toc-r-environment-rstudio-ide" class="nav-link" data-scroll-target="#r-environment-rstudio-ide"><span class="header-section-number">2</span> R (environment) &amp; Rstudio (IDE)</a>
   <ul>
-  <li><a href="#what-is-r" id="toc-what-is-r" class="nav-link" data-scroll-target="#what-is-r"><span class="header-section-number">1.1</span> 🧠 What is R?</a></li>
-  <li><a href="#what-is-rstudio" id="toc-what-is-rstudio" class="nav-link" data-scroll-target="#what-is-rstudio"><span class="header-section-number">1.2</span> 🖥️ What is RStudio?</a></li>
-  <li><a href="#how-to-use-them-together" id="toc-how-to-use-them-together" class="nav-link" data-scroll-target="#how-to-use-them-together"><span class="header-section-number">1.3</span> 🔧 How to use them together?</a></li>
+  <li><a href="#what-is-r" id="toc-what-is-r" class="nav-link" data-scroll-target="#what-is-r"><span class="header-section-number">2.1</span> 🧠 What is R?</a></li>
+  <li><a href="#what-is-rstudio" id="toc-what-is-rstudio" class="nav-link" data-scroll-target="#what-is-rstudio"><span class="header-section-number">2.2</span> 🖥️ What is RStudio?</a></li>
+  <li><a href="#how-to-use-them-together" id="toc-how-to-use-them-together" class="nav-link" data-scroll-target="#how-to-use-them-together"><span class="header-section-number">2.3</span> 🔧 How to use them together?</a></li>
   </ul></li>
-  <li><a href="#libraries-packages" id="toc-libraries-packages" class="nav-link" data-scroll-target="#libraries-packages"><span class="header-section-number">2</span> Libraries (Packages)</a></li>
+  <li><a href="#libraries-packages" id="toc-libraries-packages" class="nav-link" data-scroll-target="#libraries-packages"><span class="header-section-number">3</span> Libraries (Packages)</a></li>
   </ul>
 </nav>
 </nav>
@@ -183,7 +184,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Software, Setup and Libraries (Packages)</h1>
+<h1 class="title">Data, Software, Setup and Libraries (Packages)</h1>
 </div>
 
 
@@ -200,8 +201,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="r-environment-rstudio-ide" class="level1 page-columns page-full" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> R (environment) &amp; Rstudio (IDE)</h1>
+<section id="get-the-data-used" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Get the Data Used</h1>
+<p>The data used in this practical are available in the <a href="https://github.com/diopBachir/tp_eva/">GitHub repository</a> associated with this project. We will be working with daily streamflow records from the “La Drôme à Luc-en-Diois” hydrometric station in France. The metadata of the station are available on the <a href="https://www.hydro.eaufrance.fr/sitehydro/V4214010/fiche">HydroPortail website (here)</a>. The dataset spans from August 1st, 1958, to December 31st, 2020, and will serve as the basis for exploring flood frequency analysis techniques.</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Download the Data
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="https://github.com/diopBachir/tp_eva/blob/master/data/discharge.csv" download="" class="download-btn">📥 Download CSV</a></p>
+</div>
+</div>
+</section>
+<section id="r-environment-rstudio-ide" class="level1 page-columns page-full" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> R (environment) &amp; Rstudio (IDE)</h1>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <div class="callout callout-style-default callout-note callout-titled">
@@ -217,8 +235,8 @@ Note
 <p>An <strong><code>IDE (Integrated Development Environment)</code></strong> is a <strong>software application</strong> that provides developers with a comprehensive set of tools for <strong>writing, testing, and debugging code</strong> in one place.</p>
 </div>
 </div>
-</div></div><section id="what-is-r" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="what-is-r"><span class="header-section-number">1.1</span> 🧠 What is R?</h2>
+</div></div><section id="what-is-r" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="what-is-r"><span class="header-section-number">2.1</span> 🧠 What is R?</h2>
 <p><a href="https://www.r-project.org/"><strong><code>R</code></strong></a> is a <strong>programming language</strong> and <strong>software environment</strong> designed primarily for <strong>statistical computing</strong>, <strong>data analysis</strong>, and <strong>visualization</strong>.</p>
 <div id="fig-Rbenefits" class="quarto-figure quarto-figure-center quarto-float anchored" alt="Benefits of learning R language">
 <figure class="quarto-float quarto-float-fig figure">
@@ -231,8 +249,8 @@ Figure&nbsp;1: Some of the key advantages of learning the R programming language
 </figure>
 </div>
 </section>
-<section id="what-is-rstudio" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="what-is-rstudio"><span class="header-section-number">1.2</span> 🖥️ What is RStudio?</h2>
+<section id="what-is-rstudio" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="what-is-rstudio"><span class="header-section-number">2.2</span> 🖥️ What is RStudio?</h2>
 <p><a href="https://posit.co/download/rstudio-desktop/"><strong><code>RStudio</code></strong></a> is an <strong><code>IDE (Integrated Development Environment)</code></strong> specifically made for working with <strong><code>R</code></strong>. It provides a much more convenient and powerful interface than the basic <strong><code>R console</code></strong>:</p>
 <ul>
 <li>📝 Script editor with syntax highlighting and auto-completion</li>
@@ -252,8 +270,8 @@ Figure&nbsp;2: Overview of the four main panes in the <strong>RStudio interface<
 </figure>
 </div>
 </section>
-<section id="how-to-use-them-together" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="how-to-use-them-together"><span class="header-section-number">1.3</span> 🔧 How to use them together?</h2>
+<section id="how-to-use-them-together" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="how-to-use-them-together"><span class="header-section-number">2.3</span> 🔧 How to use them together?</h2>
 <p>1- Install <strong><code>R</code></strong> → <a href="https://cran.r-project.org">https://cran.r-project.org</a></p>
 <p>2- Install <strong><code>RStudio</code></strong> → <a href="https://posit.co/download/rstudio-desktop/">https://posit.co/download/rstudio-desktop/</a></p>
 <p>3- Then, open <strong><code>RStudio</code></strong> → it will automatically use the installed R engine in the background.</p>
@@ -269,8 +287,8 @@ Figure&nbsp;3: <strong>R environment</strong>, the engine powering your data ana
 </div>
 </section>
 </section>
-<section id="libraries-packages" class="level1 page-columns page-full" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Libraries (Packages)</h1>
+<section id="libraries-packages" class="level1 page-columns page-full" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Libraries (Packages)</h1>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <div class="callout callout-style-default callout-important callout-titled">
@@ -417,7 +435,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/422774bf-444b-4eea-82c2-98644a70d53e\.netlify\.app\/");
+      var filterRegex = new RegExp("https:\/\/diopbachir\.github\.io\/tp_eva\/index\.html");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

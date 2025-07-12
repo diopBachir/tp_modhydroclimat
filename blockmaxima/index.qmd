@@ -20,7 +20,7 @@ library(extRemes)
 # Data import {#sec-bmdata}
 
 ::: {.callout-note icon="false"}
-Download the Data used in this Section
+## Download the Data used in this Section
 
 <a href="https://github.com/diopBachir/tp_eva/blob/master/blockmaxima/data/discharge.csv" download class="download-btn">📥 Download CSV</a>
 :::
