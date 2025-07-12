@@ -298,7 +298,7 @@ area = 194   # catchment area
 ```
 
 
-We first define a function which takes as arguments the **streamflow data**, the **peak-over-threshold** value, and the **drainage basin area**, performs the **temporal declustering technique**:
+We first define a function which takes as arguments the **streamflow data**, the **threshold** value, and the **drainage basin area**, and performs the **temporal declustering technique**:
 
 ```{r}
 #| echo: true
@@ -375,7 +375,7 @@ abline(h = thres, col = "blue", lty=1, lwd=2)
 ```
 
 
-Now, we apply the **magnitude diffrential rule** to the temporally declustered peaks. To achieve this, we need to define aother function which takes as arguments the **temporally declustered data**, the the **original streamflow data**, and the **fraction** to compute magnitude diffrential, set to **2/3**.
+Now, we apply the **magnitude diffrential rule** to the temporally declustered peaks. To achieve this, we need to define another function which takes as arguments the **temporally declustered data**, the the **original streamflow data**, and the **fraction** to compute magnitude diffrential, set to **2/3**.
 
 ```{r}
 #| echo: true
@@ -498,7 +498,7 @@ ggplot(data=bacfdf, mapping=aes(x=lag, y=acf)) +
         axis.text=element_text(size=10, color="black", family="Times"))
 ```
 
-To further assess the independence of the declustered peaks, we apply the Wald-Wolfowitz independence test. From the results displayed below, we conclude that **the declustering worked well**, as we now fall to reject the null hypothesis of independance, with **p.value equal to 0.2301**.
+To further assess the independence of the declustered peaks, we apply the Wald-Wolfowitz independence test. From the results displayed below, we conclude that **the declustering worked well**, as we now fail to reject the null hypothesis of independance, with **p.value equal to 0.2301**.
 
 ```{r}
 x = peaks_final$Q
@@ -582,7 +582,7 @@ The threshold exceedance show a slight decreasing trend with a **slope of -0.001
 
 ### Fit a stationary GP distribution
 
-As we have already seen in the previous section, the GP distribution is the most appropriate distribution to model threshold exceedances. As explained by @gilleland2016extremes in their paper, an important additional consideration when using the POT approach is the **rate of exceedance** — that is, how often values exceed the chosen threshold. While this rate does not affect the fitting of the GP model itself, it is crucial for calculating return levels, which require scaling the model to real-world time units.
+As we have already seen in the previous section, the **GP** distribution is the most appropriate distribution to model threshold exceedances. As explained by @gilleland2016extremes in their paper, an important additional consideration when using the POT approach is the **`rate of exceedance` — that is, how often values exceed the chosen threshold. While this rate does not affect the fitting of the GP model itself, it is crucial for calculating return levels, which require scaling the model to real-world time units.`**
 
 ```{r}
 #| echo: false
@@ -669,7 +669,7 @@ title(main="(b) Q-Q plot")
 ```
 
 
-### Fit a non-staionary GP distribution
+### Fit a non-stationary GP distribution
 
 As for the **block maxima models**, one way to account for non-stationary is to incorporate covariates within the parameters of the distributions in a **`regression-like manner`**. To perform **parametric trend detection** with the **GP distribution**, we model the **`scale parameter (σ)`** as a function of time, transforming the model into a **`non-stationary GP`**. The scale parameter of the non-stationnary GP distribution is computed as follow:
 $$
