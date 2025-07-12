@@ -240,7 +240,7 @@ window.Quarto = {
   <li><a href="#parametric-approach-with-pot-modelling" id="toc-parametric-approach-with-pot-modelling" class="nav-link" data-scroll-target="#parametric-approach-with-pot-modelling"><span class="header-section-number">8.2</span> Parametric approach with POT modelling</a>
   <ul>
   <li><a href="#fit-a-stationary-gp-distribution" id="toc-fit-a-stationary-gp-distribution" class="nav-link" data-scroll-target="#fit-a-stationary-gp-distribution"><span class="header-section-number">8.2.1</span> Fit a stationary GP distribution</a></li>
-  <li><a href="#fit-a-non-staionary-gp-distribution" id="toc-fit-a-non-staionary-gp-distribution" class="nav-link" data-scroll-target="#fit-a-non-staionary-gp-distribution"><span class="header-section-number">8.2.2</span> Fit a non-staionary GP distribution</a></li>
+  <li><a href="#fit-a-non-stationary-gp-distribution" id="toc-fit-a-non-stationary-gp-distribution" class="nav-link" data-scroll-target="#fit-a-non-stationary-gp-distribution"><span class="header-section-number">8.2.2</span> Fit a non-stationary GP distribution</a></li>
   <li><a href="#deviance-test" id="toc-deviance-test" class="nav-link" data-scroll-target="#deviance-test"><span class="header-section-number">8.2.3</span> Deviance test</a></li>
   </ul></li>
   </ul></li>
@@ -685,7 +685,7 @@ Note
 </div>
 </div></div><p>These two rules described above not alternatives to each other, but <strong>complementary</strong>. That is, both conditions should be satisfied for an event to be considered a separate flood. We will first apply the <strong>time separation rule</strong> to ensure enough time passes for the basin to drain fully between events, and then the <strong>magnitude differential rule</strong> to ensures a significant drop in flow indicating a “new flood wave”.</p>
 <p>We will <strong>decluster</strong> our time serie using the <strong>threshold value of 10</strong>, as identified in <a href="#sec-thresholdident" class="quarto-xref">Section&nbsp;5</a>. The Area of the studied catchment is <span class="math inline">194 km²</span>, as described in the <a href="https://www.hydro.eaufrance.fr/sitehydro/V4214010/fiche">HydroPortail website (here)</a></p>
-<p>We first define a function which takes as arguments the <strong>streamflow data</strong>, the <strong>peak-over-threshold</strong> value, and the <strong>drainage basin area</strong>, performs the <strong>temporal declustering technique</strong>:</p>
+<p>We first define a function which takes as arguments the <strong>streamflow data</strong>, the <strong>threshold</strong> value, and the <strong>drainage basin area</strong>, and performs the <strong>temporal declustering technique</strong>:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
@@ -753,7 +753,7 @@ Figure&nbsp;7: Streamflow time serie with all exceedances (red dots) above the t
 </div>
 </div>
 </div>
-<p>Now, we apply the <strong>magnitude diffrential rule</strong> to the temporally declustered peaks. To achieve this, we need to define aother function which takes as arguments the <strong>temporally declustered data</strong>, the the <strong>original streamflow data</strong>, and the <strong>fraction</strong> to compute magnitude diffrential, set to <strong>2/3</strong>.</p>
+<p>Now, we apply the <strong>magnitude diffrential rule</strong> to the temporally declustered peaks. To achieve this, we need to define another function which takes as arguments the <strong>temporally declustered data</strong>, the the <strong>original streamflow data</strong>, and the <strong>fraction</strong> to compute magnitude diffrential, set to <strong>2/3</strong>.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
@@ -849,7 +849,7 @@ Figure&nbsp;9: Autocorrelation (at different lags) of <strong>declustered</stron
 </div>
 </div>
 </div>
-<p>To further assess the independence of the declustered peaks, we apply the Wald-Wolfowitz independence test. From the results displayed below, we conclude that <strong>the declustering worked well</strong>, as we now fall to reject the null hypothesis of independance, with <strong>p.value equal to 0.2301</strong>.</p>
+<p>To further assess the independence of the declustered peaks, we apply the Wald-Wolfowitz independence test. From the results displayed below, we conclude that <strong>the declustering worked well</strong>, as we now fail to reject the null hypothesis of independance, with <strong>p.value equal to 0.2301</strong>.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -930,7 +930,7 @@ Relative Sen’s slope
 <h2 data-number="8.2" class="anchored" data-anchor-id="parametric-approach-with-pot-modelling"><span class="header-section-number">8.2</span> Parametric approach with POT modelling</h2>
 <section id="fit-a-stationary-gp-distribution" class="level3 page-columns page-full" data-number="8.2.1">
 <h3 data-number="8.2.1" class="anchored" data-anchor-id="fit-a-stationary-gp-distribution"><span class="header-section-number">8.2.1</span> Fit a stationary GP distribution</h3>
-<p>As we have already seen in the previous section, the GP distribution is the most appropriate distribution to model threshold exceedances. As explained by <span class="citation" data-cites="gilleland2016extremes">Gilleland &amp; Katz (<a href="#ref-gilleland2016extremes" role="doc-biblioref">2016</a>)</span> in their paper, an important additional consideration when using the POT approach is the <strong>rate of exceedance</strong> — that is, how often values exceed the chosen threshold. While this rate does not affect the fitting of the GP model itself, it is crucial for calculating return levels, which require scaling the model to real-world time units.</p>
+<p>As we have already seen in the previous section, the <strong>GP</strong> distribution is the most appropriate distribution to model threshold exceedances. As explained by <span class="citation" data-cites="gilleland2016extremes">Gilleland &amp; Katz (<a href="#ref-gilleland2016extremes" role="doc-biblioref">2016</a>)</span> in their paper, an important additional consideration when using the POT approach is the <strong><code>rate of exceedance</code> — that is, how often values exceed the chosen threshold. While this rate does not affect the fitting of the GP model itself, it is crucial for calculating return levels, which require scaling the model to real-world time units.`</strong></p>
 <p>The <strong>exceedance rate</strong> should be passed the <strong><code>time.units</code></strong> argument in the <strong><code>fevd(...)</code></strong> function. Since our goal is to estimate annual return levels, we must specify the average number of threshold exceedances per year (i.e., the average number of flood events per year in our dataset).</p>
 <p><a href="#fig-finaldeclust" class="quarto-xref">Figure&nbsp;8</a> shows that the number of events per year varies — some years experience multiple flood events, while others have none. Therefore, a reasonable approach is to use the empirical average number of exceedances per year over the entire study period as the value for <strong><code>time.units</code></strong>. The snippet below shows how to calculate this rate.</p>
 <div class="cell">
@@ -1003,8 +1003,8 @@ Figure&nbsp;10: Diagnostic plots for the General Pareto (GP) distribution fitted
 </div>
 </div>
 </section>
-<section id="fit-a-non-staionary-gp-distribution" class="level3 page-columns page-full" data-number="8.2.2">
-<h3 data-number="8.2.2" class="anchored" data-anchor-id="fit-a-non-staionary-gp-distribution"><span class="header-section-number">8.2.2</span> Fit a non-staionary GP distribution</h3>
+<section id="fit-a-non-stationary-gp-distribution" class="level3 page-columns page-full" data-number="8.2.2">
+<h3 data-number="8.2.2" class="anchored" data-anchor-id="fit-a-non-stationary-gp-distribution"><span class="header-section-number">8.2.2</span> Fit a non-stationary GP distribution</h3>
 <p>As for the <strong>block maxima models</strong>, one way to account for non-stationary is to incorporate covariates within the parameters of the distributions in a <strong><code>regression-like manner</code></strong>. To perform <strong>parametric trend detection</strong> with the <strong>GP distribution</strong>, we model the <strong><code>scale parameter (σ)</code></strong> as a function of time, transforming the model into a <strong><code>non-stationary GP</code></strong>. The scale parameter of the non-stationnary GP distribution is computed as follow: <span class="math display">
 \sigma (t) = \sigma 0 + \sigma 1·t \tag{2}
 </span> where <span class="math inline">\sigma</span> is the time-dependant scale parameter of the GP distribution, <span class="math inline">t</span> is the time index, <span class="math inline">\sigma 0</span> is the intercept, and <span class="math inline">\sigma 1</span> is the slope.</p>
