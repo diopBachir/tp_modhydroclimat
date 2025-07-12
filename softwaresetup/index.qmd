@@ -2,7 +2,7 @@
 title: "Data, Software, Setup and Libraries (Packages)"
 ---
 
-# Get the Data
+# Get the Data Used
 
 The data used in this practical are available in the [GitHub repository](https://github.com/diopBachir/tp_eva/) associated with this project. We will be working with daily streamflow records from the "La Drôme à Luc-en-Diois" hydrometric station in France. The metadata of the station are available on the [HydroPortail website (here)](https://www.hydro.eaufrance.fr/sitehydro/V4214010/fiche). The dataset spans from August 1st, 1958, to December 31st, 2020, and will serve as the basis for exploring flood frequency analysis techniques. 
 

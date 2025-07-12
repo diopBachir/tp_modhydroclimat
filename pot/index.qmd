@@ -49,7 +49,7 @@ $$
 
 # Data import 
 
-Will work with the same data used in the [**block maxima section**](../blockmaxima/index.qmd#sec-bmdata), from the **`La Drôme à Luc-en-Diois`** station in France. 
+We will be working with the same data used in the [**block maxima section**](../blockmaxima/index.qmd#sec-bmdata), from the **`La Drôme à Luc-en-Diois`** station in France. 
 
 ::: {.callout-note icon="false"}
 Download the Data

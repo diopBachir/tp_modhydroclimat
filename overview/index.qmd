@@ -6,7 +6,7 @@ title: Overview, Key Concepts and Objectives
 
 # EVT: Extreme Value Theory
 
-Imagine we have daily observational data for a random variable (e.g., river discharge) for many years. [EVT](https://en.wikipedia.org/wiki/Extreme_value_theory) suggests that the extreme values of this variable are asymptotically close to one of three types of extreme value distributions, regardless of the original distribution of daily observations (see @coles2001 for details). [EVT](https://en.wikipedia.org/wiki/Extreme_value_theory) helps us estimate the probability of rare, high-flow events like floods.
+Imagine we have daily observational data for a random variable (e.g., river discharge) for many years. [EVT](https://en.wikipedia.org/wiki/Extreme_value_theory) suggests that the extreme values of this variable are asymptotically close to one of three types of extreme value distributions, regardless of the original distribution of daily observations (see @coles2001). [EVT](https://en.wikipedia.org/wiki/Extreme_value_theory) helps us estimate the probability of rare, high-flow events like floods.
 
 ```{r}
 #| echo: false
