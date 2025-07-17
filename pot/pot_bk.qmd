@@ -93,28 +93,115 @@ plot(Qdata$Date, Qdata$Q, type="l", xlab="Time", ylab="Streamflow (Q)", col="dod
 ```
 
 
-# Choosing an initial threshold
+# Choice of the appropriate threshold {#sec-thresholdident}
 
-While the optimal threshold is usually determined through diagnostic tools, a reasonable starting point is needed to begin the analysis. Here, we use the **90th percentile** of the discharge data — as an initial threshold. This choice balances the need for sufficient exceedances to ensure statistical stability while focusing on the upper tail of the distribution where extreme behavior occurs. The snippet below extract all flows above the 90th percentile, and plots the histogram of these values. 
+Choosing the appropriate threshold involves balancing **`bias`** and **`variance`**: setting it **lower** provides more data but risks introducing bias, whereas setting it **too high** reduces the data available, increasing uncertainty [@gilleland2016extremes]. Like choosing block size in the Block Maxima method, selecting a threshold in the POT approach aims to capture true extremes, while maintaining sufficient data for robust analysis. Even if several methods to select the threshold are available in the litterature, it is still a subjective task. The most common practice is to use graphical methods [@coles2001]. 
+
+::: {.column-margin}
+::: {.callout-note}
+Interpreting these plots often requires a certain degree of **subjective judgment**, as clear-cut decisions about threshold suitability are rarely evident.
+:::
+:::
+
+::: {.column-margin}
+::: {.callout-note}
+## Note
+The threshold process can be automated (see @solari2017) for details.
+:::
+:::
+
+One way to perform threshold selection, is a focused analysis within an specfic interval. @gilleland2016extremes proposes a procedure, implemented in the **`{extRemes}`** ecosystem, that repeatedly fits the GP distribution to the data across a sequence of threshold values, while also providing measures of variability. The idea, as they stated in their tutorial, is to identify the lowest threshold above which the fitted model remains stable, meaning that increasing the threshold further does not significantly change the results, apart from expected variation within the uncertainty bounds. 
+
+::: {.column-margin}
+::: {.callout-note}
+## Note
+The **`{extRemes}`** library provides the **`mrlplot(...)`** function to produce the **MRL** plot. 
+:::
+:::
+
+```{r}
+#| echo: true
+#| eval: false
+
+x = Qdata$Q
+threshrange.plot(x, r = c(5, 30), nint=25, na.action=na.omit, set.panels=FALSE)
+```
+
+@fig-thrangeplot illustrates how the shape and modified scale parameters of the GP distribution evolve across a range of threshold values. The parameters appear to stabilize around a threshold of **10**, while higher thresholds (from 15) exhibit increased variability, likely due to the decreasing number of exceedances.
+
+```{r}
+#| echo: false
+#| eval: true
+#| label: fig-thrangeplot
+#| fig-cap: "Threshold range plots showing the variability of GP distribution parameters across different threshold values."
+#| fig-subcap:
+#|    - Variability of the (reparametrized) scale parameter
+#|    - Variability of the shape parameter
+#| layout-ncol: 2
+
+par(cex = 1.7)
+POT::tcplot(Qdata$Q, u.range = c(5, 30))
+```
+
+Another most widely used graphical tools: the **`Mean Residual Life (MRL) plot`**. **MRL** is based on the theoretical mean of the GP [@ribatet2011pot], and helps assess the adequacy of a threshold for GP distribution modeling. The MRL plot displays the average excess over a range of thresholds, defined as the mean of the exceedances above a given threshold $q$. If the exceedances above a certain threshold follow a GP distribution, the **MRL** function should appear approximately linear beyond that point (see @gilleland2016extremes for details). Thus, identifying a linear region in the plot guide the selection of a suitable threshold. Despite its simplicity, the **MRL** plot provides a useful diagnostic to balance threshold stability and GP distribution fit (cf. @coles2001, Section 4.3.1). 
+
+::: {.column-margin}
+::: {.callout-note}
+## Note
+The **`{extRemes}`** library provides the **`mrlplot(...)`** function to produce the **MRL** plot. 
+:::
+:::
+
+For diagnosing an appropriate choice, the chunk above produces the **MRL** plot with a **95% confidence intervals (CIs)**. **CIs** are based on the **normal df** for the **mean excesses**. The **MRL** plot is expected to exhibit **approximately linear** behavior above a suitable threshold [@coles2001]. As shown in @fig-mrlplot, the threshold $q = 10$ appears appropriate, since the linearity assumption is reasonably satisfied beyond this point.
+
+
+```{r}
+#| echo: true
+#| eval: false
+
+x = Qdata$Q
+mrlplot(x, na.action=na.omit)
+abline(v = 10, col = "red", lty = 2, lwd = 2)  # Vertical line at q = 10
+```
+
+```{r}
+#| echo: false
+#| eval: true
+#| label: fig-mrlplot
+#| fig-height: 5
+#| fig-cap: "The threshold selection: the mean residual life (mean excess) plot with dashed green lines indicating the 95% confidence intervals for the mean excesses. The vertical red dashed line indicates the threshold $q = 10$."
+
+x = na.omit(Qdata$Q)
+POT::mrlplot(x, col=c("green", "black", "green"), lty=c(2, 1, 2), nt=200, main="")
+abline(v = 10, col = "red", lty=2)  # Vertical line at q = 10
+```
+
+# Threshold exceedances (POT) sampling
+
+We need to extract all exceedances above the threshold for further analysis. @fig-allexcedences show daily streamflow time serie with all exceedances above the threshold. 
+
+```{r}
+#| echo: true
+
+# extract all flow values above the threshold and sort by date
+thres = 10
+all_exceedances = Qdata |>
+                  filter(Q > thres) |>
+                  arrange(Date)
+```
 
 ```{r}
 #| echo: false
 #| fig-height: 4
 #| label: fig-allexcedences
-#| fig.cap: "Streamflow time serie with all exceedances (red dots) above the initial threshold (the 90th percentile represented by the horizontal blue line)"
-
-# extract all flow values above the threshold and sort by date
-q90 = quantile(Qdata$Q, probs = 0.90, na.rm=TRUE)
-q90_exceedances = Qdata |>
-                  filter(Q > q90) |>
-                  arrange(Date)
+#| fig.cap: "Streamflow time serie with all exceedances (red dots) above the threshold (horizontal blue line)"
 
 plot(Qdata$Date, Qdata$Q, type = "l", col = "grey", main = "", xlab="Time", ylab="Streamflow (Q)")
-points(q90_exceedances$Date, q90_exceedances$Q, col = "red", pch = 19, cex=.5)
-abline(h = q90, col = "blue", lty=1, lwd=2) 
+points(all_exceedances$Date, all_exceedances$Q, col = "red", pch = 19, cex=.5)
+abline(h = thres, col = "blue", lty=1, lwd=2) 
 ```
 
-The **correlogram** (@fig-acfplot_pot) shows that the extracted peaks are autocorrelated for lag 1, 2 and 3. This reflects dependence between consecutive peaks, and even one or two time step apart, values still influence each other. 
+ The **correlogram** (@fig-acfplot_pot) shows that the extracted peaks are autocorrelated for lag 1 and 2. This reflects dependence between consecutive peaks, and even one time step apart, values still influence each other. 
 
 ```{r}
 #| echo: false
@@ -127,11 +214,11 @@ The **correlogram** (@fig-acfplot_pot) shows that the extracted peaks are autoco
 #| fig-cap: "Autocorrelation (at different lags) of peaks over the selected threshold. The red line represents the 95% confidence interval."
 
 # compute autocorrelation lag
-bacf = acf(q90_exceedances$Q, plot = FALSE)
+bacf = acf(all_exceedances$Q, plot = FALSE)
 bacfdf = with(bacf, data.frame(lag, acf))
 
 # confidence interval
-n = length(q90_exceedances$Q)
+n = length(all_exceedances$Q)
 conf_limit = 1.96 / sqrt(n)
 
 # correlogram
@@ -156,10 +243,11 @@ This is expected, as peaks are likely to be close to each — i.e., a peak is of
 We can confirm the dependance of the threshold exceedances with the Wald-Wolfowitz independence test [@wald_test_1940] (see [**autocorrelation section**](../blockmaxima/index.qmd#sec-wwtest)) performed with the chunk below. The test summary indicates that the data are highly autocorrelated, whith a **very low p-value (< 2.2e-16)**, supporting the rejection, with high confidence, of the null hyposthesis that the data are independent.
 
 ```{r}
-x = q90_exceedances$Q
+x = all_exceedances$Q
 wwtest = trend::ww.test(x)
 print(wwtest)
 ```
+
 
 # Declustering
 
@@ -205,12 +293,12 @@ These two rules described above not alternatives to each other, but **complement
 We will **decluster** our time serie using the **threshold value of 10**, as identified in @sec-thresholdident. The Area of the studied catchment is $194 km²$, as described in the [HydroPortail website (here)](https://www.hydro.eaufrance.fr/sitehydro/V4214010/fiche)
 
 ```{r}
-thres = q90   # threshold value
-area = 194    # catchment area
+thres = 10   # threshold value
+area = 194   # catchment area
 ```
 
 
-We first define a function which takes as arguments the **extremes flows above the 90th percentile extracted below**, the **threshold** value, and the **drainage basin area**, and performs the **temporal declustering technique**:
+We first define a function which takes as arguments the **streamflow data**, the **threshold** value, and the **drainage basin area**, and performs the **temporal declustering technique**:
 
 ```{r}
 #| echo: true
@@ -269,24 +357,25 @@ We can now apply our temporal declustering function to the POT serie. The Area o
 #| echo: true
 
 # time separation
-peaks_time_declust = time_sep_declust(data=q90_exceedances, threshold=thres, Area=area)
+peaks_time_declust = time_sep_declust(data=Qdata, threshold=thres, Area=area)
 ```
 
 ```{r}
 #| echo: false
 #| #| fig-height: 4
 #| label: fig-temporaldeclust
-#| fig.cap: "Streamflow time serie with all exceedances (red dots) above the threshold (90th percentile - horizontal blue line), along with the declustered peaks (green crosses) using the time-separation rule."
+#| fig.cap: "Streamflow time serie with all exceedances (red dots) above the threshold (horizontal blue line), along with the declustered peaks (green crosses) using the time-separation rule."
 
 # plot original vs declustered peaks
 plot(Qdata$Date, Qdata$Q, type = "l", col = "grey", main = "", xlab="Time", ylab="Streamflow (Q)")
-points(q90_exceedances$Date, q90_exceedances$Q, col = "red", pch = 19, cex=.5)
+points(all_exceedances$Date, all_exceedances$Q, col = "red", pch = 19, cex=.5)
 points(peaks_time_declust$Date, peaks_time_declust$Q, col = "green", pch = 3, cex=.7)
 abline(h = thres, col = "blue", lty=1, lwd=2) 
+
 ```
 
-Now, we apply the **magnitude diffrential rule** to the temporally declustered peaks. To achieve this, we need to define another function which takes as arguments the **temporally declustered data**, the the **original streamflow data**, and the **fraction** to compute magnitude diffrential, set to **2/3**.
 
+Now, we apply the **magnitude diffrential rule** to the temporally declustered peaks. To achieve this, we need to define another function which takes as arguments the **temporally declustered data**, the the **original streamflow data**, and the **fraction** to compute magnitude diffrential, set to **2/3**.
 
 ```{r}
 #| echo: true
@@ -366,15 +455,15 @@ peaks_final = magnitude_diff_declust(data=peaks_time_declust, original_data=Qdat
 #| echo: false
 #| #| fig-height: 4
 #| label: fig-finaldeclust
-#| fig.cap: "Streamflow time serie with all exceedances (red dots) above the threshold (90th percentile - horizontal blue line), along with the declustered peaks (green crosses) using the time-separation rule, and the declustered peaks (blue dots) using the magnitude difference rule."
+#| fig.cap: "Streamflow time serie with with the declustered peaks (purple dots) using the magnitude difference rule."
 
 # plot original vs declustered peaks
 plot(Qdata$Date, Qdata$Q, type = "l", col = "grey", main = "", xlab="Time", ylab="Streamflow (Q)")
-points(q90_exceedances$Date, q90_exceedances$Q, col = "red", pch = 19, cex=.5)
-points(peaks_time_declust$Date, peaks_time_declust$Q, col = "green", pch = 3, cex=.7)
-points(peaks_final$Date, peaks_final$Q, col = "blue", pch = 19, cex=.5)
+points(peaks_final$Date, peaks_final$Q, col = "purple", pch = 19, cex=.5)
 abline(h = thres, col = "blue", lty=1, lwd=2) 
+
 ```
+
 
 @fig-acfdeclust shows the **correlogram** computed on the declustered peaks. There is no statistically significant autocorrelation beyond lag 0. Thus, the declustered peaks can be considered approximately independent.
 
@@ -409,117 +498,13 @@ ggplot(data=bacfdf, mapping=aes(x=lag, y=acf)) +
         axis.text=element_text(size=10, color="black", family="Times"))
 ```
 
-To further assess the independence of the declustered peaks, we apply the Wald-Wolfowitz independence test. From the results displayed below, we conclude that **the declustering worked well**, as we now fail to reject the null hypothesis of independance, with **p.value equal to 0.72**.
+To further assess the independence of the declustered peaks, we apply the Wald-Wolfowitz independence test. From the results displayed below, we conclude that **the declustering worked well**, as we now fail to reject the null hypothesis of independance, with **p.value equal to 0.2301**.
 
 ```{r}
 x = peaks_final$Q
 wwtest = trend::ww.test(x)
 print(wwtest)
 ```
-
-
-# Refining (tuning) the threshold value {#sec-thresholdident}
-
-Choosing the appropriate threshold involves balancing **`bias`** and **`variance`**: setting it **lower** provides more data but risks introducing bias, whereas setting it **too high** reduces the data available, increasing uncertainty [@gilleland2016extremes]. Like choosing block size in the Block Maxima method, selecting a threshold in the POT approach aims to capture true extremes, while maintaining sufficient data for robust analysis. Even if several methods to select the threshold are available in the litterature, it is still a subjective task. The most common practice is to use graphical methods [@coles2001]. 
-
-::: {.column-margin}
-::: {.callout-note}
-Interpreting these plots often requires a certain degree of **subjective judgment**, as clear-cut decisions about threshold suitability are rarely evident.
-:::
-:::
-
-::: {.column-margin}
-::: {.callout-note}
-## Note
-The threshold process can be automated (see @solari2017) for details.
-:::
-:::
-
-One way to perform threshold selection, is a focused analysis within an specfic interval. @gilleland2016extremes proposes a procedure, implemented in the **`{extRemes}`** ecosystem, that repeatedly fits the GP distribution to the data across a sequence of threshold values, while also providing measures of variability. The idea, as they stated in their tutorial, is to identify the lowest threshold above which the fitted model remains stable, meaning that increasing the threshold further does not significantly change the results, apart from expected variation within the uncertainty bounds. 
-
-::: {.column-margin}
-::: {.callout-note}
-## Note
-The **`{extRemes}`** library provides the **`mrlplot(...)`** function to produce the **MRL** plot. 
-:::
-:::
-
-```{r}
-#| echo: true
-#| eval: false
-
-x = peaks_final$Q
-threshrange.plot(x, r = c(5, 30), nint=25, na.action=na.omit, set.panels=FALSE)
-```
-
-@fig-thrangeplot illustrates how the shape and modified scale parameters of the GP distribution evolve across a range of threshold values. The parameters appear to stabilize around a threshold of **10**, while higher thresholds (from 15) exhibit increased variability, likely due to the decreasing number of exceedances.
-
-```{r}
-#| echo: false
-#| eval: true
-#| label: fig-thrangeplot
-#| fig-cap: "Threshold range plots showing the variability of GP distribution parameters across different threshold values."
-#| fig-subcap:
-#|    - Variability of the (reparametrized) scale parameter
-#|    - Variability of the shape parameter
-#| layout-ncol: 2
-
-par(cex = 1.7)
-suppressWarnings(POT::tcplot(peaks_final$Q, u.range = c(5, 30)))
-```
-
-Another most widely used graphical tools: the **`Mean Residual Life (MRL) plot`**. **MRL** is based on the theoretical mean of the GP [@ribatet2011pot], and helps assess the adequacy of a threshold for GP distribution modeling. The MRL plot displays the average excess over a range of thresholds, defined as the mean of the exceedances above a given threshold $q$. If the exceedances above a certain threshold follow a GP distribution, the **MRL** function should appear approximately linear beyond that point (see @gilleland2016extremes for details). Thus, identifying a linear region in the plot guide the selection of a suitable threshold. Despite its simplicity, the **MRL** plot provides a useful diagnostic to balance threshold stability and GP distribution fit (cf. @coles2001, Section 4.3.1). 
-
-::: {.column-margin}
-::: {.callout-note}
-## Note
-The **`{extRemes}`** library provides the **`mrlplot(...)`** function to produce the **MRL** plot. 
-:::
-:::
-
-For diagnosing an appropriate choice, the chunk above produces the **MRL** plot with a **95% confidence intervals (CIs)**. **CIs** are based on the **normal df** for the **mean excesses**. The **MRL** plot is expected to exhibit **approximately linear** behavior above a suitable threshold [@coles2001]. As shown in @fig-mrlplot, the threshold $q = 10$ appears appropriate, since the linearity assumption is reasonably satisfied beyond this point.
-
-
-```{r}
-#| echo: true
-#| eval: false
-
-x = peaks_final$Q
-mrlplot(x, na.action=na.omit)
-abline(v = 10, col = "red", lty = 2, lwd = 2)  # Vertical line at q = 10
-```
-
-```{r}
-#| echo: false
-#| eval: true
-#| label: fig-mrlplot
-#| fig-height: 5
-#| fig-cap: "The threshold selection: the mean residual life (mean excess) plot with dashed green lines indicating the 95% confidence intervals for the mean excesses. The vertical red dashed line indicates the threshold $q = 10$."
-
-x = na.omit(peaks_final$Q)
-POT::mrlplot(x, col=c("green", "black", "green"), lty=c(2, 1, 2), nt=200, main="")
-abline(v = 10, col = "red", lty = 2, lwd = 2) 
-```
-
-
-Finally, we can extract the extreme values above the threshold $q = 10$ and use the in the next sections.
-
-```{r}
-#| echo: true
-#| label: fig-finalpeak
-#| fig-height: 5
-#| fig-cap: "Streamflow time serie with the final peaks extracted (blue dots) above the threshold $q = 10$, represented by red horizontal line."
-
-# extract final peaks
-thres = 10
-peaks_final = filter(peaks_final, Q > thres)
-
-# plot the final peaks
-plot(Qdata$Date, Qdata$Q, type = "l", col = "grey", main = "", xlab="Time", ylab="Streamflow (Q)")
-points(peaks_final$Date, peaks_final$Q, col = "blue", cex=.5)
-abline(h = 10, col = "red", lwd=2)
-```
-
 
 # Trend detection
 
@@ -530,11 +515,11 @@ As for the **block maxima** approach (see [trend detection section](../blockmaxi
 ::: {.column-margin}
 ::: {.callout-tip}
 ## Interpretation
-**`p.value = 0.3846:`** there is not enough statistical evidence to conclude that a significant trend exists in the threshold exceedances serie.
+**`p.value = 0.5059:`** there is not enough statistical evidence to conclude that a significant trend exists in the threshold exceedances serie.
 
-**`tau = -5.233612e-02:`** indicates a weak or no trend.
+**`tau = -3.041649e-02:`** indicates a weak or no trend.
 
-**`z = -0.86943:`** suggests a potential decreasing trend, but the trend is not significant.
+**`z = -0.66528:`** suggests a potential decreasing trend, but the trend is not significant.
 :::
 :::
 
@@ -574,7 +559,7 @@ sens_slope_percent <- function(x, time_step=NULL)
   
   cat("Absolute Sen's slope: ", round(slope, 4), "\n", sep="")
   cat("P-value: ", format.pval(p_val, digits = 4), "\n", sep="")
-  cat("Relative trend rate: ", round(percent_change, 2), "%", "\n", sep="")
+  cat("Relative trend rate: ", round(percent_change, 2), "%/", "\n", sep="")
 }
 ```
 
@@ -589,10 +574,9 @@ sens_slope_percent(peaks_final$Q)
 ::: {.column-margin}
 ::: {.callout-tip}
 ## Relative Sen's slope
-The threshold exceedance show a slight decreasing trend with a **slope of -0.0056 mm/year**, which is equivalent to a overall decrease of **-4.71% relative to its long-term average**. Yet, this negative trend is not significative given the **p-value of 0.3846**.
+The threshold exceedance show a slight decreasing trend with a **slope of -0.0017 mm/year**, which is equivalent to a overall decrease of **-2.45%% relative to its long-term average**. Yet, this negative trend is not significative given the **p-value of 0.5059**.
 :::
 :::
-
 
 ## Parametric approach with POT modelling
 
@@ -624,6 +608,7 @@ pretty_fit_summary = function(fitobj, model) {
   # cat(sprintf("BIC: %.2f\n", look$BIC))
 }
 ```
+
 
 The **exceedance rate** should be passed the **`time.units`** argument in the **`fevd(...)`** function. Since our goal is to estimate annual return levels, we must specify the average number of threshold exceedances per year (i.e., the average number of flood events per year in our dataset). 
 
@@ -683,6 +668,7 @@ plot(sgp_fit, type="qq2", main=NULL)
 title(main="(b) Q-Q plot")
 ```
 
+
 ### Fit a non-stationary GP distribution
 
 As for the **block maxima models**, one way to account for non-stationary is to incorporate covariates within the parameters of the distributions in a **`regression-like manner`**. To perform **parametric trend detection** with the **GP distribution**, we model the **`scale parameter (σ)`** as a function of time, transforming the model into a **`non-stationary GP`**. The scale parameter of the non-stationnary GP distribution is computed as follow:
@@ -692,7 +678,6 @@ $$
 where $\sigma$ is the time-dependant scale parameter of the GP distribution, $t$ is the time index, $\sigma 0$ is the intercept, and $\sigma 1$ is the slope. 
 
 The chunk below use the **` {extRemes} `** library to fit the **`Non-Stationary GP (NS-GP) distribution`**  to our **Partial Duration Serie** extracted earlier. Unfortunately, most of the **`extRemes`** diagnostic plots currently are not available for non-stationary POT models.
-
 
 ```{r}
 #| message: false
@@ -718,11 +703,11 @@ pretty_fit_summary(nsgp_fit, "Non-Stationary GP")
 ::: {.callout-tip}
 ## NS-GP parameters
 
-**`sigma0 = σ0 = 5.7161:`** is the **intercept** of the time-varying GP scale parameter. It represents the base scale of the distribution (often the start of the time series). 
+**`sigma0 = σ0 = 4.1064:`** is the **intercept** of the time-varying GP scale parameter. It represents the base scale of the distribution (often the start of the time series). 
 
-**`sigma1 = σ1 = -0.0128:`** is the **slope** of the scale parameter with respect to time. This negative value suggests that extreme values are becoming less variable (narrower tail) over time.
+**`sigma1 = σ1 = -0.0040:`** is the **slope** of the scale parameter with respect to time. This negative value suggests that extreme values are becoming less variable (narrower tail) over time.
 
-**`shape = 0.0417:`** controls the **heaviness** of the tail of the GP distribution. The positive value (ξ > 0) suggests a heavy (Fréchet) tail (i.e., the probability of very large exceedances decays slowly).
+**`shape = 0.3066:`** controls the **heaviness** of the tail of the GP distribution. The positive value (ξ > 0) suggests a heavy (Fréchet) tail (i.e., the probability of very large exceedances decays slowly).
 :::
 :::
 
@@ -743,6 +728,8 @@ To perform the **`Deviance test`**, we can use the **`lr.test(...)`** of the **`
 * **`sgp_fit`**: model with fewer parameters (stationary GP model)
 * **`nsgp_fit`**model with more parameters (non-stationary GP model)
 
+
+
 ```{r}
 #| echo: true
 #| cache: false
@@ -757,11 +744,10 @@ lr.test(x=sgp_fit, y=nsgp_fit, alpha=0.05, df=1)
 ## Interpretation
 🚫 We fail to reject the null hypothesis.
 
-* **`D-statistic (1.0848)`** much smaller than the **`critical value (3.8415)`**.
-* **`p-value (0.2976)`** much larger than the **`significance level (0.05)`**.
+* **`D-statistic (0.65)`** much smaller than the **`critical value (3.84)`**.
+* **`p-value (0.4203)`** much larger than the **`significance level (0.05)`**.
 :::
 :::
-
 
 # Trend analysis conclusions
 
@@ -773,7 +759,7 @@ lr.test(x=sgp_fit, y=nsgp_fit, alpha=0.05, df=1)
 🚫 **No Significant Trend Detected**
 
 * Both methods consistently indicate **no statistically significant trend** in the POT serie.
-* The **Likelihood Ratio Test** showed a high p-value (0.2976), and both the **Mann-Kendall test** and the **Sen's slope** similarly returned a non-significant result, with a p-value of 0.3846.
+* The **Likelihood Ratio Test** showed a high p-value (0.4203), and both the **Mann-Kendall test** and the **Sen's slope** similarly returned a non-significant result, with a p-value of 0.5059 and 0.5059, respectively.
 
 ✅ **Modeling Implication**
 
@@ -788,7 +774,6 @@ lr.test(x=sgp_fit, y=nsgp_fit, alpha=0.05, df=1)
 
 :::
 :::
-
 
 ## Stationary context
 
@@ -806,7 +791,8 @@ The **`return level`** is the value expected to be exceeded on average **once ev
 # specific return periods (e.g., 10, 20 years)
 rperiods = c(2, 5, 10, 20, 50, 100)
 # compute return levels (with 95% confidence intervals)
-rlevels = return.level(sgp_fit, return.period=rperiods, do.ci=TRUE) 
+# rlevels = return.level(sgp_fit, return.period=rperiods, do.ci=TRUE) + 10
+rlevels = rlevd(c(2, 20, 100), scale=3.6496, shape=0.3099, type="GP")
 # print results
 print(rlevels)
 ```
@@ -903,3 +889,4 @@ print(rlplot)
 
 ::: {#refs}
 :::
+

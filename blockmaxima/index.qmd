@@ -460,7 +460,7 @@ sens_slope_percent <- function(x, time_step = NULL) {
 
     cat("Absolute Sen's slope: ", round(slope, 4), "\n", sep = "")
     cat("P-value: ", format.pval(p_val, digits = 4), "\n", sep = "")
-    cat("Relative trend rate: ", round(percent_change, 2), "%/", "\n", sep = "")
+    cat("Relative trend rate: ", round(percent_change, 2), "%", "\n", sep = "")
 }
 ```
 
