@@ -197,6 +197,10 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
+    <a class="nav-link" href="../introduction/index.html"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="../overview/index.html"> 
 <span class="menu-text">Overview</span></a>
   </li>  
@@ -968,7 +972,7 @@ Relative Sen’s slope
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(extRemes)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>thres <span class="ot">=</span> <span class="dv">10</span></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> peaks_final<span class="sc">$</span>Q</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>sgp_fit <span class="ot">=</span> <span class="fu">fevd</span>(x, <span class="at">type=</span><span class="st">"GP"</span>, <span class="at">method=</span><span class="st">"GMLE"</span>, <span class="at">threshold=</span>thres, <span class="at">time.units =</span> <span class="fu">paste0</span>(units,<span class="st">"/year"</span>))</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>sgp_fit <span class="ot">=</span> <span class="fu">fevd</span>(x, <span class="at">type=</span><span class="st">"GP"</span>, <span class="at">method=</span><span class="st">"GMLE"</span>, <span class="at">threshold=</span><span class="dv">10</span>, <span class="at">time.units =</span> <span class="st">"2.56/year"</span>)</span>
 <span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co"># show summary of the fit</span></span>
 <span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="fu">pretty_fit_summary</span>(sgp_fit, <span class="st">"GP"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1147,22 +1151,7 @@ Interpretation
 </section>
 <section id="flood-quantiles-estimation" class="level1 page-columns page-full" data-number="10">
 <h1 data-number="10"><span class="header-section-number">10</span> Flood quantiles estimation</h1>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-
-</div>
-</div>
-</div></div><section id="stationary-context" class="level2 page-columns page-full" data-number="10.1">
+<section id="stationary-context" class="level2 page-columns page-full" data-number="10.1">
 <h2 data-number="10.1" class="anchored" data-anchor-id="stationary-context"><span class="header-section-number">10.1</span> Stationary context</h2>
 <p>To estimate <strong>return levels</strong> for given <strong>return periods</strong>, we can use the <strong><code>return.level(...)</code></strong> from the <strong><code>{extRemes}</code></strong> package:</p>
 
@@ -1188,8 +1177,7 @@ Note
 <span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="co"># print results</span></span>
 <span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rlevels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>fevd(x = x, threshold = thres, type = "GP", method = "GMLE", 
-    time.units = paste0(units, "/year"))
+<pre><code>fevd(x = x, threshold = 10, type = "GP", method = "GMLE", time.units = "2.56/year")
 
 [1] "Normal Approx."
 
@@ -1240,7 +1228,7 @@ Note
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># specific return periods (e.g., 10, 20 years)</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>rperiods <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">50</span>, <span class="dv">100</span>)</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co"># compute return levels (with 95% confidence intervals)</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>rlevels <span class="ot">=</span> <span class="fu">return.level</span>(nsgp_fit, <span class="at">return.period=</span>rperiods) <span class="sc">+</span> <span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>rlevels <span class="ot">=</span> <span class="fu">return.level</span>(nsgp_fit, <span class="at">return.period=</span>rperiods)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>For easy visualization, we will plot the <strong><code>effective return levels</code></strong>. Lets convert the output of <strong><code>return.level(...)</code></strong> into a clean data.frame :</p>
 <div class="cell">
@@ -1255,12 +1243,12 @@ Note
 <span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_rlevels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  time       Q2       Q5      Q10      Q20      Q50     Q100
-1    1 29.63894 35.34148 39.80241 44.39420 50.67156 55.58217
-2    2 29.61738 35.30716 39.75812 44.33963 50.60296 55.50258
-3    3 29.59582 35.27285 39.71383 44.28507 50.53435 55.42299
-4    4 29.57426 35.23854 39.66954 44.23051 50.46575 55.34341
-5    5 29.55270 35.20422 39.62524 44.17595 50.39715 55.26382
-6    6 29.53114 35.16991 39.58095 44.12138 50.32855 55.18423</code></pre>
+1    1 19.63894 25.34148 29.80241 34.39420 40.67156 45.58217
+2    2 19.61738 25.30716 29.75812 34.33963 40.60296 45.50258
+3    3 19.59582 25.27285 29.71383 34.28507 40.53435 45.42299
+4    4 19.57426 25.23854 29.66954 34.23051 40.46575 45.34341
+5    5 19.55270 25.20422 29.62524 34.17595 40.39715 45.26382
+6    6 19.53114 25.16991 29.58095 34.12138 40.32855 45.18423</code></pre>
 </div>
 </div>
 <p>Now, we tranform the data into a long (tidy) format suitable for plotting multiple lines with <strong><code>ggplot</code></strong>:</p>
@@ -1417,7 +1405,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/diopbachir\.github\.io\/tp_eva\/index\.html");
+      var filterRegex = new RegExp("https:\/\/sbdiop\.quarto\.pub\/introduction-to-extreme-value-analysis");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

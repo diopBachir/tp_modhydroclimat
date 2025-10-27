@@ -1,0 +1,15 @@
+{
+  "hash": "53b7e5db299198d70f120bcf085f6986",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\nengine: knitr\n# include-after-body: header_text.html\nnumber-sections: false\nformat:\n  html:\n    theme:\n      - styles.scss\n---\n\n\n## {#title-slide data-menu-title=\"Accueil\" background-image=\"images/background_image.jpg\"} \n\n<!-- remove header in first slide -->\n::: header\n\n```{=latex}\n\\definecolor{bgblank}{HTML}{#013660}\n```\n\n\\textcolor{bgblank}{.}\n:::\n\n<div style=\"display: inline-flex; align-items: center; gap: 0.5em;\" class=\"custom-subtitle\">\n  Serigne Bassirou DIOP\n  <a href=\"https://orcid.org/0009-0002-8743-3660\" target=\"_blank\">\n    <img src=\"https://img.shields.io/badge/ORCID-0009--0002--8743--3660-a6ce39?logo=orcid&style=flat&logoColor=white\" alt=\"ORCID icon\">\n  </a>\n</div>\n<div class=\"custom-subtitle\">\n  <i class=\"fas fa-envelope\"></i> diop.serigne-bassirou@ugb.edu.sn\n</div> <br><br>\n\n:::: {.columns} \n\n::: {.column width=\"45%\"}\n<img src=\"images/geospatial_layers-of-data.png\" width=\"57%\" />\n<br><br><br>\n:::\n\n::: {.column width=\"55%\"}\n<br><br><br>\n<div class=\"custom-title\">Webinaire</div>\n<div class=\"custom-title\">Acquisition de Données Spatiales</div>\n\n:::\n\n<br><br><br>\n\n::::\n\n<br><br><br>\n\n<!-- INTRODUCTION -->\n<!-- {{< include intro.qmd >}} -->\n\n<!-- SETUP -->\n<!-- {{< include acquisition.qmd >}} -->\n\n<!-- ## {}\n<div style=\"text-align: center;\">\n  <img src=\"images/faq.png\" width=\"50%\" />\n</div> -->\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

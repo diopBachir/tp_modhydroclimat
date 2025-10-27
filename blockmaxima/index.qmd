@@ -8,6 +8,7 @@ title: "Flood Frequency Analysis (FFA) with Block-Maxima"
 #| echo: true
 #| eval: true
 #| message: false
+#| warning: false
 
 library(dplyr)
 library(tidyr)

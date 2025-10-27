@@ -29,6 +29,8 @@ website:
     pinned: true
     background: "#536878"
     left:
+      - href: introduction/index.qmd
+        text: Introduction
       - href: overview/index.qmd
         text: Overview
       - href: softwaresetup/index.qmd

@@ -40,5 +40,26 @@
   },
   "pot/index_.qmd": {
     "index_.html": "9d873b12"
+  },
+  "pot/pot_bk.qmd": {
+    "pot_bk.html": "ecf5ad80"
+  },
+  "introduction/index.qmd": {
+    "index.html": "179a3219"
+  },
+  "introduction/intro.qmd": {
+    "intro.html": "87fedc5b"
+  },
+  "introduction/acquisition.qmd": {
+    "acquisition.html": "e15f880d"
+  },
+  "introduction/revealjs_presentation/intro.qmd": {
+    "intro.html": "385999fb"
+  },
+  "introduction/revealjs_presentation/acquisition.qmd": {
+    "acquisition.html": "e7a3d8bb"
+  },
+  "introduction/revealjs_presentation/index.qmd": {
+    "index.html": "500c2f12"
   }
 }

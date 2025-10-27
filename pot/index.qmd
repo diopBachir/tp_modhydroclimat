@@ -8,6 +8,7 @@ title: "Peaks-Over-Threshold (POT) Modelling"
 #| echo: true
 #| eval: true
 #| message: false
+#| warning: false
 
 library(dplyr)
 library(tidyr)
@@ -654,7 +655,7 @@ Now, we can fit our **GP model** to the POT data. The workflow is same as the bl
 library(extRemes)
 thres = 10
 x = peaks_final$Q
-sgp_fit = fevd(x, type="GP", method="GMLE", threshold=thres, time.units = paste0(units,"/year"))
+sgp_fit = fevd(x, type="GP", method="GMLE", threshold=10, time.units = "2.56/year")
 
 # show summary of the fit
 pretty_fit_summary(sgp_fit, "GP")
@@ -783,12 +784,6 @@ lr.test(x=sgp_fit, y=nsgp_fit, alpha=0.05, df=1)
 
 # Flood quantiles estimation
 
-::: {.column-margin}
-::: {.callout-important}
-
-:::
-:::
-
 
 ## Stationary context
 
@@ -833,7 +828,7 @@ The **`nsgp_fit object`** is the object returned by the **`fevd(...)`** function
 # specific return periods (e.g., 10, 20 years)
 rperiods = c(2, 5, 10, 20, 50, 100)
 # compute return levels (with 95% confidence intervals)
-rlevels = return.level(nsgp_fit, return.period=rperiods) + 10
+rlevels = return.level(nsgp_fit, return.period=rperiods)
 ```
 
 For easy visualization, we will plot the **`effective return levels`**. Lets convert the output of **`return.level(...)`** into a clean data.frame :
