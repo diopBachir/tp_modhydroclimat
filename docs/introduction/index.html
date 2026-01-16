@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Introduction to Extreme Value Analysis -</title>
+<title>Introduction to Extreme Value Analysis - Hydrological modelisation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,7 +20,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -76,12 +96,13 @@ ul.task-list li input[type="checkbox"] {
 <meta property="og:image" content="https://github.com/diopBachir/tp_eva/blob/master/docs/evaillustr.png">
 <meta property="og:site_name" content="Introduction to Extreme Value Analysis">
 <meta property="og:locale" content="fr_FR">
-<meta name="twitter:title" content="Introduction to Extreme Value Analysis -">
+<meta name="twitter:title" content="Introduction to Extreme Value Analysis - Hydrological modelisation">
+<meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://github.com/diopBachir/tp_eva/blob/master/docs/evaillustr.png">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
-<body class="floating nav-fixed">
+<body class="floating nav-fixed slimcontent">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -103,10 +124,6 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Introduction</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../overview/index.html"> 
-<span class="menu-text">Overview</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="../softwaresetup/index.html"> 
 <span class="menu-text">Software &amp; Setup</span></a>
   </li>  
@@ -126,22 +143,156 @@ ul.task-list li input[type="checkbox"] {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="4">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#sec-watershed" id="toc-sec-watershed" class="nav-link active" data-scroll-target="#sec-watershed"><span class="header-section-number">1</span> The watershed concept</a></li>
+  <li><a href="#hydrological-modelling" id="toc-hydrological-modelling" class="nav-link" data-scroll-target="#hydrological-modelling"><span class="header-section-number">2</span> Hydrological Modelling</a>
+  <ul>
+  <li><a href="#classification-of-hydrological-models-based-on-process-abstraction" id="toc-classification-of-hydrological-models-based-on-process-abstraction" class="nav-link" data-scroll-target="#classification-of-hydrological-models-based-on-process-abstraction"><span class="header-section-number">2.1</span> Classification of hydrological models based on process abstraction</a>
+  <ul>
+  <li><a href="#classification-of-hydrological-models-based-on-spatial-discretization" id="toc-classification-of-hydrological-models-based-on-spatial-discretization" class="nav-link" data-scroll-target="#classification-of-hydrological-models-based-on-spatial-discretization"><span class="header-section-number">2.1.1</span> Classification of hydrological models based on spatial discretization</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#the-hydro-climatic-modelling-workflow" id="toc-the-hydro-climatic-modelling-workflow" class="nav-link" data-scroll-target="#the-hydro-climatic-modelling-workflow"><span class="header-section-number">3</span> The hydro-climatic modelling workflow</a>
+  <ul>
+  <li><a href="#hydrologcal-model-calibration" id="toc-hydrologcal-model-calibration" class="nav-link" data-scroll-target="#hydrologcal-model-calibration"><span class="header-section-number">3.1</span> Hydrologcal model calibration</a></li>
+  <li><a href="#bias-correction-of-climate-models" id="toc-bias-correction-of-climate-models" class="nav-link" data-scroll-target="#bias-correction-of-climate-models"><span class="header-section-number">3.2</span> Bias correction of climate models</a></li>
+  </ul></li>
+  <li><a href="#practical-objectives-of-this-module" id="toc-practical-objectives-of-this-module" class="nav-link" data-scroll-target="#practical-objectives-of-this-module"><span class="header-section-number">4</span> Practical Objectives of this Module</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">5</span> References</a></li>
+  </ul>
+</nav>
+</nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
     </div>
 <!-- main -->
-<main class="content column-page" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Hydrological modelisation</h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
 
-<iframe width="100%" height="100%" src="https://sbdiop.quarto.pub/trend-detection-hydrological-extremes/" title=""></iframe>
+    
+  
+    
+  </div>
+  
 
 
+</header>
+
+
+<section id="sec-watershed" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> The watershed concept</h1>
+<p>A watershed is the fundamental spatial unit used in hydrological modelling. It is considered hydrologically closed: all precipitation falling within the watershed is partitioned into evapotranspiration, infiltration, and runoff. Infiltrated water may contribute to subsurface flow and groundwater storage, while all runoff ultimately drains through a single outlet.</p>
+<div id="fig-Rbenefits" class="quarto-figure quarto-figure-center quarto-float anchored" alt="Illustration of a watershed">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-Rbenefits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/watershed.png" class="img-fluid figure-img" style="width:100.0%" alt="Illustration of a watershed">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-Rbenefits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Schematic representation of a watershed. <em>(Source: Adapted from Karambiri et Diello, 2008)</em>
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="hydrological-modelling" class="level1 page-columns page-full" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Hydrological Modelling</h1>
+<p>Hydrological modelling is a core area of hydrology that aims to simulate and understand the complex processes of the water cycle. It relies on simplified representations of these processes to predict the behavior of hydrological systems (watersheds) and assess the impacts of climate change and human activities.</p>
+<p>In practice, hydrological modelling uses mathematical models to describe the movement and storage of water within a watershed. These hydrological models are based on the physical laws governing key hydrological processes, such as: precipitation and its partitioning into runoff and infiltration, evapotranspiration, soil infiltration and groundwater flow, surface runoff and its contribution to river discharge.</p>
+<p>Hydrological models can be classified based on the <strong>level of process abstraction</strong> and the <strong>spatial discretization</strong> of the watershed. The choice of an hydrological model may depend on the suitability of the model for the specific objectives, the dominant hydrological processes to be represented, the spatial and temporal scales considered, the availability of data, and the computational constraints.</p>
+<section id="classification-of-hydrological-models-based-on-process-abstraction" class="level2 page-columns page-full" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="classification-of-hydrological-models-based-on-process-abstraction"><span class="header-section-number">2.1</span> Classification of hydrological models based on process abstraction</h2>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Depending on the degree of abstraction, models may represent the hydrological cycle through more or less detailed schematizations.</p>
+</div>
+</div>
+</div></div><ul>
+<li><strong>Conceptual models</strong><br>
+Simplified representations, often based on interconnected reservoirs and empirical or semi-empirical relationships.</li>
+<li><strong>Physically-based models</strong><br>
+Explicitly simulate water transfers and storages using fundamental physical laws applied to the main components of the watershed.</li>
+</ul>
+<section id="classification-of-hydrological-models-based-on-spatial-discretization" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="classification-of-hydrological-models-based-on-spatial-discretization"><span class="header-section-number">2.1.1</span> Classification of hydrological models based on spatial discretization</h3>
+<ul>
+<li><strong>Lumped models</strong><br>
+Treat the watershed as a single homogeneous unit, with input variables representing spatial averages of factors affecting hydrological response.</li>
+<li><strong>Distributed models</strong><br>
+Represent spatial variability in climate forcing, soil properties, topography, and vegetation by discretizing the watershed into interacting grid cells.<br>
+</li>
+<li><strong>Semi-distributed models</strong><br>
+Group areas with similar characteristics, balancing process complexity, spatial realism, and computational efficiency.</li>
+</ul>
+<div id="fig-hydro-models" class="quarto-figure quarto-figure-center quarto-float anchored" alt="Types of hydrological models">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hydro-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/hydromod_types.png" class="img-fluid figure-img" style="width:100.0%" alt="Types of hydrological models">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hydro-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Classification of hydrological models based on the <strong>spatial discretization</strong> of the watershed
+</figcaption>
+</figure>
+</div>
+</section>
+</section>
+</section>
+<section id="the-hydro-climatic-modelling-workflow" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> The hydro-climatic modelling workflow</h1>
+<section id="hydrologcal-model-calibration" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="hydrologcal-model-calibration"><span class="header-section-number">3.1</span> Hydrologcal model calibration</h2>
+<p>Hydrological models provide simplified representations of complex watershed behaviour. As a result, they rely on parameters that are typically estimated through calibration, which helps compensate for incomplete process representation and improves the accuracy of simulated streamflow. To ensure that a hydrological model is reliable, it must be both calibrated and evaluated using observational data. Calibration consists of adjusting model parameters to minimize discrepancies between observed and simulated streamflow over a given period. Model evaluation (or validation) then involves running the calibrated model over an independent, “blind” period that was not used during calibration, in order to assess its robustness and predictive performance. Model performance, or goodness of fit, is commonly quantified using statistical criteria such as the Nash-Sutcliffe Efficiency (NSE; <span class="citation" data-cites="NASH1970282">Nash &amp; Sutcliffe (<a href="#ref-NASH1970282" role="doc-biblioref">1970</a>)</span>) or the Kling-Gupta Efficiency (KGE; <span class="citation" data-cites="GUPTA200980">Gupta et al. (<a href="#ref-GUPTA200980" role="doc-biblioref">2009</a>)</span>).</p>
+</section>
+<section id="bias-correction-of-climate-models" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="bias-correction-of-climate-models"><span class="header-section-number">3.2</span> Bias correction of climate models</h2>
+<p>When assessing the impacts of climate change, hydrological models are typically forced using projections from climate models, including <a href="https://www.climatehubs.usda.gov/hubs/northwest/topic/basics-global-climate-models">Global</a> and <a href="https://climatechange.academy/climate-change-assessment-tools/how-regional-climate-models-enhance-predictions/">Regional Climate Models (GCMs and RCMs)</a>. In this context, the outputs of GCMs developed within Phase 6 of the <a href="https://wcrp-cmip.org/cmip-phases/cmip6/">Coupled Model Intercomparison Project (CMIP6)</a>, which supported the <a href="https://www.ipcc.ch/assessment-report/ar6/">IPCC Sixth Assessment Report (AR6)</a>, provide valuable information for evaluating future climate change impacts.</p>
+<p>However, GCM simulations cannot be used directly as inputs for hydrological models, as they commonly exhibit systematic biases relative to observations. <strong>Bias Correction</strong> is a mandatory step to align climate simulations with local historical observations before running the hydrological model.</p>
+</section>
+</section>
+<section id="practical-objectives-of-this-module" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Practical Objectives of this Module</h1>
+<p>📌 Calibration and validation of hydrological models</p>
+<p>📌 Climate data processing &amp; bias correction</p>
+<p>📌 Impact assessment of climate change (scenarios)</p>
+<p>📌 Hydrological indicator analysis</p>
+<p>📌 Apply all methods in practice using reproducible, open-source tools within the <a href="https://www.r-project.org/">R environment</a>.</p>
+</section>
+<section id="references" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-GUPTA200980" class="csl-entry" role="listitem">
+Gupta, H. V., Kling, H., Yilmaz, K. K., &amp; Martinez, G. F. (2009). Decomposition of the mean squared error and NSE performance criteria: Implications for improving hydrological modelling. <em>Journal of Hydrology</em>, <em>377</em>(1), 80–91. https://doi.org/<a href="https://doi.org/10.1016/j.jhydrol.2009.08.003">https://doi.org/10.1016/j.jhydrol.2009.08.003</a>
+</div>
+<div id="ref-NASH1970282" class="csl-entry" role="listitem">
+Nash, J. E., &amp; Sutcliffe, J. V. (1970). River flow forecasting through conceptual models part i — a discussion of principles. <em>Journal of Hydrology</em>, <em>10</em>(3), 282–290. https://doi.org/<a href="https://doi.org/10.1016/0022-1694(70)90255-6">https://doi.org/10.1016/0022-1694(70)90255-6</a>
+</div>
+</div>
+
+
+</section>
 
 <a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -225,7 +376,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/sbdiop\.quarto\.pub\/introduction-to-extreme-value-analysis");
+      var filterRegex = new RegExp("https:\/\/diopbachir\.github\.io\/tp_eva\/index\.html");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

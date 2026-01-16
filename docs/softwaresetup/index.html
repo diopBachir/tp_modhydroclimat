@@ -138,10 +138,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Introduction</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../overview/index.html"> 
-<span class="menu-text">Overview</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link active" href="../softwaresetup/index.html" aria-current="page"> 
 <span class="menu-text">Software &amp; Setup</span></a>
   </li>  
@@ -207,7 +203,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="get-the-data-used" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Get the Data Used</h1>
-<p>The data used in this practical are available in the <a href="https://github.com/diopBachir/tp_eva/">GitHub repository</a> associated with this project. We will be working with daily streamflow records from the <code>La Drôme à Luc-en-Diois</code> hydrometric station in France. The metadata of the station are available on the <a href="https://www.hydro.eaufrance.fr/sitehydro/V4214010/fiche">HydroPortail website (here)</a>. The dataset spans from August 1st, 1958, to December 31st, 2020, and will serve as the basis for exploring flood frequency analysis techniques.</p>
+<p>The data used in this practical session are available in the project’s dedicated <a href="https://github.com/diopBachir/tp_modhydroclimat/">GitHub repository</a>. The analysis is based on daily observed streamflow records and climate projection data for the <code>LEZ</code> watershed. Detailed metadata for this watershed are available on the <a href="https://www.sandre.eaufrance.fr/geo/CoursEau_Carthage2017/V52-0400">HydroPortail website (here)</a>.</p>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -218,7 +214,7 @@ Download the Data
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><a href="https://github.com/diopBachir/tp_eva/blob/master/data/discharge.csv" download="" class="download-btn">📥 Download CSV</a></p>
+<p><a href="https://github.com/diopBachir/tp_modhydroclimat/tree/main/data" download="" class="download-btn">📥 Download CSV</a></p>
 </div>
 </div>
 </section>
@@ -439,7 +435,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/sbdiop\.quarto\.pub\/introduction-to-extreme-value-analysis");
+      var filterRegex = new RegExp("https:\/\/diopbachir\.github\.io\/tp_eva\/index\.html");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

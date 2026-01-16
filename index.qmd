@@ -10,17 +10,16 @@ format:
 page-layout: full
 ---
 
-# Introduction to Extreme Value Analysis {.unnumbered}
+# Introduction to hydro-climatic modelling workflow {.unnumbered}
 
 ::: {.columns}
 
 ::: {.column width="47.5%"}
-## Understanding the probabilistic behavior of extreme observations and tail phenomena  
-### Application to hydrological data
+## Model calibration, bias correction, hydrological simulation and extreme flood analysis
 :::
 
-::: {.column width="47.5%"}
-![](images/evaillustr.png){width="60%"}
+::: {.column width="47.5%" style="text-align: center;"}
+![](images/raifall-runoff-model-illustr.png){width="60%"}
 :::
 
 :::
@@ -31,7 +30,7 @@ page-layout: full
 ::: {.column width="47.5%"}
 
 ## [Yves Tramblay ![ORCID icon](https://img.shields.io/badge/ORCID-0000--0003--0481--5330-a6ce39?logo=orcid&style=flat&logoColor=white)](http://orcid.org/0000-0003-0481-5330)
-
+📧 [yves.tramblay@ird.fr](mailto:yves.tramblay@ird.fr)<br>
 Research scientist at IRD since 2013, works on hydrological hazards in Mediterranean regions and climate change impacts.
 
 :::
@@ -43,7 +42,7 @@ Research scientist at IRD since 2013, works on hydrological hazards in Mediterra
 ::: {.column width="47.5%"}
 
 ## [Serigne Bassirou Diop ![ORCID icon](https://img.shields.io/badge/ORCID-0009--0002--8743--3660-a6ce39?logo=orcid&style=flat&logoColor=white)](https://orcid.org/0009-0002-8743-3660)
-
+📧 [diop.serigne-bassirou@ugb.edu.sn](mailto:diop.serigne-bassirou@ugb.edu.sn)<br>
 PhD researcher on flood modeling and climate change in West Africa.
 
 :::

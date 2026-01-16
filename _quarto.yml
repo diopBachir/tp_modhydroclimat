@@ -31,8 +31,6 @@ website:
     left:
       - href: introduction/index.qmd
         text: Introduction
-      - href: overview/index.qmd
-        text: Overview
       - href: softwaresetup/index.qmd
         text: Software & Setup
       - href: blockmaxima/index.qmd

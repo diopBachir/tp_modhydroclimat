@@ -1,5 +1,26 @@
 [
   {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Introduction to hydro-climatic modelling workflow",
+    "section": "",
+    "text": "📧 yves.tramblay@ird.fr Research scientist at IRD since 2013, works on hydrological hazards in Mediterranean regions and climate change impacts.\n\n\n\n\n\n\n📧 diop.serigne-bassirou@ugb.edu.sn PhD researcher on flood modeling and climate change in West Africa."
+  },
+  {
+    "objectID": "index.html#yves-tramblay-orcid-icon",
+    "href": "index.html#yves-tramblay-orcid-icon",
+    "title": "Introduction to hydro-climatic modelling workflow",
+    "section": "",
+    "text": "📧 yves.tramblay@ird.fr Research scientist at IRD since 2013, works on hydrological hazards in Mediterranean regions and climate change impacts."
+  },
+  {
+    "objectID": "index.html#serigne-bassirou-diop-orcid-icon",
+    "href": "index.html#serigne-bassirou-diop-orcid-icon",
+    "title": "Introduction to hydro-climatic modelling workflow",
+    "section": "",
+    "text": "📧 diop.serigne-bassirou@ugb.edu.sn PhD researcher on flood modeling and climate change in West Africa."
+  },
+  {
     "objectID": "pot/index.html",
     "href": "pot/index.html",
     "title": "Peaks-Over-Threshold (POT) Modelling",
@@ -42,53 +63,39 @@
     "text": "Back to top"
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Introduction to Extreme Value Analysis",
+    "objectID": "introduction/index.html",
+    "href": "introduction/index.html",
+    "title": "Hydrological modelisation",
     "section": "",
-    "text": "Research scientist at IRD since 2013, works on hydrological hazards in Mediterranean regions and climate change impacts.\n\n\n\n\n\n\nPhD researcher on flood modeling and climate change in West Africa."
+    "text": "A watershed is the fundamental spatial unit used in hydrological modelling. It is considered hydrologically closed: all precipitation falling within the watershed is partitioned into evapotranspiration, infiltration, and runoff. Infiltrated water may contribute to subsurface flow and groundwater storage, while all runoff ultimately drains through a single outlet.\n\n\n\n\n\n\nFigure 1: Schematic representation of a watershed. (Source: Adapted from Karambiri et Diello, 2008)"
   },
   {
-    "objectID": "index.html#yves-tramblay-orcid-icon",
-    "href": "index.html#yves-tramblay-orcid-icon",
-    "title": "Introduction to Extreme Value Analysis",
-    "section": "",
-    "text": "Research scientist at IRD since 2013, works on hydrological hazards in Mediterranean regions and climate change impacts."
+    "objectID": "introduction/index.html#eva-in-hydrology",
+    "href": "introduction/index.html#eva-in-hydrology",
+    "title": "Hydrological modelisation",
+    "section": "2.1 🌊 EVA in Hydrology",
+    "text": "2.1 🌊 EVA in Hydrology\nEVA is a powerful statistical tool to analyze rare events in hydrology and climate science. It focuses on understanding the frequency and intensity of extreme events.\n\n\n\n\n\n\n\n\nImportant\n\n\n\nIndependance (absence of autocorrelation) and Stationarity of extreme value time series are the underlying assumptions of EVA."
   },
   {
-    "objectID": "index.html#serigne-bassirou-diop-orcid-icon",
-    "href": "index.html#serigne-bassirou-diop-orcid-icon",
-    "title": "Introduction to Extreme Value Analysis",
-    "section": "",
-    "text": "PhD researcher on flood modeling and climate change in West Africa."
+    "objectID": "introduction/index.html#key-concepts-of-eva",
+    "href": "introduction/index.html#key-concepts-of-eva",
+    "title": "Hydrological modelisation",
+    "section": "3.3 📌 Key Concepts of EVA",
+    "text": "3.3 📌 Key Concepts of EVA\n\n3.3.1 📈 Block Maxima Approach\nSelects the maximum value in fixed time blocks (e.g., annual maximum flow or rainfall) → Fits data to distributions like Gumbel or GEV.\n\n\n3.3.2 📉 Peak Over Threshold (POT) Method\nConsiders all events exceeding a predefined threshold → More data points → Fitted to Generalized Pareto Distribution (GPD)."
   },
   {
-    "objectID": "introduction/revealjs_presentation/index.html",
-    "href": "introduction/revealjs_presentation/index.html",
-    "title": "Trend detection in hydrological extremes",
-    "section": "",
-    "text": "0.1 Trend in a time serie\n \n\nAyushi, 2020\n\n\n\n\n0.2 Hydrological extremes\n\n\n\n\n\n0.3 Extreme values sampling\n\n\nBlock-Maxima Approach\n\n\n\n\n\n\n\n0.4 Extreme values sampling\n\nPeaks-Over-Threshold (POT)\n\n\n\n\n\n\n\n0.5 Trend detection in a time serie\n\n\nNon-Parametric Methods\n\n\n No assumption on the statistical distribution of the data, making them suitable for hydrological extremes that often have non-normal distributions.\n\n Mann-Kendall test: One of the most common non-parametric approaches.\n\n Sen’s slope estimator: often used alongside Mann-Kendall to quantify the magnitude of the trend.\n\n\n\n0.6 Trend detection in a time serie\n\n\nParametric Methods\n\n\n Assume a specific statistical distribution for the data.\n\n Can provide magnitude estimates but require careful distribution fitting.\n\n Specific distributions are available for each extreme values sampling method : the General Extreme Value (GEV) distribution for the Block-Maxima approach and the Generalized Pareto (GP) distribution for POT.\n\n\n\n\n Back to top"
+    "objectID": "introduction/index.html#objectives-of-eva",
+    "href": "introduction/index.html#objectives-of-eva",
+    "title": "Hydrological modelisation",
+    "section": "3.4 🎯 Objectives of EVA",
+    "text": "3.4 🎯 Objectives of EVA\n🔁 Estimate Return Periods: Assess the intensity of rare events expected to be exceeded, on average, once every N years (e.g., for example, a 100-year event corresponds to a 1% annual probability of being exceeded).\n📊 Construct Frequency Curves: Fit statistical distributions (e.g., GEV, Gumbel, Log-Pearson Type III) to observed extremes to relate event magnitude to exceedance probability.\n🧰 Support Risk-Based Design: Inform engineering design criteria (e.g., for dams, levees, drainage systems) based on scientifically justified extreme thresholds"
   },
   {
-    "objectID": "introduction/revealjs_presentation/intro.html#intro",
-    "href": "introduction/revealjs_presentation/intro.html#intro",
-    "title": "Introduction to Extreme Value Analysis",
-    "section": "",
-    "text": "Données géospatiales (GeoData) : de quoi parle-t-on ?\n\n\n\n\n\n\nDéfinition : Données liées à un lieu précis sur la surface de la Terre, souvent accompagnées d’un repère temporel.\n\n\n\nComposantes : Localisation, Attributs, Temps.\n\n\n\nSources et formats variés : Données de recensement, imagerie satellite, météo, données mobiles, cartes dessinées, réseaux sociaux, etc.\n\n\n\nTypes de GeoData : Vecteur et Raster.\n\n\n\n\n\nSource : https://www.alamyimages.fr"
-  },
-  {
-    "objectID": "introduction/revealjs_presentation/intro.html#intro2",
-    "href": "introduction/revealjs_presentation/intro.html#intro2",
-    "title": "Introduction to Extreme Value Analysis",
-    "section": "",
-    "text": "Types de Données géospatiales\n\n\n\n\n\n\nVecteur : Représentations vectorielles dans lesquelles des points, des lignes et des polygones représentent des éléments tels que des propriétés, des villes, des routes, des montagnes et des plans d’eau.\n\n\n\nRaster : pixels organisés en une grille régulière (comme un tableur). Chaque pixel contient une valeur représentant une information. La seule limite est que la clareté de l’information spatiale est limitée par la taille des pixels.\n\n\n\nTypes de GeoData : Vecteur et Raster.\n\n\n\n \n\nSource : https://blog.alphorm.com/donnees-raster-vs-vecteur-sig"
-  },
-  {
-    "objectID": "introduction/revealjs_presentation/intro.html#intro3",
-    "href": "introduction/revealjs_presentation/intro.html#intro3",
-    "title": "Introduction to Extreme Value Analysis",
-    "section": "",
-    "text": "Vecteur vs Raster : Quel type de donnée choisir ?\n\n\n\n\n\n\nChoix pas triviale : Le choix entre données raster et vectorielles dépend surtout de la manière dont le cartographe conçoit l’élément à représenter.\n\n\n\n\n\n\n\n\n\n Travailler avec des pixels ou des coordonnées ?\n\n\n Quelle est l’échelle de votre carte ?\n\n\n Avez-vous des contraintes de stockage ?\n\n\n\n\n\n\n\n\nUsage des Vecteurs :\n\n\nCartographie des limites administratives\n\n\nAnalyse de réseaux (transport, électricité, eau)\n\n\nReprésentation précise d’objets discrets (ex. : arbres, écoles, rivières)\n\n\nGéolocalisation et navigation GPS\n\n\nSuivi de changements de territoire\n\n\n\n\nUsage des Rasters :\n\n\nImagerie satellite et photographie aérienne\n\n\nCartographie de phénomènes continus (température, élévation, pollution)\n\n\nAnalyse de couverture du sol (forêts, cultures, surfaces d’eau)\n\n\nModélisation environnementale (érosion, inondations, climat)\n\n\nClassification par télédétection (ex : indices NDVI)"
+    "objectID": "introduction/index.html#real-world-applications-of-eva",
+    "href": "introduction/index.html#real-world-applications-of-eva",
+    "title": "Hydrological modelisation",
+    "section": "3.5 🏗️ Real-world Applications of EVA",
+    "text": "3.5 🏗️ Real-world Applications of EVA\n🏞️ Infrastructure Design: Design dams, bridges, culverts based on expected extreme flows.\n💧 Water Resource Management: Plan for droughts, reservoir operations, and sustainable use.\n⚠️ Risk Assessment & Planning: Develop floodplain zoning, disaster risk reduction strategies.\n🧭 Policy & Climate Adaptation: Inform government strategies and early warning systems in a changing climate."
   },
   {
     "objectID": "blockmaxima/index.html",
@@ -182,67 +189,11 @@
     "text": "8.2 Non-Stationary context\nIn non-stationary context, since the location parameter is time-dependent, return levels have to be calculated for each year over time period. We refer to this as “effective” return levels The same return.level(...) from the {extRemes} package is used to compute \"effective\" return levels.\n\n\n\n\n\n\n\n\nNote\n\n\n\nThe nsgevfit object is the object returned by the fevd(...) function when we have fitted a the non-stationary GEV model.\n\n\n\n# specific return periods (e.g., 10, 20 years)\nrperiods = c(2, 5, 10, 20, 50, 100)\n# compute return levels (with 95% confidence intervals)\nrlevels = return.level(nsgevfit, return.period=rperiods)\n\nFor easy visualization, we will plot the effective return levels for each year over time period. Lets convert the output of return.level(...) into a clean data.frame :\n\n# Convert to data.frame\ndf_rlevels &lt;- data.frame(year=extractedAMF$Year,\n                         Q2=rlevels[, 1],\n                         Q5=rlevels[, 2],\n                         Q10=rlevels[, 3],\n                         Q20=rlevels[, 4],\n                         Q50=rlevels[, 5],\n                         Q100=rlevels[, 6])\nhead(df_rlevels)\n\n  year       Q2       Q5      Q10      Q20      Q50     Q100\n1 1958 24.36654 40.19203 54.81061 73.04541 104.8170 136.6172\n2 1959 24.33894 40.16443 54.78301 73.01781 104.7894 136.5896\n3 1960 24.31134 40.13683 54.75541 72.99021 104.7618 136.5620\n4 1961 24.28374 40.10923 54.72781 72.96261 104.7342 136.5344\n5 1962 24.25614 40.08163 54.70021 72.93501 104.7066 136.5068\n6 1963 24.22854 40.05403 54.67261 72.90741 104.6790 136.4792\n\n\nNow, we tranform the data into a long (tidy) format suitable for plotting multiple lines with ggplot:\n\ndataplot = df_rlevels |&gt; pivot_longer(-1, names_to=\"RL\", values_to=\"Q\")\n\nFinally, we plot the effective return levels:\n\nrlplot = dataplot %&gt;%\n         ggplot(aes(x=year, y=Q, color=RL, group=RL)) +\n         geom_line(linewidth=1) +\n         scale_x_continuous(expand=c(0.01, 0.01)) +\n         scale_y_continuous(expand=c(0.01, 0.01), limits = c(20, 150), breaks=seq(25, 200, by=25)) +\n         guides(color=guide_legend(keywidth=3)) +\n         theme_bw() +\n         theme(legend.text=element_text(size=12),\n               axis.title=element_text(size=12),\n               axis.text=element_text(size=12, color=\"black\")) +\n         labs(x=\"Time (Year)\", y=\"Return level (Q)\", color=NULL)\n           \nprint(rlplot)\n\nFigure 8 helps in understanding the variations and trends in flood quantiles across different time periods.”\n\n\n\n\n\n\n\n\nFigure 8: Effective return levels from the NS-GEV model. Each line represents a different return period (e.i., 2-, 5-, 10-, 20 50, and 100-year floods), and the colour coding indicates these return periods. The x-axis denotes the time index (year), and the y-axis indicates the estimated flood quantiles."
   },
   {
-    "objectID": "introduction/index.html",
-    "href": "introduction/index.html",
-    "title": "Introduction to Extreme Value Analysis",
-    "section": "",
-    "text": "Back to top"
-  },
-  {
-    "objectID": "introduction/revealjs_presentation/acquisition.html#acquisition-1",
-    "href": "introduction/revealjs_presentation/acquisition.html#acquisition-1",
-    "title": "Introduction to Extreme Value Analysis",
-    "section": "",
-    "text": "Acquisition de données géospatiales : Sources de données Vectorielles\n\n\n OpenStreetMap (OSM) : Le Wikipedia des Cartes\n\n\nSans doute, la plus grande communauté de cartographes, qui met à jour en continu la géographie de notre planète.\n\n\nTypes de données offertes par OSM :\n\n\nÉléments naturels et d’occupation des sols (plages, forêts, exploitations agricoles)\n\n\nLieux d’intérêt (restaurants, hôtels, commissariats, églises, musées)\n\n\nInfrastructures de transport (arrêts de bus, feux de circulation, panneaux de signalisation)\n\n\nZones habitées (villes, villages, localités)\n\n\n\n\nTélécharger les données OSM :\n\n\nGeofabrik – téléchargement par pays ou région (format .osm.pbf) : download.geofabrik.de\n\n\nBBBike Extracts – sélection personnalisée via carte (formats .osm, .shp, .geojson, etc.) : extract.bbbike.org\n\n\nQGIS (plugin QuickOSM) – extraction directe en définissant une zone et un thème (ex. : bâtiments, routes)\n\n\nOverpass Turbo – requêtes personnalisées en ligne via Overpass QL : overpass-turbo.eu\n\n\nOSMnx (Python) – téléchargement de données via script Python (ex. routes, bâtiments, POI)\n\n\nplanet.openstreetmap.org – téléchargement complet de la planète (très volumineux, réservé aux usages avancés)"
-  },
-  {
-    "objectID": "introduction/revealjs_presentation/acquisition.html#acquisition-2",
-    "href": "introduction/revealjs_presentation/acquisition.html#acquisition-2",
-    "title": "Introduction to Extreme Value Analysis",
-    "section": "",
-    "text": "Acquisition de données géospatiales : Sources de données Vectorielles\n\n\n\n Obtenir des Limites administratives\n\n\n\n\n\nDIVA-GIS – Source de données géospatiales gratuite qui propose des limites administratives mondiales, des données climatiques et des jeux de données sur la biodiversité. Idéale pour les professionnels du SIG, les chercheurs et les acteurs de la conservation. Données disponibles en formats prêts à l’emploi comme les Shapefiles : 📎 diva-gis.org/data.html\n\n\n\n\n\n\n\nGADM (Global Administrative Boundaries) – Projet visant à cartographier les divisions administratives de tous les pays du monde, à tous les niveaux (pays, régions, départements, etc.). Données en haute résolution spatiale, avec de nombreux attributs géographiques : 📎 gadm.org/data.html"
-  },
-  {
-    "objectID": "introduction/revealjs_presentation/acquisition.html#acquisition-3",
-    "href": "introduction/revealjs_presentation/acquisition.html#acquisition-3",
-    "title": "Introduction to Extreme Value Analysis",
-    "section": "",
-    "text": "Acquisition de données géospatiales : Sources de données Raster\n\n\n Modèle Numérque de Terrain (MNT)\n\n\n\n\n Définition : représentation 3D de la surface topographique de la Terre, dépourvue de toute végétation, bâtiments ou infrastructures. Il décrit l’altitude du sol nu à chaque point d’une zone donnée.\n\n\n\nUsages courants :\n\n\nModélisation hydraulique (inondations, ruissellement)\n\n\nConception d’infrastructures (routes, barrages, lignes électriques)\n\n\nAnalyse hydrologique (bassins versants, écoulements)\n\n\nCorrélation avec images satellites (orthorectification, ombrage)\n\n\nCartographie thématique (pentes, orientations, profils altimétriques)\n\n\n\n\n\n\n\n\nSource : Simou et al. (2014)"
-  },
-  {
-    "objectID": "introduction/revealjs_presentation/acquisition.html#acquisition-4",
-    "href": "introduction/revealjs_presentation/acquisition.html#acquisition-4",
-    "title": "Introduction to Extreme Value Analysis",
-    "section": "",
-    "text": "Acquisition de données géospatiales : Sources de données Raster\n\n\n\nObtenir un MNT à l’échelle d’un Pays\nDIVA-GIS - Données d’altitude issues du SRTM (Shuttle Radar Topography Mission) agrégées à une résolution de 30 mètres. Fournies par le CGIAR via la plateforme DIVA-GIS : 📎 https://diva-gis.org/data.html\n\n\n\n\n\nObtenir un MNT pour une Zone Spécifique\n30-Meter SRTM Tile Downloader - facilite le téléchargement des données d’élévation à 30 mètres de résolution issues de la mission SRTM (Shuttle Radar Topography Mission) : 📎 https://dwtkns.com/srtm30m/"
-  },
-  {
-    "objectID": "introduction/revealjs_presentation/acquisition.html#acquisition-5",
-    "href": "introduction/revealjs_presentation/acquisition.html#acquisition-5",
-    "title": "Introduction to Extreme Value Analysis",
-    "section": "",
-    "text": "Acquisition de données géospatiales : Sources de données Raster\n\n\n Carte d’occupation (d’utilisation) du sol\n\n\n Définition : répartition spatiale des différentes catégories d’utilisation ou de couverture terrestre (forêts, cultures, zones urbaines, plans d’eau, etc.) à un moment donné.\n\n\n\n\nSuivre les dynamiques spatiales (urbanisation, déforestation, expansion agricole)\n\n\nÉvaluer les impacts environnementaux (érosion, fragmentation des habitats)\n\n\nAider à l’aménagement du territoire (zonage, planification urbaine et rurale)\n\n\nAppuyer les politiques publiques (gestion des ressources, développement durable)\n\n\n\n\n\nAcquisition : \n\n\nEsri Land Cover (Sentinel-2 Land Cover Explorer) – Carte annuelle de l’occupation du sol terrestre à 10 mètres de résolution (2017–2024), produite à l’aide de méthodes d’apprentissage profond (deep learning). 📎 https://livingatlas.arcgis.com/landcoverexplorer/\n\n\nESA (European Space Agency) WorldCover 2020 – Carte mondiale d’occupation du sol à 10 m de résolution (version 2020). Données fournies en tuiles 3×3° au format GeoTIFF optimisé (COG), coordonnées EPSG:4326 (latitude/longitude). 📎 https://worldcover2020.esa.int/downloader"
-  },
-  {
-    "objectID": "introduction/revealjs_presentation/acquisition.html#acquisition-6",
-    "href": "introduction/revealjs_presentation/acquisition.html#acquisition-6",
-    "title": "Introduction to Extreme Value Analysis",
-    "section": "",
-    "text": "Acquisition de données géospatiales : Sources de données Raster\n\n\n\nImages Satellitaires : Bandes Spectrales - Chaque image satellite est composée de plusieurs bandes spectrales (canal visible, infrarouge, etc.), capturant différentes longueurs d’onde pour analyser la surface terrestre sous divers angles (végétation, humidité, sols, etc.).\n\n\n\n\nExemple : Etudier la santé de la végétation : \n\nSource : https://eo.belspo.be/fr/les-images-de-teledetection\n\n\n\n\n\n\nAcquisition : \nUSGS Earth Explorer - Plateforme centralisée pour télécharger des données géospatiales issues des vastes collections de l’USGS : images satellites landsat, données topographiques, MNT, etc. : https://earthexplorer.usgs.gov/"
-  },
-  {
-    "objectID": "introduction/revealjs_presentation/acquisition.html#acquisition-7",
-    "href": "introduction/revealjs_presentation/acquisition.html#acquisition-7",
-    "title": "Introduction to Extreme Value Analysis",
-    "section": "",
-    "text": "Allez Plus Loin !\n\n \n\n\nClimate Data Store (CDS) – Portail d’accès aux données climatiques du passé, du présent et du futur fournies par le programme Copernicus : 📎 https://cds.climate.copernicus.eu/\n\n\n\nEarth System Grid Federation (ESGF) – Réseau mondial de centres de modélisation climatique offrant un accès sécurisé et distribué aux projections issues des modèles climatiques (CMIP, CORDEX, etc.) : 📎 https://aims2.llnl.gov/search/"
-  },
-  {
     "objectID": "softwaresetup/index.html",
     "href": "softwaresetup/index.html",
     "title": "Data, Software, Setup and Libraries (Packages)",
     "section": "",
-    "text": "The data used in this practical are available in the GitHub repository associated with this project. We will be working with daily streamflow records from the La Drôme à Luc-en-Diois hydrometric station in France. The metadata of the station are available on the HydroPortail website (here). The dataset spans from August 1st, 1958, to December 31st, 2020, and will serve as the basis for exploring flood frequency analysis techniques.\n\n\n\n\n\n\nDownload the Data\n\n\n\n📥 Download CSV"
+    "text": "The data used in this practical session are available in the project’s dedicated GitHub repository. The analysis is based on daily observed streamflow records and climate projection data for the LEZ watershed. Detailed metadata for this watershed are available on the HydroPortail website (here).\n\n\n\n\n\n\nDownload the Data\n\n\n\n📥 Download CSV"
   },
   {
     "objectID": "softwaresetup/index.html#what-is-r",
@@ -264,41 +215,6 @@
     "title": "Data, Software, Setup and Libraries (Packages)",
     "section": "2.3 🔧 How to use them together?",
     "text": "2.3 🔧 How to use them together?\n1- Install R → https://cran.r-project.org\n2- Install RStudio → https://posit.co/download/rstudio-desktop/\n3- Then, open RStudio → it will automatically use the installed R engine in the background.\n\n\n\n\n\n\nFigure 3: R environment, the engine powering your data analysis, and RStudio, the dashboard and controls that make driving (coding) efficient and user-friendly. (Source: umanitoba.ca)"
-  },
-  {
-    "objectID": "overview/index.html",
-    "href": "overview/index.html",
-    "title": "Overview, Key Concepts and Objectives",
-    "section": "",
-    "text": "Imagine we have daily observational data for a random variable (e.g., river discharge) for many years. EVT suggests that the extreme values of this variable are asymptotically close to one of three types of extreme value distributions, regardless of the original distribution of daily observations (see Coles (2001)). EVT helps us estimate the probability of rare, high-flow events like floods.\n\n\n\n\n\n\n\n\n\n(a) Normal distribution of the random variable\n\n\n\n\n\n\n\n(b) Sampling distribution of the mean\n\n\n\n\n\n\n\n(c) Extreme value distribution (maxima)\n\n\n\n\n\n\nIllustration of the Extreme Value Theory (EVT)"
-  },
-  {
-    "objectID": "overview/index.html#eva-in-hydrology",
-    "href": "overview/index.html#eva-in-hydrology",
-    "title": "Overview, Key Concepts and Objectives",
-    "section": "2.1 🌊 EVA in Hydrology",
-    "text": "2.1 🌊 EVA in Hydrology\nEVA is a powerful statistical tool to analyze rare events in hydrology and climate science. It focuses on understanding the frequency and intensity of extreme events.\n\n\n\n\n\n\n\n\nImportant\n\n\n\nIndependance (absence of autocorrelation) and Stationarity of extreme value time series are the underlying assumptions of EVA."
-  },
-  {
-    "objectID": "overview/index.html#key-concepts-of-eva",
-    "href": "overview/index.html#key-concepts-of-eva",
-    "title": "Overview, Key Concepts and Objectives",
-    "section": "2.2 📌 Key Concepts of EVA",
-    "text": "2.2 📌 Key Concepts of EVA\n\n2.2.1 📈 Block Maxima Approach\nSelects the maximum value in fixed time blocks (e.g., annual maximum flow or rainfall) → Fits data to distributions like Gumbel or GEV.\n\n\n2.2.2 📉 Peak Over Threshold (POT) Method\nConsiders all events exceeding a predefined threshold → More data points → Fitted to Generalized Pareto Distribution (GPD)."
-  },
-  {
-    "objectID": "overview/index.html#objectives-of-eva",
-    "href": "overview/index.html#objectives-of-eva",
-    "title": "Overview, Key Concepts and Objectives",
-    "section": "2.3 🎯 Objectives of EVA",
-    "text": "2.3 🎯 Objectives of EVA\n🔁 Estimate Return Periods: Assess the intensity of rare events expected to be exceeded, on average, once every N years (e.g., for example, a 100-year event corresponds to a 1% annual probability of being exceeded).\n📊 Construct Frequency Curves: Fit statistical distributions (e.g., GEV, Gumbel, Log-Pearson Type III) to observed extremes to relate event magnitude to exceedance probability.\n🧰 Support Risk-Based Design: Inform engineering design criteria (e.g., for dams, levees, drainage systems) based on scientifically justified extreme thresholds"
-  },
-  {
-    "objectID": "overview/index.html#real-world-applications-of-eva",
-    "href": "overview/index.html#real-world-applications-of-eva",
-    "title": "Overview, Key Concepts and Objectives",
-    "section": "2.4 🏗️ Real-world Applications of EVA",
-    "text": "2.4 🏗️ Real-world Applications of EVA\n🏞️ Infrastructure Design: Design dams, bridges, culverts based on expected extreme flows.\n💧 Water Resource Management: Plan for droughts, reservoir operations, and sustainable use.\n⚠️ Risk Assessment & Planning: Develop floodplain zoning, disaster risk reduction strategies.\n🧭 Policy & Climate Adaptation: Inform government strategies and early warning systems in a changing climate."
   },
   {
     "objectID": "pot/pot_bk.html",
@@ -334,5 +250,40 @@
     "title": "Peaks-Over-Threshold (POT) Modelling",
     "section": "10.2 Non-Stationary context",
     "text": "10.2 Non-Stationary context\nIn non-stationary context, since the scale parameter is time-dependent, return levels have to be calculated for each time step. We refer to this as “effective” return levelsThe same return.level(...) from the {extRemes} package is used to compute \"effective\" return levels.\n\n\n\n\n\n\n\n\nNote\n\n\n\nThe nsgp_fit object is the object returned by the fevd(...) function when we have fitted a the non-stationary GP model.\n\n\n\n# specific return periods (e.g., 10, 20 years)\nrperiods = c(2, 5, 10, 20, 50, 100)\n# compute return levels (with 95% confidence intervals)\nrlevels = return.level(nsgp_fit, return.period=rperiods) + 10\n\nFor easy visualization, we will plot the effective return levels. Lets convert the output of return.level(...) into a clean data.frame :\n\n# Convert estimates to data.frame\ndf_rlevels &lt;- data.frame(time=1:nrow(peaks_final),\n                         Q2=rlevels[, 1],\n                         Q5=rlevels[, 2],\n                         Q10=rlevels[, 3],\n                         Q20=rlevels[, 4],\n                         Q50=rlevels[, 5],\n                         Q100=rlevels[, 6])\nhead(df_rlevels)\n\n  time       Q2       Q5      Q10      Q20      Q50     Q100\n1    1 31.36000 39.38540 47.14447 56.74100 73.00002 88.71949\n2    2 31.34887 39.36640 47.11788 56.70500 72.94809 88.65216\n3    3 31.33774 39.34741 47.09128 56.66901 72.89617 88.58484\n4    4 31.32661 39.32842 47.06469 56.63301 72.84424 88.51751\n5    5 31.31549 39.30943 47.03810 56.59702 72.79232 88.45019\n6    6 31.30436 39.29044 47.01150 56.56102 72.74039 88.38286\n\n\nNow, we tranform the data into a long (tidy) format suitable for plotting multiple lines with ggplot:\n\ndataplot = df_rlevels |&gt; \n           pivot_longer(-1, names_to=\"RL\", values_to=\"Q\") |&gt;\n           # re-index\n           mutate(RL = factor(RL, levels=rev(paste0(\"Q\", c(2, 5,10,20,50,100)))))\n\nFinally, we plot the effective return levels:\n\nrlplot = dataplot |&gt;\n         ggplot(aes(x=time, y=Q, color=RL, group=RL)) +\n         geom_line(linewidth=1) +\n         scale_x_continuous(expand=c(0.01, 0.01)) +\n         scale_y_continuous(expand=c(0.01, 0.01)) +\n         guides(color=guide_legend(keywidth=3)) +\n         theme_bw() +\n         theme(legend.text=element_text(size=12),\n               axis.title=element_text(size=12),\n               axis.text=element_text(size=12, color=\"black\")) +\n         labs(x=\"Time\", y=\"Return level (Q)\", color=NULL)\n           \nprint(rlplot)\n\nFigure 11 helps in understanding the variations and trends in flood quantiles across different time periods.”\n\n\n\n\n\n\n\n\nFigure 11: Effective return levels from the NS-GEV model. Each line represents a different return period (e.i., 2-, 5-, 10-, 20 50, and 100-year floods), and the colour coding indicates these return periods. The x-axis denotes the time index (year), and the y-axis indicates the estimated flood quantiles."
+  },
+  {
+    "objectID": "introduction/index.html#types-of-hydrological-models",
+    "href": "introduction/index.html#types-of-hydrological-models",
+    "title": "Hydrological modelisation",
+    "section": "2.1 Types of Hydrological Models",
+    "text": "2.1 Types of Hydrological Models\nHydrological models can be classified based on the level of process abstraction and the spatial discretization of the watershed. The choice of an hydrological model may depend on the suitability of the model for the specific objectives, the dominant hydrological processes to be represented, the spatial and temporal scales considered, the availability of data, and the computational constraints.\n\n2.1.1 Process Abstraction\n\n\n\n\n\n\n\n\nNote\n\n\n\nDepending on the degree of abstraction, models may represent the hydrological cycle through more or less detailed schematizations.\n\n\n\nConceptual models\nSimplified representations, often based on interconnected reservoirs and empirical or semi-empirical relationships.\nPhysically-based models\nExplicitly simulate water transfers and storages using fundamental physical laws applied to the main components of the watershed.\n\n\n\n2.1.2 Spatial Representation\n\nLumped models\nTreat the watershed as a single homogeneous unit, with input variables representing spatial averages of factors affecting hydrological response.\nDistributed models\nRepresent spatial variability in climate forcing, soil properties, topography, and vegetation by discretizing the watershed into interacting grid cells.\n\nSemi-distributed models\nGroup areas with similar characteristics, balancing process complexity, spatial realism, and computational efficiency.\n\n\n\n\n\n\n\nFigure 2: Classification of hydrological models based on the spatial discretization of the watershed"
+  },
+  {
+    "objectID": "introduction/index.html#hydrologcal-model-calibration",
+    "href": "introduction/index.html#hydrologcal-model-calibration",
+    "title": "Hydrological modelisation",
+    "section": "3.1 Hydrologcal model calibration",
+    "text": "3.1 Hydrologcal model calibration\nHydrological models provide simplified representations of complex watershed behaviour. As a result, they rely on parameters that are typically estimated through calibration, which helps compensate for incomplete process representation and improves the accuracy of simulated streamflow. To ensure that a hydrological model is reliable, it must be both calibrated and evaluated using observational data. Calibration consists of adjusting model parameters to minimize discrepancies between observed and simulated streamflow over a given period. Model evaluation (or validation) then involves running the calibrated model over an independent, “blind” period that was not used during calibration, in order to assess its robustness and predictive performance. Model performance, or goodness of fit, is commonly quantified using statistical criteria such as the Nash-Sutcliffe Efficiency (NSE; Nash & Sutcliffe (1970)) or the Kling-Gupta Efficiency (KGE; Gupta et al. (2009))."
+  },
+  {
+    "objectID": "introduction/index.html#bias-correction-of-climate-models",
+    "href": "introduction/index.html#bias-correction-of-climate-models",
+    "title": "Hydrological modelisation",
+    "section": "3.2 Bias correction of climate models",
+    "text": "3.2 Bias correction of climate models\nWhen assessing the impacts of climate change, hydrological models are typically forced using projections from climate models, including Global and Regional Climate Models (GCMs and RCMs). In this context, the outputs of GCMs developed within Phase 6 of the Coupled Model Intercomparison Project (CMIP6), which supported the IPCC Sixth Assessment Report (AR6), provide valuable information for evaluating future climate change impacts.\nHowever, GCM simulations cannot be used directly as inputs for hydrological models, as they commonly exhibit systematic biases relative to observations. Bias Correction is a mandatory step to align climate simulations with local historical observations before running the hydrological model."
+  },
+  {
+    "objectID": "introduction/index.html#classification-of-model-based-on-process-abstraction",
+    "href": "introduction/index.html#classification-of-model-based-on-process-abstraction",
+    "title": "Hydrological modelisation",
+    "section": "2.1 Classification of model based on process abstraction",
+    "text": "2.1 Classification of model based on process abstraction\n\n\n\n\n\n\n\n\nNote\n\n\n\nDepending on the degree of abstraction, models may represent the hydrological cycle through more or less detailed schematizations.\n\n\n\nConceptual models\nSimplified representations, often based on interconnected reservoirs and empirical or semi-empirical relationships.\nPhysically-based models\nExplicitly simulate water transfers and storages using fundamental physical laws applied to the main components of the watershed.\n\n\n2.1.1 Classification of model based on spatial discretization\n\nLumped models\nTreat the watershed as a single homogeneous unit, with input variables representing spatial averages of factors affecting hydrological response.\nDistributed models\nRepresent spatial variability in climate forcing, soil properties, topography, and vegetation by discretizing the watershed into interacting grid cells.\n\nSemi-distributed models\nGroup areas with similar characteristics, balancing process complexity, spatial realism, and computational efficiency.\n\n\n\n\n\n\n\nFigure 2: Classification of hydrological models based on the spatial discretization of the watershed"
+  },
+  {
+    "objectID": "introduction/index.html#classification-of-hydrological-models-based-on-process-abstraction",
+    "href": "introduction/index.html#classification-of-hydrological-models-based-on-process-abstraction",
+    "title": "Hydrological modelisation",
+    "section": "2.1 Classification of hydrological models based on process abstraction",
+    "text": "2.1 Classification of hydrological models based on process abstraction\n\n\n\n\n\n\n\n\nNote\n\n\n\nDepending on the degree of abstraction, models may represent the hydrological cycle through more or less detailed schematizations.\n\n\n\nConceptual models\nSimplified representations, often based on interconnected reservoirs and empirical or semi-empirical relationships.\nPhysically-based models\nExplicitly simulate water transfers and storages using fundamental physical laws applied to the main components of the watershed.\n\n\n2.1.1 Classification of hydrological models based on spatial discretization\n\nLumped models\nTreat the watershed as a single homogeneous unit, with input variables representing spatial averages of factors affecting hydrological response.\nDistributed models\nRepresent spatial variability in climate forcing, soil properties, topography, and vegetation by discretizing the watershed into interacting grid cells.\n\nSemi-distributed models\nGroup areas with similar characteristics, balancing process complexity, spatial realism, and computational efficiency.\n\n\n\n\n\n\n\nFigure 2: Classification of hydrological models based on the spatial discretization of the watershed"
   }
 ]

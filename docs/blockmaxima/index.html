@@ -201,10 +201,6 @@ window.Quarto = {
 <span class="menu-text">Introduction</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../overview/index.html"> 
-<span class="menu-text">Overview</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="../softwaresetup/index.html"> 
 <span class="menu-text">Software &amp; Setup</span></a>
   </li>  
@@ -935,7 +931,7 @@ GEV distribution
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The Generalized Extreme Value (GEV) distribution is a family of continuous probability distributions developed to combine the <strong>Gumbel</strong>, <strong>Fréchet</strong>, and <strong>Weibull</strong> distributions. According to the <a href="../overview/index.html#sec-evt"><strong>Extreme Value Theorem</strong></a>, the <strong>GEV</strong> distribution is the only possible limit distribution for properly normalized sequences of maxima of independent and identically distributed random variables. The <strong>cumulative distribution function (CDF)</strong> of the <strong>GEV</strong> distribution is given by:</p>
+<p>The Generalized Extreme Value (GEV) distribution is a family of continuous probability distributions developed to combine the <strong>Gumbel</strong>, <strong>Fréchet</strong>, and <strong>Weibull</strong> distributions. According to the <a href="../overview/index.qmd#sec-evt"><strong>Extreme Value Theorem</strong></a>, the <strong>GEV</strong> distribution is the only possible limit distribution for properly normalized sequences of maxima of independent and identically distributed random variables. The <strong>cumulative distribution function (CDF)</strong> of the <strong>GEV</strong> distribution is given by:</p>
 <p><span class="math display">
 F(x; \mu, \alpha, \xi) = \exp\left\{ -\left[ 1 + \xi \left( \frac{x - \mu}{\alpha} \right) \right]^{-1/\xi} \right\}
 \tag{7}
@@ -1796,7 +1792,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/sbdiop\.quarto\.pub\/introduction-to-extreme-value-analysis");
+      var filterRegex = new RegExp("https:\/\/diopbachir\.github\.io\/tp_eva\/index\.html");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

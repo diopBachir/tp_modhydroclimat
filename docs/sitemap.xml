@@ -1,47 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://sbdiop.quarto.pub/introduction-to-extreme-value-analysis/pot/index.html</loc>
+    <loc>https://diopbachir.github.io/tp_eva/index.html/index.html</loc>
+    <lastmod>2026-01-16T16:21:57.654Z</lastmod>
+  </url>
+  <url>
+    <loc>https://diopbachir.github.io/tp_eva/index.html/pot/index.html</loc>
     <lastmod>2025-10-05T23:12:23.312Z</lastmod>
   </url>
   <url>
-    <loc>https://sbdiop.quarto.pub/introduction-to-extreme-value-analysis/index.html</loc>
-    <lastmod>2025-10-23T18:40:59.605Z</lastmod>
+    <loc>https://diopbachir.github.io/tp_eva/index.html/introduction/index.html</loc>
+    <lastmod>2026-01-15T23:41:29.031Z</lastmod>
   </url>
   <url>
-    <loc>https://sbdiop.quarto.pub/introduction-to-extreme-value-analysis/introduction/revealjs_presentation/index.html</loc>
-    <lastmod>2025-10-23T20:14:40.059Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sbdiop.quarto.pub/introduction-to-extreme-value-analysis/introduction/revealjs_presentation/intro.html</loc>
-    <lastmod>2025-08-03T01:00:59.103Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sbdiop.quarto.pub/introduction-to-extreme-value-analysis/blockmaxima/index.html</loc>
+    <loc>https://diopbachir.github.io/tp_eva/index.html/blockmaxima/index.html</loc>
     <lastmod>2025-10-23T14:05:00.487Z</lastmod>
   </url>
   <url>
-    <loc>https://sbdiop.quarto.pub/introduction-to-extreme-value-analysis/introduction/index.html</loc>
-    <lastmod>2025-10-23T20:07:18.922Z</lastmod>
+    <loc>https://diopbachir.github.io/tp_eva/index.html/softwaresetup/index.html</loc>
+    <lastmod>2026-01-16T16:34:25.679Z</lastmod>
   </url>
   <url>
-    <loc>https://sbdiop.quarto.pub/introduction-to-extreme-value-analysis/introduction/revealjs_presentation/acquisition.html</loc>
-    <lastmod>2025-08-03T00:58:19.247Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sbdiop.quarto.pub/introduction-to-extreme-value-analysis/softwaresetup/index.html</loc>
-    <lastmod>2025-07-12T13:01:15.228Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sbdiop.quarto.pub/introduction-to-extreme-value-analysis/overview/index.html</loc>
-    <lastmod>2025-07-12T13:29:50.020Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sbdiop.quarto.pub/introduction-to-extreme-value-analysis/pot/pot_bk.html</loc>
+    <loc>https://diopbachir.github.io/tp_eva/index.html/pot/pot_bk.html</loc>
     <lastmod>2025-07-17T22:47:56.067Z</lastmod>
-  </url>
-  <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/index.html</loc>
-    <lastmod>2025-10-23T20:17:12.720Z</lastmod>
   </url>
 </urlset>
