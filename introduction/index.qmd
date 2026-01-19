@@ -2,6 +2,7 @@
 title: Hydrological modelisation
 # author: --
 # date: last-modified
+page-layout: full
 ---
 
 # The watershed concept {#sec-watershed}
@@ -23,10 +24,8 @@ Hydrological models can be classified based on the **level of process abstractio
 
 ## Classification of hydrological models based on process abstraction
 
-::: {.column-margin}
 ::: {.callout-note}
 Depending on the degree of abstraction, models may represent the hydrological cycle through more or less detailed schematizations.
-:::
 :::
 
 - **Conceptual models**  

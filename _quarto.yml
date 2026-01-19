@@ -33,10 +33,18 @@ website:
         text: Introduction
       - href: softwaresetup/index.qmd
         text: Software & Setup
-      - href: blockmaxima/index.qmd
-        text: Block Maxima Approach
-      - href: pot/index.qmd
-        text: Threshold Exceedance (POT)
+      - href: loaddata/index.qmd
+        text: Database
+      - href: modelcalib/index.qmd
+        text: Model calibration
+      - href: biascorr/index.qmd
+        text: Bias correction
+      - href: simulation/index.qmd
+        text: Simulation
+      # - href: blockmaxima/index.qmd
+      #   text: Block Maxima Approach
+      # - href: pot/index.qmd
+        # text: Threshold Exceedance (POT)
     #   - href: teaching/index.qmd
     #     text: Distributions Fitting
     #   - href: about/index.qmd

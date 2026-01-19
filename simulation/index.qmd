@@ -1,0 +1,724 @@
+---
+title: "Hydrological simulation"
+page-layout: full
+---
+
+# Load necessary libraries
+
+```{r}
+#| echo: true
+#| eval: true
+#| message: false
+#| warning: false
+
+library(zoo)
+library(airGR)
+library(hydromad)
+library(dplyr)
+library(tidyr)
+library(lubridate)
+library(ggplot2)
+library(patchwork)
+```
+
+# Load preprocessed observational and bias corrected data
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+hist_obs = readRDS("output_preprocessed/processed_obsdata_lez.rds")
+str(hist_obs)
+
+biascorr_climdata = readRDS("output_biascorrection/biascorrected_climdata.rds")
+str(biascorr_climdata)
+```
+
+
+# Validation of the bias correction using calibrated hydrological models over the historical period
+
+In this section, we will run hydrological experiments or simulations using calibrated hydrological models driven  by observed hydroclimatic data and bias-corrected GCMs outputs.
+
+
+## Validation with the GR4J model
+
+We first load the optimized GR4J parameters derived in the [GR4J model calibration section](../modelcalib/index.qmd#sec-gr4jcalib).
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+gr4j_param = readRDS("output_modelcalibration/fitGR4J_lez.rds")
+```
+
+Before running the GR4J simulations, we define a helper function (**`run_gr4j_simulation(...)`**) that prepares all required input objects for the model using already calibrated parameters. This function streamlines the simulation workflow, avoids repeating the input preparation steps, and ensures consistency across all model runs.
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+#| code-fold: true
+#| code-summary: Show the code
+
+run_gr4j_simulation = function(data, Pvarname, PETvarname, Qobs, params) {
+  
+  data = data[complete.cases(data[, c(Pvarname, PETvarname)]), ]
+
+  # Ensure Date format (POSIXt required by airGR) ---
+  data[["Date"]] = as.POSIXct(data[["Date"]])
+  
+  # Create model inputs ---
+  InputsModel = CreateInputsModel(
+    FUN_MOD  = RunModel_GR4J,
+    DatesR   = data[["Date"]],
+    Precip   = data[[Pvarname]],
+    PotEvap  = data[[PETvarname]]
+  )
+  
+  # Create run options (no warm-up) ---
+  RunOptions = CreateRunOptions(
+    FUN_MOD = RunModel_GR4J,
+    InputsModel = InputsModel,
+    IndPeriod_Run = seq_len(length(data[["Date"]]))
+  )
+  
+  # Run GR4J simulation ---
+  OutputsModel = RunModel_GR4J(
+    InputsModel = InputsModel,
+    RunOptions  = RunOptions,
+    Param       = params
+  )
+  
+  # Return simulation outputs ---
+  data.frame(
+    Date = data$Date,
+    Qobs = Qobs,
+    Qsim = OutputsModel$Qsim
+  )
+}
+
+```
+
+
+Reference simulation (Benchmark using station data)
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+Qobs_data = hist_obs$Q
+gr4jsim_hist_obs = run_gr4j_simulation(
+  hist_obs, "P", "PET", Qobs_data, gr4j_param
+)
+str(gr4jsim_hist_obs)
+```
+
+We will focus strictly on the validation of the bias-corrected data (the "Adjusted" version), (i.e., the **`PRadj`** and **`PETadj`** columns created by our **CDF-t step**).
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+hist_adj_climdata = biascorr_climdata[["hist"]]
+gr4jsim_hist_adjclimdata = run_gr4j_simulation(
+  hist_adj_climdata, "PRadj", "PETadj", Qobs_data, gr4j_param
+)
+```
+
+
+```{r}
+#| echo: false
+#| eval: false
+#| warning: false
+#| message: false
+
+# # Reference Simulation (Benchmark using station data)
+# Qobs = hist_obs$Q
+# gr4jsim_hist_obs = run_gr4j_simulation(hist_obs, "P", "PET", Qobs, gr4j_param)
+
+# # Corrected Simulations for all models
+# model_names = c("CLM", "CNRM", "IPSL")
+# hist_clim_sims = lapply(setNames(model_names, model_names), function(m) {
+#   # Pass the global Qobs to each model simulation
+#   run_corrected_sims_hist(
+#     all_models_list = biascorr_climdata, 
+#     model_name = m, 
+#     Qobs_data = hist_obs$Q, 
+#     params = gr4j_param
+#   )
+# })
+# str(hist_clim_sims)
+```
+
+We define the **`hydrological year`** starting on **`September 1st`**. Once the hydrological year defined, we will compute the following statistics for the observations and for each climate model simulation:
+
+- **Mean annual discharge**:
+- **Annual Maximum**
+- **Annual Minimum 7-day Discharge (VCN7)**
+- **Mean daily hydrograph over the hydrological year**
+
+
+Below, we define two helper functions to compute these metrics:
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+#| code-fold: true
+#| code-summary: Show the code
+
+compute_hydro_indices = function(df, model_name, Q_col) 
+{
+  df %>%
+    mutate(
+      # Revert selected Q from mm to m3/s (assuming area is 178 km2)
+      # .data[[...]] allows us to reference the column dynamically
+      Q_val = (.data[[Q_col]] * 178) / 86.4,
+      Date = as.Date(Date),
+      # Define Water Year (Sept 1st)
+      WaterYear = ifelse(month(Date) >= 9, year(Date) + 1, year(Date))
+    ) %>%
+    group_by(WaterYear) %>%
+    summarise(
+      Model = model_name,
+      AnMean = mean(Q_val, na.rm = TRUE),
+      Amax   = max(Q_val, na.rm = TRUE),
+      minVCN7 = min(rollapply(Q_val, width = 7, FUN = mean, fill = NA), na.rm = TRUE),
+      .groups = "drop"
+    )
+}
+
+compute_mean_daily_cycle = function(df, model_name, Q_col) 
+{
+  df %>%
+    mutate(
+      # Convert from mm/day to m3/s
+      Q_val = (.data[[Q_col]] * 178) / 86.4,
+      Date = as.Date(Date),
+      
+      # Hydrological year (Sept–Aug)
+      WaterYear = ifelse(month(Date) >= 9, year(Date) + 1, year(Date)),
+      
+      # Hydrological day of year (Sept 1 = 1)
+      HydroDOY = ifelse(
+        month(Date) >= 9,
+        yday(Date) - yday(as.Date(paste0(year(Date), "-09-01"))) + 1,
+        yday(Date) + (365 - yday(as.Date(paste0(year(Date) - 1, "-09-01"))) + 1)
+      )
+    ) %>%
+    group_by(HydroDOY) %>%
+    summarise(
+      Model = model_name,
+      MeanDailyQ = mean(Q_val, na.rm = TRUE),
+      .groups = "drop"
+    )
+}
+
+```
+
+We can apply these functions to compute the indices for the observed and climate-model-driven GR4J simulations:
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Mean annual discharge, Annual Maximum, and VCN7 for observed data
+histObsMetrics = compute_hydro_indices(
+  gr4jsim_hist_obs, "Observed", "Qobs"
+)
+str(histObsMetrics)
+
+# Mean daily streamflow for observed data
+histObsmeanDaily = compute_mean_daily_cycle(
+  gr4jsim_hist_obs, "Observed", "Qobs"
+)
+str(histObsmeanDaily)
+
+# Mean annual discharge, Annual Maximum, and VCN7 for GR4J with observed data
+histGR4JObsMetrics = compute_hydro_indices(
+  gr4jsim_hist_obs, "GR4J with observed", "Qsim"
+)
+str(histGR4JObsMetrics)
+
+# Mean daily streamflow data for GR4J with observed data
+histGR4JObsmeanDaily = compute_mean_daily_cycle(
+  gr4jsim_hist_obs, "GR4J with observed", "Qsim"
+)
+str(histGR4JObsmeanDaily)
+
+# Mean annual discharge, Annual Maximum, and VCN7 for GR4J with bias-corrected data
+histGR4JclimAdjMetrics = compute_hydro_indices(
+  gr4jsim_hist_adjclimdata, "GR4J with bias-corrected RCM", "Qsim"
+)
+str(histGR4JclimAdjMetrics)
+
+# Mean daily streamflow for GR4J with observed data
+histGR4JclimAdjmeanDaily = compute_mean_daily_cycle(
+  gr4jsim_hist_adjclimdata, "GR4J with bias-corrected RCM", "Qsim"
+)
+str(histGR4JclimAdjmeanDaily)
+
+```
+
+```{r}
+#| echo: false
+#| eval: false
+#| code-fold: true
+#| code-summary: Show the code
+#| warning: false
+#| message: false
+#| fig-width: 12
+#| fig-height: 8
+#| out-width: "100%"
+#| label: fig-metric_simu_hist
+#| fig-cap: ""
+
+# # Apply to observed streamflow, and simulations with GR4J
+# histObsMetrics = compute_hydro_indices(gr4jsim_hist_obs, "Observed", "Qobs")
+# histGR4JObsMetrics = compute_hydro_indices(gr4jsim_hist_obs, "Observed-GR4J", "Qsim")
+# histGR4JCliModMetrics = lapply(names(hist_clim_sims), function(m) {
+#   compute_hydro_indices(
+#     df = hist_clim_sims[[m]], 
+#     model_name = paste0(m, "-GR4J"), Q_col = "Qsim"
+#   )
+# }) 
+
+# # bind all dfs for plot
+# histGR4Jsimu = bind_rows(histObsMetrics, histGR4JObsMetrics, histGR4JCliModMetrics)
+# summary(histGR4Jsimu)
+```
+
+We validate the bias correction by reproducing **`key hydrological-year`** metrics by comparing observed indices with their simulated counterparts. For **mean annual discharge**, **annual maximum discharge**, and **VCN7**, scatter plots against the 1:1 line (QQ-plot–style comparisons) are used, as they provide a direct visualization of model bias and dispersion. In contrast, a time-serie representation of the **mean daily discharge** over the hydrological year is more appropriate for assessing the model’s ability to reproduce the seasonal streamflow cycle.
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+#| fig-width: 10
+#| fig-height: 5
+#| out-width: "100%"
+#| code-fold: true
+#| code-summary: Show the code
+
+# --- Make scatter plots ---------------
+
+# Separate the Reference (X-axis)
+obs_metrics_ref = histGR4JObsMetrics %>%
+  select(WaterYear, 
+         Obs_AnMean = AnMean, 
+         Obs_Amax = Amax, 
+         Obs_minVCN7 = minVCN7)
+
+# Join with Observations and Pivot for Plotting ---
+scatterplot_data = histGR4JclimAdjMetrics %>%
+  left_join(obs_metrics_ref, by = "WaterYear") %>%
+  # Pivot simulated values
+  pivot_longer(cols = c(AnMean, Amax, minVCN7), 
+               names_to = "Metric", 
+               values_to = "Sim_Value") %>%
+  # Pivot observed values to match
+  mutate(Obs_Value = case_when(
+    Metric == "AnMean"  ~ Obs_AnMean,
+    Metric == "Amax"    ~ Obs_Amax,
+    Metric == "minVCN7" ~ Obs_minVCN7
+  )) %>%
+  # Clean names for facets
+  mutate(Metric = factor(Metric, 
+                         levels = c("AnMean", "Amax", "minVCN7"),
+                         labels = c("Annual Mean Discharge", 
+                                    "Annual Max Discharge", 
+                                    "Low Flow VCN7")))
+
+limits_df = scatterplot_data %>%
+  group_by(Metric, Model) %>%
+  summarise(
+    lim_min = min(c(Obs_Value, Sim_Value), na.rm = TRUE),
+    lim_max = max(c(Obs_Value, Sim_Value), na.rm = TRUE),
+    .groups = "drop"
+  )
+
+scatterplot_data = left_join(
+  scatterplot_data,
+  limits_df,
+  by = c("Metric", "Model")
+)
+
+# Create the scatterplots
+ggplot(scatterplot_data, aes(x = Obs_Value, y = Sim_Value)) +
+  geom_blank(aes(x = lim_min, y = lim_min)) +
+  geom_blank(aes(x = lim_max, y = lim_max)) +
+  geom_abline(slope = 1, intercept = 0, linetype="dashed", color="grey50", linewidth=.8) +
+  geom_point(alpha = 0.7, size = 4, color = "#5ab4ac") +
+  facet_wrap(vars(Metric), scales = "free") +
+  labs(x = "GR4J with observed", y = "GR4J with bias-corrected RCM") +
+  theme_bw(base_family="Times") +
+  theme(legend.position = "none", # Legend is redundant because of facet labels
+        strip.text = element_text(face="bold", size=16),
+        axis.text = element_text(size=16, color="black"),
+        axis.title = element_text(size=16, color="black", face="bold"),
+        aspect.ratio = 1)
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+#| fig-width: 12
+#| fig-height: 7
+#| out-width: "100%"
+#| code-fold: true
+#| code-summary: Show the code
+
+
+# --- Annual cycle plot (mean annual daily flow) ---------------
+
+# Combine all daily cycle data into one dataframe
+histRegimeAll = bind_rows(histObsmeanDaily,   
+                          histGR4JObsmeanDaily,
+                          histGR4JclimAdjmeanDaily)
+
+# Ensure the factor levels are in a logical order for the legend
+histRegimeAll$Model = factor(histRegimeAll$Model, 
+                              levels = c("Observed", 
+                                         "GR4J with observed", 
+                                         "GR4J with bias-corrected RCM"))
+
+ggplot(histRegimeAll, aes(x=HydroDOY, y=MeanDailyQ, color=Model, linetype=Model)) +
+  # Apply 7-day smoothing directly in the plot
+  geom_line(linewidth = .8) +
+  scale_color_manual(values = c("Observed" = "black", 
+                                "GR4J with observed" = "#d8b365", 
+                                "GR4J with bias-corrected RCM" = "#5ab4ac")) +
+  scale_linetype_manual(values = c("Observed" = "dotted", 
+                                   "GR4J with observed" = "solid", 
+                                   "GR4J with bias-corrected RCM" = "solid")) +
+  scale_x_continuous(breaks = seq(1, 366, 20)) +
+  labs(x = "Days of hydrological year", 
+       y = "Discharge (m3/s)", 
+       color = NULL, linetype = NULL) +
+  guides(color = guide_legend(keywidth=unit(2, "cm")),
+         linetype = guide_legend(keywidth=unit(2, "cm"))) +
+  theme_bw() +
+  theme(legend.position = c(.7, .8),
+        panel.grid.minor = element_blank(),
+        legend.text = element_text(size=16, color="black"),
+        axis.text = element_text(size=16, color="black"),
+        axis.title = element_text(size=16, color="black", face="bold"))
+```
+
+```{r}
+# # 1. Prepare Reference (X-axis)
+# obs_ref = histGR4Jsimu %>%
+#   filter(Model == "Observed") %>%
+#   select(WaterYear, AnMean_Obs = AnMean, Amax_Obs = Amax, minVCN7_Obs = minVCN7)
+
+# # 2. Prepare Data for Faceting
+# plot_data_grid = histGR4Jsimu %>%
+#   filter(Model != "Observed") %>%
+#   left_join(obs_ref, by = "WaterYear") %>%
+#   tidyr::pivot_longer(
+#     cols = c(AnMean, Amax, minVCN7),
+#     names_to = "Metric",
+#     values_to = "Simulated_Value"
+#   ) %>%
+#   mutate(Observed_Value = case_when(
+#     Metric == "AnMean"  ~ AnMean_Obs,
+#     Metric == "Amax"    ~ Amax_Obs,
+#     Metric == "minVCN7" ~ minVCN7_Obs
+#   )) %>%
+#   # Clean up labels for pretty facets
+#   mutate(
+#     Metric = factor(Metric, 
+#                     levels = c("AnMean", "Amax", "minVCN7"),
+#                     labels = c("Annual Mean Flow", "Annual Max Flow", "Low Flow (VCN7)")),
+#     Model = factor(Model)
+#   )
+
+# # 3. Create the Matrix Plot
+# ggplot(plot_data_grid, aes(x = Observed_Value, y = Simulated_Value)) +
+#   # Add the 1:1 line in the background
+#   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey60") +
+#   # Use black/blue points since we have facets for models
+#   geom_point(alpha = 0.5, color = "steelblue", size = 1.5) +
+#   # CREATE THE GRID: Rows = Metrics, Columns = Models
+#   facet_wrap(
+#     facets = vars(Metric, Model),
+#     scales = "free",
+#     ncol = length(unique(plot_data_grid$Model))
+#   ) +
+#   labs(
+#     title = "Hydrological Indices Validation Matrix",
+#     subtitle = "Rows: Hydrological Indicators | Columns: Simulation Type | X-axis: Observed Station Data",
+#     x = "Observed Value at Station (m³/s)",
+#     y = "Simulated Value by GR4J (m³/s)"
+#   ) +
+#   theme_bw() +
+#   theme(
+#     strip.background = element_rect(fill = "grey95"),
+#     strip.text = element_text(face = "bold"),
+#     panel.grid.minor = element_blank(),
+#     aspect.ratio = 1 # Keep plots square for 1:1 comparison
+#   )
+```
+
+
+## Validation with the IHACRES model
+
+::: {.callout-warning title="Predefined objects"}
+Many of the objects and functions (**`hist_obs`**, **`Qobs_data`**, **`hist_adj_climdata`**, **`histObsMetrics`**, **`histObsmeanDaily`**, **`compute_hydro_indices`**, **`compute_mean_daily_cycle`**) used in this section have already been defined in the **GR4J model section** above. Make sure to review that section if you need context or definitions before proceeding.
+:::
+
+In [IHACRES model calibration section](../modelcalib/index.qmd#sec-ihacrescalib), we obtained a calibrated IHACRES model. The resulting fitted object can be used directly to generate streamflow simulations over the validation period.
+
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+fit_ihacres = readRDS("output_modelcalibration/fitIHACRES_lez.rds")
+class(fit_ihacres)
+```
+
+As with the GR4G model, we define a helper function to ease the runs of IHACRES model.
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+#| code-fold: true
+#| code-summary: Show the code
+
+predict_ihacres <- function(fit,
+                            df,
+                            Qobs_data = NA,
+                            P_col = "PR",
+                            E_col = "PET",
+                            date_col = "Date") 
+{
+  
+  # Safety checks
+  stopifnot(
+    inherits(fit, "hydromad"),
+    all(c(P_col, E_col, date_col) %in% names(df))
+  )
+  
+  # Prepare inputs
+  inputs <- data.frame(
+    P = df[[P_col]],
+    E = df[[E_col]]
+  )
+  
+  # Run simulation
+  Qsim <- predict(fit, newdata = inputs)
+  
+  # --- Return tidy dataframe ---
+  data.frame(
+    Date = as.Date(df[[date_col]]),
+    Qobs = Qobs_data,
+    Qsim = as.numeric(Qsim)
+  )
+}
+```
+
+Reference simulation (Benchmark using station data)
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+#| code-fold: true
+#| code-summary: Show the code
+
+ihacres_sim_hist_obs = predict_ihacres(
+  fit_ihacres, hist_obs, Qobs_data, "P", "PET"
+)
+str(ihacres_sim_hist_obs)
+```
+
+Next, we run the calibrated IHACRES model using the bias-corrected data as forcings.
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+ihacres_sim_hist_adjclimdata = predict_ihacres(
+  fit_ihacres, hist_adj_climdata, Qobs_data, "PRadj", "PETadj"
+)
+str(ihacres_sim_hist_adjclimdata)
+```
+
+As for the GR4J, we compute the **mean annual discharge**, **annual maximum**, **annual minimum 7-day discharge (VCN7)**, **mean daily hydrograph over the hydrological year.
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+# Mean annual discharge, Annual Maximum, and VCN7 for IHACRES with observed data
+histIHACRESObsMetrics = compute_hydro_indices(
+  ihacres_sim_hist_obs, "IHACRES with observed", "Qsim"
+)
+str(histIHACRESObsMetrics)
+
+# Mean daily streamflow data for IHACRES with observed data
+histIHACRESObsmeanDaily = compute_mean_daily_cycle(
+  ihacres_sim_hist_obs, "IHACRES with observed", "Qsim"
+)
+str(histIHACRESObsmeanDaily)
+
+# Mean annual discharge, Annual Maximum, and VCN7 for IHACRES with bias-corrected data
+histIHACRESclimAdjMetrics = compute_hydro_indices(
+  ihacres_sim_hist_adjclimdata, "IHACRES with bias-corrected RCM", "Qsim"
+)
+str(histIHACRESclimAdjMetrics)
+
+# Mean daily streamflow for IHACRES with observed data
+histIHACRESclimAdjmeanDaily = compute_mean_daily_cycle(
+  ihacres_sim_hist_adjclimdata, "IHACRES with bias-corrected RCM", "Qsim"
+)
+str(histIHACRESclimAdjmeanDaily)
+```
+
+
+We validate the bias correction using the IHACRES by creating the same plots as with the GR4J model above.
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+#| fig-width: 10
+#| fig-height: 5
+#| out-width: "100%"
+#| code-fold: true
+#| code-summary: Show the code
+
+# --- Make scatter plots ---------------
+
+# Separate the Reference (X-axis)
+obs_metrics_ref = histIHACRESObsMetrics %>%
+  select(WaterYear, 
+         Obs_AnMean = AnMean, 
+         Obs_Amax = Amax, 
+         Obs_minVCN7 = minVCN7)
+
+# Join with Observations and Pivot for Plotting ---
+scatterplot_data = histIHACRESclimAdjMetrics %>%
+  left_join(obs_metrics_ref, by = "WaterYear") %>%
+  # Pivot simulated values
+  pivot_longer(cols = c(AnMean, Amax, minVCN7), 
+               names_to = "Metric", 
+               values_to = "Sim_Value") %>%
+  # Pivot observed values to match
+  mutate(Obs_Value = case_when(
+    Metric == "AnMean"  ~ Obs_AnMean,
+    Metric == "Amax"    ~ Obs_Amax,
+    Metric == "minVCN7" ~ Obs_minVCN7
+  )) %>%
+  # Clean names for facets
+  mutate(Metric = factor(Metric, 
+                         levels = c("AnMean", "Amax", "minVCN7"),
+                         labels = c("Annual Mean Discharge", 
+                                    "Annual Max Discharge", 
+                                    "Low Flow VCN7")))
+
+limits_df = scatterplot_data %>%
+  group_by(Metric, Model) %>%
+  summarise(
+    lim_min = min(c(Obs_Value, Sim_Value), na.rm = TRUE),
+    lim_max = max(c(Obs_Value, Sim_Value), na.rm = TRUE),
+    .groups = "drop"
+  )
+
+scatterplot_data = left_join(
+  scatterplot_data,
+  limits_df,
+  by = c("Metric", "Model")
+)
+
+# Create the scatterplots
+ggplot(scatterplot_data, aes(x = Obs_Value, y = Sim_Value)) +
+  geom_blank(aes(x = lim_min, y = lim_min)) +
+  geom_blank(aes(x = lim_max, y = lim_max)) +
+  geom_abline(slope = 1, intercept = 0, linetype="dashed", color="grey50", linewidth=.8) +
+  geom_point(alpha = 0.7, size = 4, color = "#5ab4ac") +
+  facet_wrap(vars(Metric), scales = "free") +
+  labs(x = "IHACRES with observed", y = "IHACRES with bias-corrected RCM") +
+  theme_bw(base_family="Times") +
+  theme(legend.position = "none", # Legend is redundant because of facet labels
+        strip.text = element_text(face="bold", size=16),
+        axis.text = element_text(size=16, color="black"),
+        axis.title = element_text(size=16, color="black", face="bold"),
+        aspect.ratio = 1)
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+#| fig-width: 12
+#| fig-height: 7
+#| out-width: "100%"
+#| code-fold: true
+#| code-summary: Show the code
+
+
+# --- Annual cycle plot (mean annual daily flow) ---------------
+
+# Combine all daily cycle data into one dataframe
+histRegimeAll = bind_rows(histObsmeanDaily,   
+                          histIHACRESObsmeanDaily,
+                          histIHACRESclimAdjmeanDaily)
+
+# Ensure the factor levels are in a logical order for the legend
+histRegimeAll$Model = factor(histRegimeAll$Model, 
+                              levels = c("Observed", 
+                                         "IHACRES with observed", 
+                                         "IHACRES with bias-corrected RCM"))
+
+ggplot(histRegimeAll, aes(x=HydroDOY, y=MeanDailyQ, color=Model, linetype=Model)) +
+  # Apply 7-day smoothing directly in the plot
+  geom_line(linewidth = .8) +
+  scale_color_manual(values = c("Observed" = "black", 
+                                "IHACRES with observed" = "#d8b365", 
+                                "IHACRES with bias-corrected RCM" = "#5ab4ac")) +
+  scale_linetype_manual(values = c("Observed" = "dotted", 
+                                   "IHACRES with observed" = "solid", 
+                                   "IHACRES with bias-corrected RCM" = "solid")) +
+  scale_x_continuous(breaks = seq(1, 366, 20)) +
+  labs(x = "Days of hydrological year", 
+       y = "Discharge (m3/s)", 
+       color = NULL, linetype = NULL) +
+  guides(color = guide_legend(keywidth=unit(2, "cm")),
+         linetype = guide_legend(keywidth=unit(2, "cm"))) +
+  theme_bw() +
+  theme(legend.position = c(.7, .8),
+        panel.grid.minor = element_blank(),
+        legend.text = element_text(size=16, color="black"),
+        axis.text = element_text(size=16, color="black"),
+        axis.title = element_text(size=16, color="black", face="bold"))
+```
+
+
+# Scenarios climatiques
+

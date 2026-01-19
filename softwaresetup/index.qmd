@@ -1,5 +1,6 @@
 ---
 title: "Data, Software, Setup and Libraries (Packages)"
+page-layout: full
 ---
 
 # Get the Data Used
@@ -14,10 +15,8 @@ The data used in this practical session are available in the project’s dedicat
 
 # R (environment) & Rstudio (IDE)
 
-::: {.column-margin}
 ::: {.callout-note}
 An **`IDE (Integrated Development Environment)`** is a **software application** that provides developers with a comprehensive set of tools for **writing, testing, and debugging code** in one place.
-:::
 :::
 
 
@@ -52,7 +51,6 @@ An **`IDE (Integrated Development Environment)`** is a **software application** 
 
 # Libraries (Packages)
 
-::: {.column-margin}
 ::: {.callout-important}
 ## Must-haves
 ```{r}
@@ -67,9 +65,7 @@ library(trend)
 library(extRemes)
 ```
 :::
-:::
 
-::: {.column-margin}
 ::: {.callout-note}
 The packages `dplyr`, `ggplot2` and `lubridate` are part of the [`tidyverse`](https://www.tidyverse.org/packages/) collection of R packages. The `core tidyverse` includes the packages that you’re likely to use in everyday data analyses. It's is advised to install this set of packages, including `dplyr`, `ggplot2` and `lubridate`, together by running:
 
@@ -79,7 +75,6 @@ The packages `dplyr`, `ggplot2` and `lubridate` are part of the [`tidyverse`](ht
 
 install.packages("tidyverse")
 ```
-:::
 :::
 
 📦 [{extRemes}](https://www.jstatsoft.org/article/view/v072i08) — For fitting and analyzing extreme value distributions.

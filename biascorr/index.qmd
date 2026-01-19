@@ -1,0 +1,542 @@
+---
+title: "Bias correction of climate models"
+page-layout: full
+---
+
+# Load necessary libraries
+
+```{r}
+#| echo: true
+#| eval: true
+#| message: false
+#| warning: false
+
+library(CDFt)
+library(ggplot2)
+library(lubridate)
+```
+
+# Load preprocessed data
+
+As described in the [**database section**](../loaddata/index.qmd#sec-exportpreprocessed), preprocessed datasets can be efficiently reloaded using the **`readRDS()`** function. In the code chunk below, we reload the observational and climate projection dataset that was previously prepared and exported. The structure of the R objects is fully preserved: the observed data are stored in a dataframe, while the climate projection data are organized as a nested list, ensuring seamless reuse in subsequent analyses.
+
+```{r}
+#| echo: true
+#| eval: true
+
+hist_obs = readRDS("output_preprocessed/processed_obsdata_lez.rds")
+names(hist_obs) = c("Date", "PR", "T", "PET", "Q")
+str(hist_obs)
+
+clim_proj = readRDS("output_preprocessed/processed_climatedata_lez.rds")
+str(clim_proj[1])
+```
+
+
+Before applying bias correction, we first compute the **Potential Evapotranspiration (PET)** from the climate model data. In this step, we use the **Hargreaves and Samani** equation [@Hargreaves1985], a widely adopted temperature-based method that estimates PET from daily temperature extremes and extraterrestrial radiation. Calculating PET at this stage ensures that both precipitation and evapotranspiration are consistently represented, which is essential for subsequent hydrological modeling and bias-correction procedures.
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-fold: true
+#| code-summary: Expand to see the calc_hargreaves function
+
+calc_hargreaves = function(df, lat = 44.1958) 
+{
+  # Convert Latitude to Radians
+  phi = lat * pi / 180
+  
+  # Get Day of Year from the Date column
+  doy = yday(df$Date)
+  
+  # 1. Inverse relative distance Earth-Sun (dr)
+  dr = 1 + 0.033 * cos(2 * pi * doy / 365)
+  
+  # 2. Solar declination (delta)
+  delta = 0.409 * sin(2 * pi * doy / 365 - 1.39)
+  
+  # 3. Sunset hour angle (ws)
+  # This handles the geometry of the Earth's curve at 43.7 degrees
+  ws = acos(-tan(phi) * tan(delta))
+  
+  # 4. Extraterrestrial radiation (Ra) in MJ/m2/day
+  Ra = (24 * 60 / pi) * 0.0820 * dr * (ws * sin(phi) * sin(delta) + cos(phi) * cos(delta) * sin(ws))
+  
+  # 5. Convert Ra to evaporation equivalent (mm/day)
+  # 1 MJ/m2/day is approx 0.408 mm/day
+  Ra_mm = Ra * 0.408
+  
+  # 6. Final Hargreaves Calculation
+  T_mean = (df$TMAX + df$TMIN) / 2
+  # pmax ensures we don't get NaNs if Tmin > Tmax (though rare)
+  PET = 0.0023 * Ra_mm * (T_mean + 17.8) * sqrt(pmax(0, df$TMAX - df$TMIN))
+  
+  return(PET)
+}
+```
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Apply the calc_hargreaves() function to the 'hist', 'rcp45', and 'rcp85' dataframes
+
+clim_proj[["climdataCLM"]] = lapply(clim_proj[["climdataCLM"]], function(df) {
+  df$PET = calc_hargreaves(df, lat = 44.1958)
+  df[, c("Date", "PR", "PET")]
+})
+
+clim_proj[["climdataCNRM"]] = lapply(clim_proj[["climdataCNRM"]], function(df) {
+  df$PET = calc_hargreaves(df, lat = 44.1958)
+  df[, c("Date", "PR", "PET")]
+})
+
+clim_proj[["climdataIPSL"]] = lapply(clim_proj[["climdataIPSL"]], function(df) {
+  df$PET = calc_hargreaves(df, lat = 44.1958)
+  df[, c("Date", "PR", "PET")]
+})
+```
+
+Now, we compute multi-model mean precipation and evapotranspiration before applying bias correction.
+
+```{r}
+#| echo: true
+#| eval: true
+
+model_names = c("climdataCLM", "climdataCNRM", "climdataIPSL")
+scenarios = c("hist", "rcp45", "rcp85")
+multi_model_mean = list()
+
+for (scen in scenarios) {
+  
+  # Extract all models for a given scenario
+  dfs = lapply(model_names, function(m) clim_proj[[m]][[scen]])
+  
+  # Stack the values into matrices
+  PR_mat = do.call(cbind, lapply(dfs, function(df) df$PR))
+  PET_mat = do.call(cbind, lapply(dfs, function(df) df$PET))
+  
+  # Calculer la moyenne multi-modèles (na.rm = TRUE pour ignorer les NA)
+  PR_mean  = rowMeans(PR_mat, na.rm = TRUE)
+  PET_mean = rowMeans(PET_mat, na.rm = TRUE)
+  
+  # Compute the multi-model mean
+  multi_model_mean[[scen]] = data.frame(
+    Date = dfs[[1]]$Date,
+    PR   = PR_mean,
+    PET  = PET_mean
+  )
+}
+
+str(multi_model_mean)
+```
+
+
+# Apply bias correction 
+
+Bias-correction techniques are commonly applied to reduce systematic discrepancies and make climate projections suitable for hydrological applications. Several methods have been developed to correct the bias of climate model simulations. Here, we apply the **`Cumulative Distribution Function-transform (CDF-t) method`**. The **`CDF-t algorithm`** consists in adjusting the **cumulative distribution function (CDF)** derived from a GCM over the historical period so that it matches the empirical distribution of the observed data. The calibrated transformation function is then applied to the projected **`CDF`** of the GCM for the future period. For more details, readers are referred to @Michelangeli2009GL038401. 
+
+We will use the **`CDFt R package`** [@VracCDFT] to apply bias correction. Given the structure of our preprocessed climate datasets, we first define a helper function to automate the bias correction process for the historical period (**`hist`**), as well as the future climate scenarios (**`rcp245`** and **`rcp585`**) for each climate model.
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-fold: true
+#| code-summary: Show the cdft.bias.corr() funtion code
+
+cdft.bias.corr = function(nested_list, df_obs = hist_obs, scenarios = c("rcp45", "rcp85")) 
+{
+  
+  # 1. Validation: We MUST have a 'hist' period in the nested list to calibrate
+  if (!"hist" %in% names(nested_list)) {
+    stop("The list must contain a 'hist' dataframe for calibration.")
+  }
+
+  # 2. Extract common historical data once
+  # CDFt works on vectors of data
+  obs_hist_pr = df_obs$PR
+  mod_hist_pr = nested_list$hist$PR
+  
+  obs_hist_pet = df_obs$PET
+  mod_hist_pet = nested_list$hist$PET
+
+  # 3. Apply to each scenario
+  nested_list[scenarios] = lapply(nested_list[scenarios], function(df_proj) {
+    
+    # --- Correct Precipitation ---
+    # CDFt returns a list. $DS is the corrected Downscaled series.
+    res_pr = CDFt(ObsRp = obs_hist_pr, 
+                  DataGp = mod_hist_pr, 
+                  DataGf = df_proj$PR)
+    df_proj$PRadj = res_pr$DS
+    df_proj$PRadj = pmax(res_pr$DS, 0)
+    
+    # --- Correct PET ---
+    res_pet = CDFt(ObsRp = obs_hist_pet, 
+                  DataGp = mod_hist_pet, 
+                  DataGf = df_proj$PET)
+    df_proj$PETadj = res_pet$DS
+    df_proj$PETadj = pmax(res_pet$DS, 0)
+    
+    return(df_proj)
+  })
+  
+  # Note: CDFt is designed for future projections. 
+  # To 'correct' the historical period itself for validation, 
+  # you would set DataGf = DataGp (mod_hist).
+  res_hist_pr = CDFt(obs_hist_pr, mod_hist_pr, mod_hist_pr)
+  nested_list$hist$PRadj = res_hist_pr$DS
+  
+  res_hist_pet = CDFt(obs_hist_pet, mod_hist_pet, mod_hist_pet)
+  nested_list$hist$PETadj = res_hist_pet$DS
+
+  nested_list$hist$PRadj  = pmax(res_hist_pr$DS, 0)
+  nested_list$hist$PETadj = pmax(res_hist_pet$DS, 0)
+
+  return(nested_list)
+}
+```
+
+Now, our entire bias correction workflow becomes just one step:
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+biascorrected.climdata = cdft.bias.corr(nested_list = multi_model_mean)
+str(biascorrected.climdata)
+```
+
+To visualize the bias correction results, we plot the the **`Empirical Cumulative Distribution Functions (ECDFs)`** to validate the effectiveness of the **`CDF-t algorithm`**.
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-fold: true
+#| code-summary: Show the code
+#| warning: false
+#| message: false
+#| fig-width: 12
+#| fig-height: 5
+#| out-width: "100%"
+#| label: fig-biascorr_hist
+#| fig-cap: "Bias correction results: Observed, Raw Model, and Corrected Model distributions for the historical period"
+
+vars = c("PR", "PET")
+
+# Use a 1-row, 2-column layout
+par(mfrow = c(1, 2), mar = c(4, 4, 2, 1))
+
+for (v in vars) {
+  adj_v = paste0(v, "adj") # Pour appeler PRadj ou PETadj
+  
+  obs_val = hist_obs[[v]]
+  raw_mean_val = biascorrected.climdata$hist[[v]]
+  adj_mean_val = biascorrected.climdata$hist[[adj_v]] # La nouvelle courbe corrigée
+  
+  # Limites d'axes
+  x_lim = range(c(obs_val, raw_mean_val, adj_mean_val), na.rm = TRUE)
+  if (v == "PR") { plot_log = "x"; x_lim[1] = 0.1 } else { plot_log = "" }
+
+  # Plot ECDF: Observé (Noir)
+  plot(ecdf(obs_val), do.points = FALSE, 
+       verticals = TRUE, col = "black", lwd = 3,
+       log = plot_log, xlim = x_lim, 
+       main = ifelse(v=="PR", "Precip.", "PET"),
+       xlab = paste(v, "(mm/day)"), ylab = "Prob.")
+  
+  # ECDF: Brut (Rouge, pointillé)
+  plot(ecdf(raw_mean_val), add = TRUE, do.points = FALSE, verticals = TRUE,
+       col = "red", lwd = 1, lty = 1)
+  
+  # ECDF: Ajusté (Bleu, continu) - C'EST CELLE-CI QUI DOIT COLLER À L'OBS
+  plot(ecdf(adj_mean_val), add = TRUE, do.points = FALSE, verticals = TRUE,
+       col = "green", lwd = 1, lty = 1)
+  
+  if(v == "PR") {
+    legend("bottomright", 
+         legend = c("Observed", "Raw GCM Mean", "Adjusted (CDF-t)"),
+         col = c("black", "red", "green"), lty = c(1, 1, 1), lwd = 1.5, bty = "o")
+  }
+}
+```
+
+```{r}
+#| echo: false
+#| eval: false
+#| code-fold: true
+#| code-summary: Show the code
+#| warning: false
+#| message: false
+#| fig-width: 12
+#| fig-height: 8
+#| out-width: "100%"
+#| label: fig-biascorr_hist2
+#| fig-cap: "Bias correction results: Observed, Raw Model, and Corrected Model distributions for the historical period"
+
+# # List of models and variables to iterate over
+# models = c("CLM", "CNRM", "IPSL")
+# vars = c("PR", "PET")
+
+# # Use a 2-row, 3-column layout
+# par(mfrow = c(2, 3), mar = c(4, 4, 2, 1))
+
+# for (v in vars) {
+#   for (m in models) {
+    
+#     # Extract the specific data
+#     current_model_list = get(paste0("climdata", m))
+    
+#     obs_val  = hist_obs[[v]]
+#     raw_val  = current_model_list$hist[[v]]
+#     adj_val  = current_model_list$hist[[paste0(v, "adj")]]
+    
+#     # Determine Axis Limits
+#     if (v == "PR") {
+#       plot_log = "x"
+#       x_lim = c(0.4, max(obs_val, na.rm = TRUE))
+#       x_label = "Precip (mm/day)"
+#     } else {
+#       plot_log = ""
+#       x_lim = range(c(obs_val, raw_val), na.rm = TRUE)
+#       x_label = "PET (mm/day)"
+#     }
+    
+#     # 1. Observed (Black, thick solid)
+#     plot(
+#       ecdf(obs_val),
+#       do.points = FALSE, verticals = TRUE,
+#       col = "black", lwd = 1, lty = 1,
+#       log = plot_log, xlim = x_lim,
+#       main = paste(m, "-", v),
+#       xlab = x_label, ylab = "Prob"
+#     )
+    
+#     # Raw model (Red, dashed)
+#     plot(
+#       ecdf(raw_val),
+#       add = TRUE,
+#       do.points = FALSE, verticals = TRUE,
+#       col = "red", lwd = 1, lty = 1
+#     )
+    
+#     # Bias-corrected model (Blue, thick solid)
+#     plot(
+#       ecdf(adj_val),
+#       add = TRUE,
+#       do.points = FALSE, verticals = TRUE,
+#       col = "blue", lwd = 1, lty = 2
+#     )
+
+#     # ---- Legend (only once) ----
+#     if (v == vars[1] && m == models[1]) {
+#       legend("bottomright",
+#              legend = c("Observed", "Raw model", "Bias-corrected"),
+#              col = c("black", "red", "blue"),
+#              lwd = c(2, 1.5, 1.5),
+#              lty = c(1, 1, 1),
+#              bty = "n",
+#              cex = 1.5)
+#     }
+#   }
+# }
+```
+
+To visualize the **climate change signal**, we will now compare the Observed historical data against the Bias-Corrected Future Projections (RCP 4.5 and RCP 8.5). Unlike your previous plot where the green and black lines overlapped perfectly, these plots will show a shift. This shift represents the actual climate change signal (e.g.,different rainfall patterns) after the systematic model biases have been removed.
+
+```{r}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-summary: Show the code
+#| warning: false
+#| message: false
+#| fig-width: 12
+#| fig-height: 5
+#| out-width: "100%"
+#| label: fig-biascorr_scenario_fut
+#| fig-cap: "Bias correction results: Observed, Raw Model, and Corrected Model distributions for the RCP 4.5 and RCP 8.5 scenarios"
+
+vars = c("PR", "PET")
+
+# Use a 1-row, 2-column layout
+par(mfrow = c(1, 2), mar = c(4, 4, 2, 1))
+
+for (v in vars) {
+
+    # Historical Baseline (Observed)
+    obs_val  = hist_obs[[v]]
+      
+    # Corrected Future RCP 4.5
+    rcp45_val = biascorrected.climdata$rcp45[[paste0(v, "adj")]]
+      
+    # Corrected Future RCP 8.5
+    rcp85_val = biascorrected.climdata$rcp85[[paste0(v, "adj")]]
+  
+    # Determine Axis Limits (Including future extremes)
+    if (v == "PR") {
+      plot_log = "x"
+      x_lim = c(0.1, max(c(obs_val, rcp85_val), na.rm = TRUE))
+      x_label = "Precip (mm/day)"
+    } else {
+      plot_log = ""
+      x_lim = range(c(obs_val, rcp45_val, rcp85_val), na.rm = TRUE)
+      x_label = "PET (mm/day)"
+    }
+    
+    # --- PLOTTING ---
+    
+    # 1. Observed Historical (Black - The Baseline)
+    plot(
+      ecdf(obs_val),
+      do.points = FALSE, verticals = TRUE,
+      col = "black", lwd = 1,
+      log = plot_log, xlim = x_lim,
+      main = ifelse(v=="PR", "Precip.", "PET"),
+      xlab = paste(v, "(mm/day)"), ylab = "Probability"
+    )
+    
+    # 2. Corrected RCP 4.5 (Green/Orange - Moderate Scenario)
+    plot(
+      ecdf(rcp45_val),
+      add = TRUE,
+      do.points = FALSE, verticals = TRUE,
+      col = "orange", lwd = 1, lty = 1
+    )
+    
+    # 3. Corrected RCP 8.5 (Red - Extreme Scenario)
+    plot(
+      ecdf(rcp85_val),
+      add = TRUE,
+      do.points = FALSE, verticals = TRUE,
+      col = "red", lwd = 1, lty = 1
+    )
+    
+    # Add a legend only to the first plot of each row for clarity
+    if(v == "PR") {
+      legend("bottomright", legend=c("Obs Hist", "RCP 4.5", "RCP 8.5"), 
+             col=c("black", "orange", "red"), lwd = 1.5, bty = "o")
+    }
+}
+```
+
+```{r}
+#| echo: false
+#| eval: false
+#| code-fold: false
+#| code-summary: Show the code
+#| warning: false
+#| message: false
+#| fig-width: 12
+#| fig-height: 8
+#| out-width: "100%"
+#| label: fig-biascorr_scenario
+#| fig-cap: "Bias correction results: Observed, Raw Model, and Corrected Model distributions for the RCP 4.5 and RCP 8.5 scenarios"
+
+# # List of models and variables to iterate over
+# models = c("CLM", "CNRM", "IPSL")
+# vars = c("PR", "PET")
+
+# # Use a 2-row, 3-column layout
+# par(mfrow = c(2, 3), mar = c(4, 4, 2, 1))
+
+# for (v in vars) {
+#   for (m in models) {
+    
+#     # Extract the specific model data
+#     current_model_list = get(paste0("climdata", m))
+    
+#     # 1. Historical Baseline (Observed)
+#     obs_val  = hist_obs[[v]]
+    
+#     # 2. Corrected Future RCP 4.5
+#     rcp45_val = current_model_list$rcp45[[paste0(v, "adj")]]
+    
+#     # 3. Corrected Future RCP 8.5
+#     rcp85_val = current_model_list$rcp85[[paste0(v, "adj")]]
+    
+#     # Determine Axis Limits (Including future extremes)
+#     if (v == "PR") {
+#       plot_log = "x"
+#       x_lim = c(0.5, max(c(obs_val, rcp85_val), na.rm = TRUE))
+#       x_label = "Precip (mm/day)"
+#     } else {
+#       plot_log = ""
+#       x_lim = range(c(obs_val, rcp45_val, rcp85_val), na.rm = TRUE)
+#       x_label = "PET (mm/day)"
+#     }
+    
+#     # --- PLOTTING ---
+    
+#     # 1. Observed Historical (Black - The Baseline)
+#     plot(
+#       ecdf(obs_val),
+#       do.points = FALSE, verticals = TRUE,
+#       col = "black", lwd = 1,
+#       log = plot_log, xlim = x_lim,
+#       main = paste(m, "-", v),
+#       xlab = x_label, ylab = "Prob"
+#     )
+    
+#     # 2. Corrected RCP 4.5 (Green/Orange - Moderate Scenario)
+#     plot(
+#       ecdf(rcp45_val),
+#       add = TRUE,
+#       do.points = FALSE, verticals = TRUE,
+#       col = "orange", lwd = 1, lty = 1
+#     )
+    
+#     # 3. Corrected RCP 8.5 (Red - Extreme Scenario)
+#     plot(
+#       ecdf(rcp85_val),
+#       add = TRUE,
+#       do.points = FALSE, verticals = TRUE,
+#       col = "red", lwd = 1, lty = 1
+#     )
+    
+#     # Add a legend only to the first plot of each row for clarity
+#     if(m == "CLM") {
+#       legend("bottomright", legend=c("Obs Hist", "RCP 4.5", "RCP 8.5"), 
+#              col=c("black", "orange", "red"), lwd=2, bty="n", cex=1.5)
+#     }
+#   }
+# }
+```
+
+As in the previous sections, the bias-corrected climate datasets are saved using the **`saveRDS()`** function. This approach preserves the internal structure of the R objects (including nested lists and data frames) and facilitates efficient reloading and reuse in subsequent processing steps.
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+# Create an output directory if it doesn't exist
+if (!dir.exists("output_biascorrection")) dir.create("output_biascorrection")
+
+# Save the bias-corrected climate data while preserving object structure
+saveRDS(biascorrected.climdata, 
+        file="output_biascorrection/biascorrected_climdata.rds")
+```
+
+```{r}
+#| echo: false
+#| eval: false
+#| warning: false
+#| message: false
+
+# # Create an output directory if it doesn't exist
+# if (!dir.exists("output_biascorrection")) dir.create("output_biascorrection")
+
+# # Merge all bias-corrected climate model outputs into a single list
+# # to simplify export and downstream loading
+# all_biascorr_data = list("climdataCLMadj" = climdataCLM, 
+#                          "climdataCNRMadj" = climdataCNRM, 
+#                          "climdataIPSLadj" = climdataIPSL)
+
+# # Save the bias-corrected climate data while preserving object structure
+# saveRDS(all_biascorr_data, 
+#         file="output_biascorrection/biascorrected_climdata.rds")
+```

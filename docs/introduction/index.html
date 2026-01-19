@@ -102,7 +102,7 @@ div.csl-indent {
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
-<body class="floating nav-fixed slimcontent">
+<body class="floating nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -128,12 +128,20 @@ div.csl-indent {
 <span class="menu-text">Software &amp; Setup</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../blockmaxima/index.html"> 
-<span class="menu-text">Block Maxima Approach</span></a>
+    <a class="nav-link" href="../loaddata/index.html"> 
+<span class="menu-text">Database</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../pot/index.html"> 
-<span class="menu-text">Threshold Exceedance (POT)</span></a>
+    <a class="nav-link" href="../modelcalib/index.html"> 
+<span class="menu-text">Model calibration</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../biascorr/index.html"> 
+<span class="menu-text">Bias correction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../simulation/index.html"> 
+<span class="menu-text">Simulation</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -143,7 +151,7 @@ div.csl-indent {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="4">
@@ -170,10 +178,10 @@ div.csl-indent {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
     </div>
 <!-- main -->
-<main class="content page-columns page-full" id="quarto-document-content">
+<main class="content column-page-right" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -182,7 +190,7 @@ div.csl-indent {
 
 
 
-<div class="quarto-title-meta">
+<div class="quarto-title-meta column-page-right">
 
     
   
@@ -208,15 +216,13 @@ Figure&nbsp;1: Schematic representation of a watershed. <em>(Source: Adapted fro
 </figure>
 </div>
 </section>
-<section id="hydrological-modelling" class="level1 page-columns page-full" data-number="2">
+<section id="hydrological-modelling" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Hydrological Modelling</h1>
 <p>Hydrological modelling is a core area of hydrology that aims to simulate and understand the complex processes of the water cycle. It relies on simplified representations of these processes to predict the behavior of hydrological systems (watersheds) and assess the impacts of climate change and human activities.</p>
 <p>In practice, hydrological modelling uses mathematical models to describe the movement and storage of water within a watershed. These hydrological models are based on the physical laws governing key hydrological processes, such as: precipitation and its partitioning into runoff and infiltration, evapotranspiration, soil infiltration and groundwater flow, surface runoff and its contribution to river discharge.</p>
 <p>Hydrological models can be classified based on the <strong>level of process abstraction</strong> and the <strong>spatial discretization</strong> of the watershed. The choice of an hydrological model may depend on the suitability of the model for the specific objectives, the dominant hydrological processes to be represented, the spatial and temporal scales considered, the availability of data, and the computational constraints.</p>
-<section id="classification-of-hydrological-models-based-on-process-abstraction" class="level2 page-columns page-full" data-number="2.1">
+<section id="classification-of-hydrological-models-based-on-process-abstraction" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="classification-of-hydrological-models-based-on-process-abstraction"><span class="header-section-number">2.1</span> Classification of hydrological models based on process abstraction</h2>
-
-<div class="no-row-height column-margin column-container"><div class="">
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -230,7 +236,7 @@ Note
 <p>Depending on the degree of abstraction, models may represent the hydrological cycle through more or less detailed schematizations.</p>
 </div>
 </div>
-</div></div><ul>
+<ul>
 <li><strong>Conceptual models</strong><br>
 Simplified representations, often based on interconnected reservoirs and empirical or semi-empirical relationships.</li>
 <li><strong>Physically-based models</strong><br>

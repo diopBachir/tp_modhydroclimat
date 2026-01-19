@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Introduction to Extreme Value Analysis - Hydrological model calibration over the historical period</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../evaillustr.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<link href="https://fonts.googleapis.com/css?family=Fira+Sans|Merriweather" rel="stylesheet">
+<script src="https://kit.fontawesome.com/0fba9333d8.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Introduction to Extreme Value Analysis">
+<meta property="og:description" content="A comprehensive guide to extreme value analysis">
+<meta property="og:image" content="https://github.com/diopBachir/tp_eva/blob/master/docs/evaillustr.png">
+<meta property="og:site_name" content="Introduction to Extreme Value Analysis">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:title" content="Introduction to Extreme Value Analysis - Hydrological model calibration over the historical period">
+<meta name="twitter:description" content="">
+<meta name="twitter:image" content="https://github.com/diopBachir/tp_eva/blob/master/docs/evaillustr.png">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Introduction to Extreme Value Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../introduction/index.html"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../softwaresetup/index.html"> 
+<span class="menu-text">Software &amp; Setup</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../loaddata/index.html"> 
+<span class="menu-text">Database</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../modelcalib/index.html" aria-current="page"> 
+<span class="menu-text">Model calibration</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../biascorr/index.html"> 
+<span class="menu-text">Bias correction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../simulation/index.html"> 
+<span class="menu-text">Simulation</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="4">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#load-necessary-libraries" id="toc-load-necessary-libraries" class="nav-link active" data-scroll-target="#load-necessary-libraries"><span class="header-section-number">1</span> Load necessary libraries</a></li>
+  <li><a href="#load-preprocessed-observational-data" id="toc-load-preprocessed-observational-data" class="nav-link" data-scroll-target="#load-preprocessed-observational-data"><span class="header-section-number">2</span> Load preprocessed observational data</a></li>
+  <li><a href="#sec-gr4jcalib" id="toc-sec-gr4jcalib" class="nav-link" data-scroll-target="#sec-gr4jcalib"><span class="header-section-number">3</span> Calibration of the GR4J model</a></li>
+  <li><a href="#further-analysis-calibration-of-the-ihacres-model" id="toc-further-analysis-calibration-of-the-ihacres-model" class="nav-link" data-scroll-target="#further-analysis-calibration-of-the-ihacres-model"><span class="header-section-number">4</span> Further Analysis: Calibration of the IHACRES Model</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">5</span> References</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content column-page-right" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Hydrological model calibration over the historical period</h1>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-right">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="load-necessary-libraries" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Load necessary libraries</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(airGR)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(hydromad)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lattice)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(latticeExtra)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="load-preprocessed-observational-data" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Load preprocessed observational data</h1>
+<p>As described in the <a href="../loaddata/index.html#sec-exportpreprocessed"><strong>database section</strong></a>, preprocessed datasets can be efficiently reloaded using the <strong><code>readRDS()</code></strong> function. In the code chunk below, we reload the historical hydro-climatic dataset that was previously prepared and exported. This dataset serves as the input for the calibration of the hydrological models in the subsequent steps.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>hist_obs <span class="ot">=</span> <span class="fu">readRDS</span>(<span class="st">"output_preprocessed/processed_obsdata_lez.rds"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(hist_obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   10592 obs. of  5 variables:
+ $ Date: Date, format: "1977-01-01" "1977-01-02" ...
+ $ P   : num  2.85 0 0 1.7 6.4 5.95 0 0 0 0 ...
+ $ T   : num  6.84 4.6 3.34 2.95 3.98 ...
+ $ PET : num  0.75 0.9 1.55 2.25 1 0.7 1.75 2.1 1.2 0.6 ...
+ $ Q   : num  14.56 11.65 7.77 5.82 4.85 ...</code></pre>
+</div>
+</div>
+</section>
+<section id="sec-gr4jcalib" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Calibration of the GR4J model</h1>
+<p>The <strong>GR4J</strong> (<strong><code>G</code></strong>énie <strong><code>R</code></strong>ural à <strong><code>4</code></strong> paramètres <strong><code>J</code></strong>ournalier) model is a parsimonious, lumped conceptual rainfall-runoff model widely used in hydrological studies. It represents catchment processes through a production (soil moisture) reservoir, which controls the transformation of precipitation into effective rainfall by accounting for evapotranspiration and soil water storage, and a routing reservoir, which simulates the delayed transfer of water to the outlet (<a href="#fig-gr4jschema" class="quarto-xref">Figure&nbsp;1</a>). As the name suggests, the model is governed by four parameters: the capacity of the production reservoir (<span class="math inline">x_1</span>), the groundwater exchange coefficient (<span class="math inline">x_2</span>), the routing reservoir capacity (<span class="math inline">x_3</span>), and the time base of the unit hydrograph (<span class="math inline">x_4</span>). For a detailed description of the model structure and parameterization, readers are referred to <span class="citation" data-cites="PERRIN2003275">Perrin et al. (<a href="#ref-PERRIN2003275" role="doc-biblioref">2003</a>)</span>.</p>
+<div id="fig-gr4jschema" class="quarto-figure quarto-figure-center quarto-float anchored" alt="Schematic structure of the daily GR4J model">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gr4jschema-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/gr4j-illustr.png" class="img-fluid figure-img" style="width:45.0%" alt="Schematic structure of the daily GR4J model">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gr4jschema-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Schematic structure of the <strong>GR4J rainfall-runoff model</strong> <span class="citation" data-cites="PERRIN2003275">(<a href="#ref-PERRIN2003275" role="doc-biblioref">Perrin et al., 2003</a>)</span>. <span class="math inline">P</span> denotes rainfall (mm), <span class="math inline">E</span> is potential evapotranspiration (mm), <span class="math inline">S</span> represents the level of the production reservoir (mm), <span class="math inline">R</span> the level of the routing reservoir (mm), and <span class="math inline">Q</span> the simulated streamflow (mm). <span class="math inline">UH</span> refers to the unit hydrograph, and <span class="math inline">F(X₂)</span> to the groundwater exchange function.
+</figcaption>
+</figure>
+</div>
+<p>To optimize the four parameters of the <strong>GR4J model</strong> (<span class="math inline">x_1, x_2, x_3, x_4</span>), we use the <strong><code>Michel calibration algorithm</code></strong>, integrated within the <strong><code>airGR R package</code></strong> <span class="citation" data-cites="CORON2017166">(<a href="#ref-CORON2017166" role="doc-biblioref">Coron et al., 2017</a>)</span>. The <strong><code>Michel algorithm</code></strong> is a gradient-free and iterative local search method which begins by exploring the parameter space using a coarse, predefined grid to identify the most promising region of “good” parameter sets. From the best starting point found in the grid, it performs an iterative local search, adjusting the parameters in directions that maximize an objective function, which measures the goodness-of-fit between observed and simulated discharge. Here we use the the <strong><code>Kling-Gupta Efficiency (KGE; @GUPTA200980)</code></strong> as objective function.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Mathematics of the KGE">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Mathematics of the KGE
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <strong>KGE</strong> is a decomposition of the <strong><code>Nash-Sutcliffe Efficiency (NSE; @NASH1970282)</code></strong> designed to provide a more balanced assessment of model performance. Unlike the <strong><code>NSE</code></strong>, which can disproportionately emphasize high flows, the <strong>KGE</strong> jointly accounts for correlation <span class="math inline">(r)</span>, bias <span class="math inline">(\beta)</span>, and variability <span class="math inline">(\alpha)</span>. <strong>KGE</strong> values range from <span class="math inline">-∞</span> to <span class="math inline">1</span>, with <span class="math inline">1</span> indicating perfect agreement with observations.</p>
+<p><span class="math display">
+\text{KGE} = 1 - \sqrt{(r-1)^2 + (\alpha-1)^2 + (\beta-1)^2}
+</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">r</span> is the linear correlation between simulated and observed discharge,</li>
+<li><span class="math inline">\alpha = \frac{\sigma_s}{\sigma_o}</span> is the ratio of the standard deviations of simulated (<span class="math inline">\sigma_s</span>) and observed (<span class="math inline">\sigma_o</span>) series,<br>
+</li>
+<li><span class="math inline">\beta = \frac{\mu_s}{\mu_o}</span> is the ratio of the mean simulated (<span class="math inline">\mu_s</span>) and observed (<span class="math inline">\mu_o</span>) discharge.</li>
+</ul>
+</div>
+</div>
+<p>The steps described above are adapted from the <a href="https://hydrogr.github.io/airGR/"><strong><code>airGR website</code></strong></a>, which provides a comprehensive overview of the package, detailed descriptions of its functions, and practical tutorials to help users get started with hydrological modeling in <strong><code>R</code></strong>.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Preparing inputs for **`airGR`** Models">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Preparing inputs for <strong><code>airGR</code></strong> Models
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To run a hydrological model using the <strong><code>airGR</code></strong> package, the functions require input data and options in specific formats. To simplify this process, the package provides dedicated functions:</p>
+<ul>
+<li><strong><code>CreateInputsModel()</code></strong> – sets up the model inputs such as time series of dates, precipitation, and observed discharge.<br>
+</li>
+<li><strong><code>CreateRunOptions()</code></strong> – defines model run settings, including warm-up and calibration periods.<br>
+</li>
+<li><strong><code>CreateInputsCrit()</code></strong> – specifies the efficiency criterion and any transformations of the discharge (e.g., log or square root).<br>
+</li>
+<li><strong><code>CreateCalibOptions()</code></strong> – configures the calibration algorithm, including which parameters to optimize and predefined values for fixed parameters.</li>
+</ul>
+<p>These helper functions ensure that all required inputs are correctly structured for a smooth and error-free model execution.</p>
+</div>
+</div>
+<p>We first convert the <strong><code>Date</code></strong> column in the POSIXt format required by the <strong><code>airGR ecosystem</code></strong>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>hist_obs<span class="sc">$</span>Date <span class="ot">=</span> <span class="fu">as.POSIXct</span>(hist_obs<span class="sc">$</span>Date)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(hist_obs<span class="sc">$</span>Date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> POSIXct[1:10592], format: "1977-01-01" "1977-01-02" "1977-01-03" "1977-01-04" "1977-01-05" ...</code></pre>
+</div>
+</div>
+<p>Next, we prepare the input data with the <code>CreateInputsModel()</code>** function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>InputsModel <span class="ot">=</span> <span class="fu">CreateInputsModel</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">FUN_MOD =</span> RunModel_GR4J, </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">DatesR =</span> hist_obs<span class="sc">$</span>Date,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Precip =</span> hist_obs<span class="sc">$</span>P, </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">PotEvap =</span> hist_obs<span class="sc">$</span>PET</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(InputsModel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 3
+ $ DatesR : POSIXlt[1:10592], format: "1977-01-01" "1977-01-02" ...
+ $ Precip : num [1:10592] 2.85 0 0 1.7 6.4 5.95 0 0 0 0 ...
+ $ PotEvap: num [1:10592] 0.75 0.9 1.55 2.25 1 0.7 1.75 2.1 1.2 0.6 ...
+ - attr(*, "class")= chr [1:3] "InputsModel" "daily" "GR"</code></pre>
+</div>
+</div>
+<p>Before running the <strong>GR4J model</strong>, we must select the period for which we want to run the model. It is recommended to include a <strong>warm-up period</strong> of at least one year. This allows the model’s internal reservoirs to reach realistic initial states and helps avoid poor-quality discharge simulations at the beginning of the run caused by inaccurate initialization.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define two years of warm-up period</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ind_WarmUp <span class="ot">=</span> <span class="fu">seq</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">which</span>(hist_obs<span class="sc">$</span>Date <span class="sc">==</span> <span class="fu">min</span>(hist_obs<span class="sc">$</span>Date)), </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">which</span>(hist_obs<span class="sc">$</span>Date <span class="sc">==</span> hist_obs<span class="sc">$</span>Date[<span class="dv">2</span>]<span class="sc">+</span><span class="fu">years</span>(<span class="dv">2</span>))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(ind_WarmUp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> int [1:732] 1 2 3 4 5 6 7 8 9 10 ...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run period</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ind_Run <span class="ot">=</span> <span class="fu">seq</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">max</span>(ind_WarmUp) <span class="sc">+</span> <span class="dv">1</span>, </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">which</span>(hist_obs<span class="sc">$</span>Date <span class="sc">==</span> <span class="fu">max</span>(hist_obs<span class="sc">$</span>Date))</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(ind_Run)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> int [1:9860] 733 734 735 736 737 738 739 740 741 742 ...</code></pre>
+</div>
+</div>
+<p>We can now create the run options using the <strong><code>InputsModel</code></strong>, <strong><code>ind_WarmUp</code></strong> and <strong><code>ind_Run</code></strong> objects as arguments for the <strong><code>CreateRunOptions()</code></strong> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>RunOptions <span class="ot">=</span> <span class="fu">CreateRunOptions</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">FUN_MOD =</span> RunModel_GR4J,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">InputsModel =</span> InputsModel,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">IndPeriod_WarmUp =</span> ind_WarmUp,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">IndPeriod_Run =</span> ind_Run, </span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(RunOptions)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 8
+ $ IndPeriod_WarmUp: int [1:732] 1 2 3 4 5 6 7 8 9 10 ...
+ $ IndPeriod_Run   : int [1:9860] 733 734 735 736 737 738 739 740 741 742 ...
+ $ IniStates       : num [1:67] 0 0 0 0 0 0 0 0 0 0 ...
+ $ IniResLevels    : num [1:4] 0.3 0.5 NA NA
+ $ Outputs_Cal     : chr [1:2] "Qsim" "Param"
+ $ Outputs_Sim     : Named chr [1:22] "DatesR" "PotEvap" "Precip" "Prod" ...
+  ..- attr(*, "names")= chr [1:22] "" "GR1" "GR2" "GR3" ...
+ $ FortranOutputs  :List of 2
+  ..$ GR: chr [1:18] "PotEvap" "Precip" "Prod" "Pn" ...
+  ..$ CN: NULL
+ $ FeatFUN_MOD     :List of 12
+  ..$ CodeMod     : chr "GR4J"
+  ..$ NameMod     : chr "GR4J"
+  ..$ NbParam     : int 4
+  ..$ TimeUnit    : chr "daily"
+  ..$ Id          : logi NA
+  ..$ Class       : chr [1:2] "daily" "GR"
+  ..$ Pkg         : chr "airGR"
+  ..$ NameFunMod  : chr "RunModel_GR4J"
+  ..$ TimeStep    : num 86400
+  ..$ TimeStepMean: int 86400
+  ..$ CodeModHydro: chr "GR4J"
+  ..$ IsSD        : logi FALSE
+ - attr(*, "class")= chr [1:3] "RunOptions" "daily" "GR"</code></pre>
+</div>
+</div>
+<p>Next, we use the <strong><code>CreateInputsCrit()</code></strong> function that gathers all the data and information required to compute the calibration criterion.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>InputsCrit <span class="ot">=</span> <span class="fu">CreateInputsCrit</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># the name of the error criterion functions:</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>      <span class="co">#* ErrorCrit_RMSE(): Root mean square error (RMSE)</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>      <span class="co">#* ErrorCrit_NSE(): Nash-Sutcliffe model efficiency coefficient (NSE)</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>      <span class="co">#* ErrorCrit_KGE(): Kling-Gupta efficiency criterion (KGE)</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>      <span class="co">#* ErrorCrit_KGE2(): modified Kling-Gupta efficiency criterion (KGE’)</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">FUN_CRIT =</span> ErrorCrit_KGE, </span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#* the inputs of the hydrological model previously prepared by the </span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">#* CreateInputsModel() function</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">InputsModel =</span> InputsModel, </span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">#* the options of the hydrological model previously prepared by the </span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="co">#* CreateRunOptions() function</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">RunOptions =</span> RunOptions,      </span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># the name of the considered variable (by default "Q" for the discharge)</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">VarObs =</span> <span class="st">"Q"</span>,       </span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># observed variable time serie (e.g. the discharge expressed in mm/time step)</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">Obs =</span> hist_obs<span class="sc">$</span>Q[ind_Run]   </span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(InputsCrit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 8
+ $ FUN_CRIT:function (InputsCrit, OutputsModel, warnings = TRUE, verbose = TRUE)  
+  ..- attr(*, "class")= chr [1:2] "FUN_CRIT" "function"
+ $ Obs     : num [1:9860] 0.849 1.277 1.796 2.582 2.776 ...
+ $ VarObs  : chr "Q"
+ $ BoolCrit: logi [1:9860] TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ idLayer : logi NA
+ $ transfo : chr ""
+ $ epsilon : NULL
+ $ Weights : NULL
+ - attr(*, "class")= chr [1:2] "Single" "InputsCrit"</code></pre>
+</div>
+</div>
+<p>Before using the automatic calibration tool, we must prepare the calibration options using the <strong><code>CreateCalibOptions()</code></strong> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>CalibOptions <span class="ot">=</span> <span class="fu">CreateCalibOptions</span>(  </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">FUN_MOD =</span> RunModel_GR4J,        <span class="co"># the name of the model function</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">FUN_CALIB =</span> Calibration_Michel  <span class="co"># the name of the calibration algorithm</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(CalibOptions)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 4
+ $ FixedParam       : logi [1:4] NA NA NA NA
+ $ SearchRanges     : num [1:2, 1:4] 4.59e-05 2.18e+04 -1.09e+04 1.09e+04 4.59e-05 ...
+ $ FUN_TRANSFO      :function (ParamIn, Direction)  
+ $ StartParamDistrib: num [1:3, 1:4] 169.017 247.151 432.681 -2.376 -0.649 ...
+ - attr(*, "class")= chr [1:4] "CalibOptions" "daily" "GR" "HBAN"</code></pre>
+</div>
+</div>
+<p>Now we are ready to perform calibration of the GR4J model using the <strong><code>Calibration_Michel()</code></strong> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>OutputsCalib <span class="ot">=</span> <span class="fu">Calibration_Michel</span>(</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#* the inputs of the hydrological model previously prepared by the </span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#* CreateInputsModel() function</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">InputsModel =</span> InputsModel, </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#* the options of the hydrological model previously prepared by the </span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#* CreateRunOptions() function</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">RunOptions =</span> RunOptions,</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#* the options of the hydrological model previously prepared by the </span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">#* CreateInputsCrit() function</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">InputsCrit =</span> InputsCrit, </span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">#* the options of the hydrological calibration model previously prepared by  </span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="co">#* the CreateCalibOptions() function</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">CalibOptions =</span> CalibOptions,</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  <span class="co">#* Le modèle à utiliser </span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">FUN_MOD =</span> RunModel_GR4J</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Grid-Screening in progress (0% 20% 40% 60% 80% 100%)
+     Screening completed (81 runs)
+         Param =  247.151,   -0.020,   83.096,    1.417
+         Crit. KGE[Q]       = 0.7813
+Steepest-descent local search in progress
+     Calibration completed (19 iterations, 219 runs)
+         Param =  247.151,    1.319,  116.746,    1.203
+         Crit. KGE[Q]       = 0.8754</code></pre>
+</div>
+</div>
+<p>The <strong><code>Calibration_Michel()</code></strong> function returns a vector containing the optimized parameters of the <strong>GR4J model</strong>. We can extract these values for subsequent use in model simulations and analysis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>gr4j_params <span class="ot">=</span> OutputsCalib<span class="sc">$</span>ParamFinalR</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>kge <span class="ot">=</span> OutputsCalib<span class="sc">$</span>CritFinal</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code> Calibration summary 
+    X1:  247.1511 
+    X2:  1.319029 
+    X1:  116.7459 
+    X2:  1.202703 
+ ------------------------------
+    KGE:  0.88 
+ ==============================</code></pre>
+</div>
+</div>
+<p>Finally, we can vizualize the results of the GR4J model calibration. The <strong><code>airGR</code></strong> package offers the possibility to make use of the <strong><code>plot()</code></strong> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>OutputsModel <span class="ot">=</span> <span class="fu">RunModel_GR4J</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">InputsModel =</span> InputsModel, </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">RunOptions =</span> RunOptions, </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Param =</span> gr4j_params</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(OutputsModel, <span class="at">Qobs =</span> hist_obs<span class="sc">$</span>Q[ind_Run])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-calibgr4j" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-calibgr4j-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-calibgr4j-1.png" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-calibgr4j-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: GR4J model calibration results: top row shows the total precipitation time serie; second row displays observed versus simulated discharge; third row (bottom-left) presents the interannual average of daily simulated and observed discharge; bottom-middle shows the cumulative frequency plot of simulated and observed discharge; and bottom-right illustrates the correlation between simulated and observed discharge.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>As in the data preprocessing stage, the <strong>calibrated GR4J model</strong> is reused in the subsequent sections. Working directly with the optimized parameters ensures methodological consistency, avoids unnecessary recalibration, and provides a reliable baseline for subsequent analyses and simulations.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create an output directory if it doesn't exist</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">dir.exists</span>(<span class="st">"output_modelcalibration"</span>)) <span class="fu">dir.create</span>(<span class="st">"output_modelcalibration"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Export using saveRDS</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(gr4j_params, <span class="at">file=</span><span class="st">"output_modelcalibration/fittedGR4J_lez.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="further-analysis-calibration-of-the-ihacres-model" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Further Analysis: Calibration of the IHACRES Model</h1>
+<p>While the <strong>GR4J model</strong> is used for the remainder of the practical, further analysis may include the calibration of the <strong>IHACRES model</strong>. <strong>IHACRES</strong> stands for <strong><code>I</code></strong>dentification of unit <strong><code>H</code></strong>ydrographs <strong><code>A</code></strong>nd <strong><code>C</code></strong>omponent flows from <strong><code>R</code></strong>ainfall, <strong><code>E</code></strong>vaporation and <strong><code>S</code></strong>treamflow data. The IHACRES model is a lumped conceptual rainfall-runoff model which architecture is divided into two fundamental modules (<span class="citation" data-cites="ihacresschema">(<a href="#ref-ihacresschema" role="doc-biblioref"><strong>ihacresschema?</strong></a>)</span>). The <strong>non-linear loss module</strong> converts observed rainfall into effective rainfall by accounting for antecedent moisture conditions through a catchment wetness index, controlled by a small set of parameters governing catchment drying and rainfall–runoff efficiency, typically influenced by temperature or potential evapotranspiration (<span class="citation" data-cites="ihacresschema">(<a href="#ref-ihacresschema" role="doc-biblioref"><strong>ihacresschema?</strong></a>)</span>). The <strong>linear routing module</strong> then transforms this effective rainfall into discharge using linear reservoirs whose parameters control the response time and relative contribution of quick flow (surface or near-surface runoff) and slow flow (groundwater contribution or baseflow). For a detailed description of the model structure and parameterization, readers are referred to <span class="citation" data-cites="Jakeman93WR00877">Jakeman &amp; Hornberger (<a href="#ref-Jakeman93WR00877" role="doc-biblioref">1993</a>)</span>.</p>
+<div id="fig-ihacresschema" class="quarto-figure quarto-figure-center quarto-float anchored" alt="Schematic structure of the IHACRES model">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ihacresschema-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/ihacres-illustr.png" class="img-fluid figure-img" style="width:100.0%" alt="Schematic structure of the IHACRES model">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ihacresschema-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Schematic structure of the IHACRES model <span class="citation" data-cites="Zhaonh2019047">(<a href="#ref-Zhaonh2019047" role="doc-biblioref">Zhao et al., 2019</a>)</span>. <span class="math inline">C</span> represents mass balance which ensures the long-term volume of effective rainfall matches observed discharge, <span class="math inline">\tau_s</span> is the reference drying rate, which defines the soil’s drying speed at a reference temperature, <span class="math inline">f</span> is the temperature modulation of drying rate
+</figcaption>
+</figure>
+</div>
+<p>In <strong><code>R</code></strong>, the most common and robust way to use the <strong><code>IHACRES</code></strong> model is through the <strong><code>hydromad package</code></strong>. It is specifically designed for conceptual rainfall-runoff modeling and allows to handle both the <strong>non-linear loss</strong> and <strong>linear routing</strong> modules separately or as a combined model.</p>
+<p>The model requires a time-series object (<strong><code>zoo</code></strong> or <strong><code>xts</code></strong>) containing Rainfall (<span class="math inline">P</span>), Temperature (<span class="math inline">T</span>) or Potential Evapotranspiration (<span class="math inline">E</span>), and observed Discharge (<span class="math inline">Q</span>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert data into a zoo object</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>hist_obs<span class="sc">$</span>Date <span class="ot">=</span> <span class="fu">as.Date</span>(hist_obs<span class="sc">$</span>Date)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>ts_data <span class="ot">=</span> <span class="fu">with</span>(</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  hist_obs, </span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">zoo</span>(<span class="fu">cbind</span>(<span class="at">P =</span> P, <span class="at">E =</span> PET, <span class="at">Q =</span> Q), <span class="at">order.by =</span> Date)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(ts_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'zoo' series from 1977-01-01 to 2005-12-31
+  Data: num [1:10592, 1:3] 2.85 0 0 1.7 6.4 5.95 0 0 0 0 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : NULL
+  ..$ : chr [1:3] "P" "E" "Q"
+  Index:  Date[1:10592], format: "1977-01-01" "1977-01-02" "1977-01-03" "1977-01-04" "1977-01-05" ...</code></pre>
+</div>
+</div>
+<p>Next, we define the <strong>IHACRES model</strong> structure by specifying the two modules. In the chunk below, we use the <strong><code>CWI (Catchment Wetness Index)</code></strong> for the <strong>loss module</strong> and <strong><code>expuh (Exponential Unit Hydrograph)</code></strong> for the <strong>routing</strong>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the model structure</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># sma: Soil Moisture Accounting (Non-linear Loss)</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># routing: Linear Routing (Quick and Slow flow)</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>ihacres <span class="ot">=</span> <span class="fu">hydromad</span>(ts_data, </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">sma =</span> <span class="st">"cwi"</span>, </span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">routing =</span> <span class="st">"expuh"</span>,</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>                   <span class="co"># Set parameter bounds (example)</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">tau_q =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">2</span>),   <span class="co"># Quick flow time constant</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">tau_s =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">100</span>),  <span class="co"># Slow flow time constant</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">v_s =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))       <span class="co"># Relative volume of slow flow</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>ihacres</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Hydromad model with "cwi" SMA and "expuh" routing:
+Start = 1977-01-01, End = 2005-12-31
+
+SMA Parameters:
+      lower upper     
+tw        0   100     
+f         0     8     
+scale    NA    NA     
+l         0     0 (==)
+p         1     1 (==)
+t_ref    20    20 (==)
+Routing Parameters:
+      lower upper  
+tau_q   0.1     2  
+tau_s  10.0   100  
+v_s     0.0     1  </code></pre>
+</div>
+</div>
+<p>To calibrate the parameters of the <strong>IHACRES model</strong>, we will use the <strong>Shuffled Complex Evolution (SCE)</strong> global optimizer. The <strong><code>SCE algorithm</code></strong>, developed at the <strong>University of Arizona <span class="citation" data-cites="DUAN1994265">(<a href="#ref-DUAN1994265" role="doc-biblioref">Duan et al., 1994</a>)</span></strong>, is a global optimization strategy specifically designed to efficiently explore high-dimensional and complex parameter spaces where multiple local optima may exist. It is worth noting that the <strong>IHACRES model</strong> involves up to nine (9) parameters to be optimized (cf. <span class="citation" data-cites="KIM2015543">Kim (<a href="#ref-KIM2015543" role="doc-biblioref">2015</a>)</span>). We first define a robust <strong>KGE</strong> objective function for <strong><code>hydromad</code></strong>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>kge_fun <span class="ot">=</span> <span class="cf">function</span>(Q, X, ...) </span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove missing values to prevent cor/sd returning NA</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  ok <span class="ot">=</span> <span class="fu">complete.cases</span>(Q, X)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">sum</span>(ok) <span class="sc">&lt;</span> <span class="dv">2</span>) <span class="fu">return</span>(<span class="cn">NA</span>)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  Q <span class="ot">=</span> Q[ok]</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  X <span class="ot">=</span> X[ok]</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">=</span> <span class="fu">cor</span>(X, Q)                     <span class="co"># correlation</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  alpha <span class="ot">=</span> <span class="fu">sd</span>(X) <span class="sc">/</span> <span class="fu">sd</span>(Q)             <span class="co"># variability ratio</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  beta <span class="ot">=</span> <span class="fu">mean</span>(X) <span class="sc">/</span> <span class="fu">mean</span>(Q)          <span class="co"># bias ratio</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Calculate KGE</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>  val <span class="ot">=</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">sqrt</span>((r <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> (alpha <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> (beta <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>  val</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled" title="Note on Calibration Time">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note on Calibration Time
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Calibration of the <strong>IHACRES model</strong> using the <strong><code>SCE algorithm</code></strong> algorithm can be <strong>computationally intensive</strong>. Depending on the <strong>length of the time serie</strong> and the <strong>computer’s processing power</strong>, this step <strong>may take several minutes to complete</strong>. Please be patient and avoid interrupting the process. For testing purposes, the <strong><code>control</code></strong> list (e.g., <code>maxit</code>, <code>ncomplex</code>) can be adjusted to reduce runtime.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run calibration using the SCE algorithm and KGE as obj. function</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>fit_ihacres <span class="ot">=</span> <span class="fu">fitBySCE</span>(</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  ihacres, </span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">objective =</span> kge_fun,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Run SCE with only 5 iterations (very short, just for testing)</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Use 2 complexes in the population (again, very minimal).</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">maxit =</span> <span class="dv">5</span>, <span class="at">ncomplex =</span> <span class="dv">2</span>)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in fitBySCE(ihacres, objective = kge_fun, control = list(maxit = 5, :
+Maximum number of function evaluations or iterations reached.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of calibrated parameters</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_ihacres)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+hydromad(DATA = ts_data, tau_q = 1.30526, tau_s = 12.2441, v_s = 0.298025, 
+    sma = "cwi", routing = "expuh", tw = 9.53867, f = 1.85669, 
+    scale = 0.00190669)
+
+Time steps: 10492 (0 missing).
+Runoff ratio (Q/P): (1.03 / 2.393) = 0.4303
+rel bias: -1.173e-07
+r squared: 0.573
+r sq sqrt: 0.4984
+r sq log: 0.4187
+
+For definitions see ?hydromad.stats</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Extract the KGE value</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>kge_val <span class="ot">=</span> <span class="fu">objFunVal</span>(fit_ihacres, <span class="at">objective =</span> kge_fun)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"IHACRES calibration KGE:"</span>, kge_val)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>IHACRES calibration KGE: 0.7903994</code></pre>
+</div>
+</div>
+<p>Unlike the <strong><code>airGR package</code></strong>, which provides a dedicated <strong>built-in plotting function</strong> for visualizing model calibration results, the<strong><code>hydromad package</code></strong> does not include an equivalent comprehensive graphical output. Consequently, we limit the graphical assessment to a direct comparison between observed and simulated discharge time series, which nonetheless provides a clear and informative evaluation of model performance (<a href="#fig-calibihacres" class="quarto-xref">Figure&nbsp;4</a>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xyplot</span>(fit_ihacres,</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">with.standard =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">"Time"</span>,</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylab =</span> <span class="st">"Discharge (m3/s)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-calibihacres" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-calibihacres-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-calibihacres-1.png" class="img-fluid figure-img" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-calibihacres-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: IHACRES model calibration results: observed versus simulated discharge.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="references" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-CORON2017166" class="csl-entry" role="listitem">
+Coron, L., Thirel, G., Delaigue, O., Perrin, C., &amp; Andréassian, V. (2017). The suite of lumped GR hydrological models in an r package. <em>Environmental Modelling &amp; Software</em>, <em>94</em>, 166–171. https://doi.org/<a href="https://doi.org/10.1016/j.envsoft.2017.05.002">https://doi.org/10.1016/j.envsoft.2017.05.002</a>
+</div>
+<div id="ref-DUAN1994265" class="csl-entry" role="listitem">
+Duan, Q., Sorooshian, S., &amp; Gupta, V. K. (1994). Optimal use of the SCE-UA global optimization method for calibrating watershed models. <em>Journal of Hydrology</em>, <em>158</em>(3), 265–284. https://doi.org/<a href="https://doi.org/10.1016/0022-1694(94)90057-4">https://doi.org/10.1016/0022-1694(94)90057-4</a>
+</div>
+<div id="ref-Jakeman93WR00877" class="csl-entry" role="listitem">
+Jakeman, A. J., &amp; Hornberger, G. M. (1993). How much complexity is warranted in a rainfall-runoff model? <em>Water Resources Research</em>, <em>29</em>(8), 2637–2649. https://doi.org/<a href="https://doi.org/10.1029/93WR00877">https://doi.org/10.1029/93WR00877</a>
+</div>
+<div id="ref-KIM2015543" class="csl-entry" role="listitem">
+Kim, H. S. (2015). Application of a baseflow filter for evaluating model structure suitability of the IHACRES CMD. <em>Journal of Hydrology</em>, <em>521</em>, 543–555. https://doi.org/<a href="https://doi.org/10.1016/j.jhydrol.2014.12.030">https://doi.org/10.1016/j.jhydrol.2014.12.030</a>
+</div>
+<div id="ref-PERRIN2003275" class="csl-entry" role="listitem">
+Perrin, C., Michel, C., &amp; Andréassian, V. (2003). Improvement of a parsimonious model for streamflow simulation. <em>Journal of Hydrology</em>, <em>279</em>(1), 275–289. https://doi.org/<a href="https://doi.org/10.1016/S0022-1694(03)00225-7">https://doi.org/10.1016/S0022-1694(03)00225-7</a>
+</div>
+<div id="ref-Zhaonh2019047" class="csl-entry" role="listitem">
+Zhao, B., Mao, J., Dai, Q., Han, D., Dai, H., &amp; Rong, G. (2019). Exploration on hydrological model calibration by considering the hydro-meteorological variability. <em>Hydrology Research</em>, <em>51</em>(1), 30–46.
+</div>
+</div>
+
+
+</section>
+
+<a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/diopbachir\.github\.io\/tp_eva\/index\.html");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Copyright 2025</p>
+</div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="http://orcid.org/0000-0003-0481-5330">
+<p>Yves Tramblay <i class="fa-brands fa-orcid"></i></p>
+</a>
+  </li>  
+    <li class="nav-item">
+ |
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://orcid.org/0009-0002-8743-3660">
+<p>Serigne Bassirou Diop <i class="fa-brands fa-orcid"></i></p>
+</a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+<p>Powered by <a href="https://quarto.org/">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

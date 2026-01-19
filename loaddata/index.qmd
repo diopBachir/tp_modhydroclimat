@@ -1,0 +1,351 @@
+---
+title: "Database description and data preparation"
+page-layout: full
+---
+
+# Description of the database
+
+The database for this project is structured to support hydrological modeling under both historical conditions and future climate change scenarios. It is organized into two main components: **observed in-situ** data and **simulated climate model** data.
+
+## Observed Data (In-Situ)
+
+The file **`dataobs_P_TEMP_ETP_DEBIT.csv`** contains historical observations used for model calibration and validation. It typically includes:
+
+* **P:** Precipitation (mm)
+* **TEMP:** Air Temperature (°C)
+* **ETP:** Potential Evapotranspiration (mm)
+* **DEBIT:** River discharge or spring flow ($m^3/s$)
+
+## Climate model data (projections)
+
+The database includes climate projections from three different RCMs, organized into specific folders:
+
+* **CLM:** Community Land Model / Climate Limited-area Modelling.
+* **CNRM:** National Centre for Meteorological Research (France).
+* **IPSL:** Institut Pierre-Simon Laplace (France).
+
+Each model folder contains several CSV files categorized by variable and scenario:
+
+* **PR:** Precipitation
+* **TMAX:** Maximum Temperature
+* **TMIN:** Minimum Temperature
+
+Scenarios:
+
+* **hist (Historical):** Reference simulations for the historical period.
+* **rcp45 (RCP 4.5):** A moderate climate change scenario in which greenhouse gas emissions are gradually reduced, leading to a stabilization of global warming around a radiative forcing of 4.5 W/m² after 2100.
+* **rcp85 (RCP 8.5):** A high-emission scenario assuming no significant mitigation efforts, resulting in a strong increase in greenhouse gas emissions and a radiative forcing exceeding 8.5 W/m² by 2100.
+
+::: {.callout-note title="Climate data file naming convention"}
+The climate files follow a standardized naming convention as below: 
+**`[model]_data[Variable]_[Scenario].csv`**.
+
+**Example:** **`clm_dataTMAX_rcp85.csv`** represents the Maximum Temperature projections for the Lez basin using the CLM model under the pessimistic RCP8.5 scenario.
+:::
+
+# Historical (observational) data preparation and time windowing
+
+In this section, we subset the observed data to a specific historical reference period **(1977–2005)**. Data manipulation is performed using the **`tidyverse`** suite of packages, and date handling is managed efficiently using the **`lubridate`** package.
+
+
+<br>
+
+**Load necessary libraries:**
+```{r}
+#| echo: true
+#| eval: true
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(lubridate)
+```
+
+<br>
+
+**Load Data:**
+```{r}
+#| echo: true
+#| eval: true
+#| message: false
+#| warning: false
+
+# Set Github repo. url to access data
+github_repo = paste0("https://raw.githubusercontent.com/",
+                     "diopBachir/tp_modhydroclimat/main/")
+
+# read the CSV and set columns names [Date, P, TEMP, ETP, DEBIT]
+obs_url = file.path(github_repo, "data/dataobs_P_TEMP_ETP_DEBIT.csv")
+
+# set columns names and classes
+colnames = c("Date", "P", "T", "PET", "Q")
+colclasses = c("character", "numeric", "numeric", "numeric", "numeric")
+
+# import data
+obsdata = read.csv(obs_url, col.names = colnames, colClasses = colclasses)
+
+# Convert the Date column to R-Date objects
+obsdata[["Date"]] = as.Date(obsdata[["Date"]], format = "%Y%m%d")
+
+# print data
+# head(obsdata)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+
+DT::datatable(
+  obsdata,
+  options = list(pageLength = 5),
+  caption = "Observed hydro-climatic data for the Lez basin"
+)
+```
+
+<br>
+
+**Define Time Windows:**
+```{r}
+#| echo: true
+#| eval: true
+#| message: false
+#| warning: false
+
+# Historical period: 1977-01-01 to 2005-12-31
+hist_start = as.Date("1977-01-01")
+hist_end = as.Date("2005-12-31")
+
+# Subset historical data
+obs_hist = obsdata %>%
+  filter(Date >= hist_start, Date <= hist_end)
+```
+
+We convert streamfolow from $m^3.s_{-1}$ to $mm$. Converting streamflow from a volume rate ($m^3.s{-1}$) to a depth ($mm$) is required by almost all hydrological models, and allows for a direct comparison with precipitation and evapotranspiration. To do this, we normalize the flow by the catchment area.
+
+::: {.callout-note title="Mathematical conversion"}
+To convert discharge $Q$ (in $m^3/s$) to a runoff depth $R$ (in $mm/day$), we use the following formula:
+$$R_{mm/day} = \frac{Q_{m^3/s} \times 86400 \times 1000}{Area_{m^2}}$$
+
+Where:
+
+- **`86,400`**: Number of seconds in a day.
+- **`1,000`**: Conversion factor from meters to millimeters.
+- **`Area`**: The catchment area in square meters.
+
+:::
+
+If the catchment area is expressed in $km^2$ (which is standard), the formula simplifies to:
+
+$$R_{mm/day} = \frac{Q_{m^3/s} \times 86.4}{Area_{km^2}}$$
+
+::: {.callout-note title="The **`86.4`** Constant"}
+The constant **`86.4`** is derived from $\frac{86,400 \text{ sec/day} \times 1,000 \text{ mm/m}}{1,000,000 \text{ m}^2\text{/km}^2}$.
+:::
+
+To convert the model output ($mm/day$) back to volumetric flow ($m^3/s$):
+
+$$Q_{m^3/s} = \frac{R_{mm/day} \times Area_{km^2}}{86.4}$$
+
+
+```{r}
+#| echo: true
+#| eval: true
+#| message: false
+#| warning: false
+
+A = 178
+obs_hist[["Q"]] = (obs_hist[["Q"]] * 86.4) / A
+```
+
+# Climate model data preparation and time windowing
+
+We first define the temporal window used for climate projections. 
+
+```{r}
+#| echo: true
+#| eval: true
+#| 
+# Define projection period (project 1977-2005 window to 2070)
+duration = hist_end - hist_start
+fut_start = ymd("2070-01-01")
+fut_end = fut_start + duration
+```
+
+To automate the processing of our climate model folders **`(CLM, CNRM, IPSL)`**, we create in the chunk below a robust function named **`prepare_climate_data(...)`**that handles file paths, date filtering, and variable merging. Since our data is split into separate files for **PR**, **TMAX**, and **TMIN**, the function will need to join these variables based on the date to return a clean, usable dataset.
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+#| code-fold: false
+#| code-summary: Show the code
+
+#' ---------------Function to prepare climate data-------------------
+#' @param model_prefix Character. The name of the climate model.
+#' @param base_path Character. Path to the folder containing model subfolders.
+#' @param h_start Date. Start of the historical period .
+#' @param h_end Date. End of the historical period.
+#' @param f_start Date. Start of the future projection period.
+#' @param f_end Date. End of the future projection period.
+#'
+#' @return A list with three elements:
+#' hist: A tibble with historical PR, TMAX, TMIN data.
+#' rcp45: A tibble with future RCP 4.5 PR, TMAX, TMIN data.
+#' rcp85: A tibble with future RCP 8.5 PR, TMAX, TMIN data.
+#'
+#' @details
+#' The function assumes each CSV file is named following the convention:
+#' [model]_data[Variable]_[Scenario].csv.
+#' Dates must be in a format that as.Date() can parse (e.g., "YYYY-MM-DD").
+#' 
+#' @examples
+#' climate_data = prepare_climate_data(
+#'   model_prefix = "CLM",
+#'   base_path = "data/",
+#'   h_start = as.Date("1977-01-01"),
+#'   h_end   = as.Date("2005-12-31"),
+#'   f_start = as.Date("2070-01-01"),
+#'   f_end   = as.Date("2099-12-31")
+#' )
+#' 
+#' names(climate_data) # returns "hist", "rcp45", "rcp85"
+#'
+#' @export
+prepare_climate_data = function(model_prefix, 
+                                base_path, 
+                                h_start, 
+                                h_end, 
+                                f_start, 
+                                f_end) 
+{
+  
+  # Helper function to load and filter a single variable CSV
+  load_var = function(var_name, scenario, start_date, end_date) 
+  {
+    
+    # Construct file path based on naming convention
+    fname = paste0(tolower(model_prefix), "_data", var_name, "_", scenario, ".csv")
+    file_path = file.path(base_path, toupper(model_prefix), fname)
+    
+    # Load CSV
+    df = read.csv(
+        file_path, 
+        col.names = c("Date", toupper(var_name)),
+        colClasses = c("character", "numeric")
+    )
+    
+    # Convert Date column to Date type
+    df$Date = as.Date(df$Date, format = "%Y%m%d")
+    
+    # Filter dates within range and rename the variable column
+    df %>%
+      filter(Date >= start_date & Date <= end_date) %>%
+      rename(!!var_name := 2)  # Rename 2nd column to PR, TMAX, or TMIN
+  }
+
+  # --- 1. HISTORICAL PERIOD ---
+  hist_pr   = load_var("PR",   "hist", h_start, h_end)
+  hist_tmax = load_var("TMAX", "hist", h_start, h_end)
+  hist_tmin = load_var("TMIN", "hist", h_start, h_end)
+  
+  # Merge historical variables by Date
+  hist_all  = hist_pr %>%
+    inner_join(hist_tmax, by = "Date") %>%
+    inner_join(hist_tmin, by = "Date")
+
+  # --- 2. FUTURE RCP 4.5 ---
+  fut45_pr   = load_var("PR",   "rcp45", f_start, f_end)
+  fut45_tmax = load_var("TMAX", "rcp45", f_start, f_end)
+  fut45_tmin = load_var("TMIN", "rcp45", f_start, f_end)
+  
+  fut45_all  = fut45_pr %>%
+    inner_join(fut45_tmax, by = "Date") %>%
+    inner_join(fut45_tmin, by = "Date")
+
+  # --- 3. FUTURE RCP 8.5 ---
+  fut85_pr   = load_var("PR",   "rcp85", f_start, f_end)
+  fut85_tmax = load_var("TMAX", "rcp85", f_start, f_end)
+  fut85_tmin = load_var("TMIN", "rcp85", f_start, f_end)
+  
+  fut85_all  = fut85_pr %>%
+    inner_join(fut85_tmax, by = "Date") %>%
+    inner_join(fut85_tmin, by = "Date")
+
+  # Return all data as a structured list
+  return(list(
+    hist  = hist_all,
+    rcp45 = fut45_all,
+    rcp85 = fut85_all
+  ))
+}
+
+```
+
+
+We can now call this function for each of our climate models. Note that all the variables used below to call the **`prepare_climate_data`** function have been defined in the previous chunks, namely **`github_repo`**, **`hist_start`**, **`hist_end`**, **`fut_start`**, **`fut_end`**.
+
+```{r}
+#| echo: true
+#| eval: true
+
+# define the data path
+climdatapath = file.path(github_repo, "data")
+
+# Process all models
+
+clm_data = prepare_climate_data(
+    "clm", climdatapath, hist_start, hist_end, fut_start, fut_end
+)
+
+cnrm_data = prepare_climate_data(
+    "cnrm", climdatapath, hist_start, hist_end, fut_start, fut_end
+)
+
+ipsl_data = prepare_climate_data(
+    "ipsl", climdatapath, hist_start, hist_end, fut_start, fut_end
+)
+```
+
+
+# Exporting preprocessed data {#sec-exportpreprocessed}
+
+Effective data management requires saving intermediate datasets to establish a reliable baseline for subsequent modeling steps, including bias correction and hydrological simulations here. By exporting the filtered historical observations and harmonized climate projections, we:
+
+* Avoid repeating computationally intensive preprocessing routines.
+* Minimize the risk of temporal inconsistencies or misalignments.
+* Maintain a transparent audit trail of all transformations applied to the data.
+
+This approach not only improves computational efficiency in future R sessions but also ensures that clean, analysis-ready datasets can be readily shared across software platforms.
+
+The following code creates an **`output/`** directory and saves the observed historical data alongside the processed climate model data. To ensure a seamless transition between data preparation and the subsequent modelling phases, we utilize the **RDS (R Data Serialization)** format to archive our preprocessed datasets. Exporting the filtered historical observations and the nested lists of climate projections into **`.rds`** files is more robust than using **flat CSVs**, as it preserves **R-specific metadata**, such as **complex list structures** and **Date-class attributes**, while offering significant file compression.
+
+::: {.callout-note title="Reloading Preprocessed Data"}
+
+In the next part of the practical session, the previously exported datasets can be easily reloaded in a single step using the **`readRDS()`** function. This approach preserves the original data structure, including column types, ensuring a consistent and analysis-ready dataset without the need to repeat preprocessing steps.
+
+:::
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Create an output directory if it doesn't exist
+if (!dir.exists("output_preprocessed")) dir.create("output_preprocessed")
+
+# This keeps all Climate Models in a single file
+models_list = list(
+    climdataCLM = clm_data,
+    climdataCNRM = cnrm_data,
+    climdataIPSL = ipsl_data
+)
+
+preprocessed_data <- list(
+  obs_hist = obs_hist,
+  models   = models_list
+)
+
+# Export using saveRDS
+saveRDS(obs_hist, file="output_preprocessed/processed_obsdata_lez.rds")
+saveRDS(models_list, file="output_preprocessed/processed_climatedata_lez.rds")
+```

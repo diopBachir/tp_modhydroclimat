@@ -40,14 +40,15 @@ $code-block-bg: $off-white;
 -----------------------------------------------------------------------------*/
 body {
   font-family: 'Merriweather', Georgia, 'Times New Roman', Times, Serif;
-  font-size: 0.90em;
-  line-height: 1.5em;
+  font-size: 1.1em;
+  line-height: 1.6em;
   background-color: #faf8f8;
 }
 
 pre>code {
   font-family: 'Hack', 'Source Code Pro', 'Courier New', 'Courier', monospace;
-  font-size: $font-size-base * 1.02;
+  font-size: $font-size-base * .99 !important;
+  line-height: 1.1em;
   background-color: #edf0f5;
 }
 
@@ -192,7 +193,7 @@ dd {
 // figure caption
 
 figcaption {
-  font-size: $font-size-base * .87 !important;
+  font-size: $font-size-base * 1.1 !important;
   color: $teal !important;
   margin-top: -.44em !important;
   line-height: 1.5em !important;

@@ -116,7 +116,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
-<body class="floating nav-fixed slimcontent">
+<body class="floating nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -142,12 +142,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Software &amp; Setup</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../blockmaxima/index.html"> 
-<span class="menu-text">Block Maxima Approach</span></a>
+    <a class="nav-link" href="../loaddata/index.html"> 
+<span class="menu-text">Database</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../pot/index.html"> 
-<span class="menu-text">Threshold Exceedance (POT)</span></a>
+    <a class="nav-link" href="../modelcalib/index.html"> 
+<span class="menu-text">Model calibration</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../biascorr/index.html"> 
+<span class="menu-text">Bias correction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../simulation/index.html"> 
+<span class="menu-text">Simulation</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -157,7 +165,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="4">
@@ -177,10 +185,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
     </div>
 <!-- main -->
-<main class="content page-columns page-full" id="quarto-document-content">
+<main class="content column-page-right" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -189,7 +197,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<div class="quarto-title-meta">
+<div class="quarto-title-meta column-page-right">
 
     
   
@@ -218,10 +226,8 @@ Download the Data
 </div>
 </div>
 </section>
-<section id="r-environment-rstudio-ide" class="level1 page-columns page-full" data-number="2">
+<section id="r-environment-rstudio-ide" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> R (environment) &amp; Rstudio (IDE)</h1>
-
-<div class="no-row-height column-margin column-container"><div class="">
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -235,7 +241,7 @@ Note
 <p>An <strong><code>IDE (Integrated Development Environment)</code></strong> is a <strong>software application</strong> that provides developers with a comprehensive set of tools for <strong>writing, testing, and debugging code</strong> in one place.</p>
 </div>
 </div>
-</div></div><section id="what-is-r" class="level2" data-number="2.1">
+<section id="what-is-r" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="what-is-r"><span class="header-section-number">2.1</span> 🧠 What is R?</h2>
 <p><a href="https://www.r-project.org/"><strong><code>R</code></strong></a> is a <strong>programming language</strong> and <strong>software environment</strong> designed primarily for <strong>statistical computing</strong>, <strong>data analysis</strong>, and <strong>visualization</strong>.</p>
 <div id="fig-Rbenefits" class="quarto-figure quarto-figure-center quarto-float anchored" alt="Benefits of learning R language">
@@ -287,10 +293,8 @@ Figure&nbsp;3: <strong>R environment</strong>, the engine powering your data ana
 </div>
 </section>
 </section>
-<section id="libraries-packages" class="level1 page-columns page-full" data-number="3">
+<section id="libraries-packages" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Libraries (Packages)</h1>
-
-<div class="no-row-height column-margin column-container"><div class="">
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -311,7 +315,6 @@ Must-haves
 </div>
 </div>
 </div>
-</div><div class="">
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -328,7 +331,6 @@ Note
 </div>
 </div>
 </div>
-</div></div>
 <p>📦 <a href="https://www.jstatsoft.org/article/view/v072i08">{extRemes}</a> — For fitting and analyzing extreme value distributions.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"extRemes"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
