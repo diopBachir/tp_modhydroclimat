@@ -1,51 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://b5dba8f3-1119-4a67-b8f0-23f5ff767917.netlify.app/index.html</loc>
-    <lastmod>2026-01-27T04:02:07.465Z</lastmod>
-  </url>
-  <url>
-    <loc>https://b5dba8f3-1119-4a67-b8f0-23f5ff767917.netlify.app/softwaresetup/index.html</loc>
-    <lastmod>2026-01-18T08:38:13.572Z</lastmod>
-  </url>
-  <url>
-    <loc>https://b5dba8f3-1119-4a67-b8f0-23f5ff767917.netlify.app/biascorr/index.html</loc>
-    <lastmod>2026-01-27T02:32:57.634Z</lastmod>
-  </url>
-  <url>
-    <loc>https://b5dba8f3-1119-4a67-b8f0-23f5ff767917.netlify.app/modelcalib/index.html</loc>
-    <lastmod>2026-01-26T20:27:59.345Z</lastmod>
-  </url>
-  <url>
-    <loc>https://b5dba8f3-1119-4a67-b8f0-23f5ff767917.netlify.app/scenarios/index.html</loc>
-    <lastmod>2026-01-27T04:08:19.402Z</lastmod>
-  </url>
-  <url>
-    <loc>https://b5dba8f3-1119-4a67-b8f0-23f5ff767917.netlify.app/introduction/index.html</loc>
-    <lastmod>2026-01-26T20:15:27.396Z</lastmod>
-  </url>
-  <url>
-    <loc>https://b5dba8f3-1119-4a67-b8f0-23f5ff767917.netlify.app/validation/index.html</loc>
-    <lastmod>2026-01-27T02:33:28.687Z</lastmod>
-  </url>
-  <url>
-    <loc>https://b5dba8f3-1119-4a67-b8f0-23f5ff767917.netlify.app/loaddata/index.html</loc>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/loaddata/index.html</loc>
     <lastmod>2026-01-26T23:08:22.036Z</lastmod>
   </url>
   <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/validation/index.html</loc>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/validation/index.html</loc>
     <lastmod>2026-01-27T04:59:05.927Z</lastmod>
   </url>
   <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/introduction/index.html</loc>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/introduction/index.html</loc>
     <lastmod>2026-01-27T04:14:23.910Z</lastmod>
   </url>
   <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/modelcalib/index.html</loc>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/scenarios/index.html</loc>
+    <lastmod>2026-01-27T04:08:19.402Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/modelcalib/index.html</loc>
     <lastmod>2026-01-27T04:19:07.615Z</lastmod>
   </url>
   <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/index.html</loc>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/biascorr/index.html</loc>
+    <lastmod>2026-01-27T02:32:57.634Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/softwaresetup/index.html</loc>
+    <lastmod>2026-01-18T08:38:13.572Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/index.html</loc>
     <lastmod>2026-01-27T04:59:10.378Z</lastmod>
   </url>
 </urlset>
