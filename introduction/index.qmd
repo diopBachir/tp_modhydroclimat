@@ -57,6 +57,30 @@ When assessing the impacts of climate change, hydrological models are typically 
 
 However, GCM simulations cannot be used directly as inputs for hydrological models, as they commonly exhibit systematic biases relative to observations. **Bias Correction** is a mandatory step to align climate simulations with local historical observations before running the hydrological model.
 
+::: {.callout-note title="Mechanics of Bias Correction [@Chun2012]"}
+
+Consider a single weather variable (such as daily temperature at a specific grid point) observed over two distinct periods:
+
+- Present-Day Period: Represented by actual observations **$X_o$** and climate model simulations **$X_m$**.
+- Future Period: Represented by unknown future observations **$X'_o$** and future climate model projections **$X'_m$**.
+
+The primary goal of a future climate assessment is to estimate the statistical distribution of **$X'_o$** by leveraging the known data samples from **$X_o$**, **$X_m$**, and **$X'_m$**.
+
+The bias correction strategy is built on the fundamental assumption that model errors are **stationary**, meaning they do not change over time. Under this logic, the mathematical relationship required to align the present-day model **$X_m$** with present-day observations **$X_o$** is the exact same relationship needed to align the future model **$X'_m$** with future observations **$X'_o$**.
+
+As shown in @fig-biascorr, this method effectively **"shifts"** or **"reshapes"** the model's output to match the historical reality, then applies that same transformation to future projections. The schematic (a) illustrates the relationship between four key variables: present-day observations (**$X_o$**), present-day model simulations **($X_m$)**, future model projections **($X'_m$)**, and the estimated future observations **($X'_o$)**. The bias correction strategy assumes that model discrepancies (biases) remain stationary over time. As shown in the probability density functions (b), the transformation required to align the present-day model (**$X_m$**, solid blue) with historical observations (**$X_o$**, solid red) is applied to the future model projections (**$X'_m$**, solid purple). This results in the calibrated future projected variable (**$X'_o$**, dashed orange), which inherits the statistical characteristics of the observed distribution while accounting for the model-predicted climate change signal.
+
+![Conceptual Framework of the Bias Correction Pathway for Climate Model Projections [@Chun2012].](images/biascorr_illustr.png){#fig-biascorr width=100% fig-alt="Bias correction Illustr"}
+
+:::
+
+
+# Potential Evapotranspiration (PET)
+
+**PET** is a key hydrological variable representing the water loss from soil and vegetation under the assumption of unlimited water availability (i.e., the atmospheric “evaporative demand”). It quantifies how much water would be evaporated or transpired if there were no water limitations. **PET** is a critical input to conceptual rainfall–runoff models, as it governs soil moisture dynamics and controls the amount of water available for runoff generation. PET can be estimated using various empirical methods, such as **Hargreaves**, **Penman-Monteith**, or **Thornthwaite** formulas, depending on available climate data.
+
+![Evapotranspiration: sum of evaporation from water bodies and land surfaces plus transpiration from plants, such as trees and grasses. (Image by LabXchange © The President and Fellows of Harvard College)](images/pet-illustr.png){#fig-pet width=100% fig-alt="Schematic of the PET physics"}
+
 
 # Practical Objectives of this Module
 

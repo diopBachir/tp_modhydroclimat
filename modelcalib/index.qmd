@@ -12,9 +12,6 @@ page-layout: full
 #| warning: false
 
 library(airGR)
-library(hydromad)
-library(lattice)
-library(latticeExtra)
 library(lubridate)
 ```
 
@@ -35,7 +32,7 @@ str(hist_obs)
 
 The **GR4J** (**`G`**énie **`R`**ural à **`4`** paramètres **`J`**ournalier) model is a parsimonious, lumped conceptual rainfall-runoff model widely used in hydrological studies. It represents catchment processes through a production (soil moisture) reservoir, which controls the transformation of precipitation into effective rainfall by accounting for evapotranspiration and soil water storage, and a routing reservoir, which simulates the delayed transfer of water to the outlet (@fig-gr4jschema). As the name suggests, the model is governed by four parameters: the capacity of the production reservoir ($x_1$), the groundwater exchange coefficient ($x_2$), the routing reservoir capacity ($x_3$), and the time base of the unit hydrograph ($x_4$). For a detailed description of the model structure and parameterization, readers are referred to @PERRIN2003275.
 
-![Schematic structure of the **GR4J rainfall-runoff model** [@PERRIN2003275]. $P$ denotes rainfall (mm), $E$ is potential evapotranspiration (mm), $S$ represents the level of the production reservoir (mm), $R$ the level of the routing reservoir (mm), and $Q$ the simulated streamflow (mm). $UH$ refers to the unit hydrograph, and $F(X₂)$ to the groundwater exchange function.](images/gr4j-illustr.png){#fig-gr4jschema width=45% fig-alt="Schematic structure of the daily GR4J model"}
+![Schematic structure of the **GR4J rainfall-runoff model** [@PERRIN2003275]. $P$ denotes rainfall (mm), $E$ is potential evapotranspiration (mm), $S$ represents the level of the production reservoir (mm), $R$ the level of the routing reservoir (mm), and $Q$ the simulated streamflow (mm). $UH$ refers to the unit hydrograph, and $F(X₂)$ to the groundwater exchange function.](images/gr4j-illustr.png){#fig-gr4jschema width=55% fig-alt="Schematic structure of the daily GR4J model"}
 
 To optimize the four parameters of the **GR4J model** ($x_1, x_2, x_3, x_4$), we use the **`Michel calibration algorithm`**, integrated within the **`airGR R package`** [@CORON2017166]. The **`Michel algorithm`** is a gradient-free and iterative local search method which begins by exploring the parameter space using a coarse, predefined grid to identify the most promising region of "good" parameter sets. From the best starting point found in the grid, it performs an iterative local search, adjusting the parameters in directions that maximize an objective function, which measures the goodness-of-fit between observed and simulated discharge. Here we use the the **`Kling-Gupta Efficiency (KGE; @GUPTA200980)`** as objective function. 
 
@@ -267,7 +264,7 @@ saveRDS(gr4j_params, file="output_modelcalibration/fittedGR4J_lez.rds")
 
 # Further Analysis: Calibration of the IHACRES Model
 
-While the **GR4J model** is used for the remainder of the practical, further analysis may include the calibration of the **IHACRES model**. **IHACRES** stands for **`I`**dentification of unit **`H`**ydrographs **`A`**nd **`C`**omponent flows from **`R`**ainfall, **`E`**vaporation and **`S`**treamflow data. The IHACRES model is a lumped conceptual rainfall-runoff model which architecture is divided into two fundamental modules (@ihacresschema). The **non-linear loss module** converts observed rainfall into effective rainfall by accounting for antecedent moisture conditions through a catchment wetness index, controlled by a small set of parameters governing catchment drying and rainfall–runoff efficiency, typically influenced by temperature or potential evapotranspiration (@ihacresschema). The **linear routing module** then transforms this effective rainfall into discharge using linear reservoirs whose parameters control the response time and relative contribution of quick flow (surface or near-surface runoff) and slow flow (groundwater contribution or baseflow). For a detailed description of the model structure and parameterization, readers are referred to @Jakeman93WR00877.
+While the **GR4J model** is used for the remainder of the practical, further analysis may include the calibration of the **IHACRES model**. **IHACRES** stands for **`I`**dentification of unit **`H`**ydrographs **`A`**nd **`C`**omponent flows from **`R`**ainfall, **`E`**vaporation and **`S`**treamflow data. The IHACRES model is a lumped conceptual rainfall-runoff model which architecture is divided into two fundamental modules (@fig-ihacresschema). The **non-linear loss module** converts observed rainfall into effective rainfall by accounting for antecedent moisture conditions through a catchment wetness index, controlled by a small set of parameters governing catchment drying and rainfall–runoff efficiency, typically influenced by temperature or potential evapotranspiration (@ihacresschema). The **linear routing module** then transforms this effective rainfall into discharge using linear reservoirs whose parameters control the response time and relative contribution of quick flow (surface or near-surface runoff) and slow flow (groundwater contribution or baseflow). For a detailed description of the model structure and parameterization, readers are referred to @Jakeman93WR00877.
 
 ![Schematic structure of the IHACRES model [@Zhaonh2019047]. $C$ represents mass balance which ensures the long-term volume of effective rainfall matches observed discharge, $\tau_s$ is the reference drying rate, which defines the soil's drying speed at a reference temperature, $f$ is the temperature modulation of drying rate](images/ihacres-illustr.png){#fig-ihacresschema width=100% fig-alt="Schematic structure of the IHACRES model"}
 
@@ -278,6 +275,10 @@ The model requires a time-series object (**`zoo`** or **`xts`**) containing Rain
 ```{r}
 #| echo: true
 #| eval: true
+#| message: false
+#| warning: false
+
+library(hydromad)
 
 # Convert data into a zoo object
 hist_obs$Date = as.Date(hist_obs$Date)
@@ -286,7 +287,7 @@ ts_data = with(
   zoo(cbind(P = P, E = PET, Q = Q), order.by = Date)
 )
 
-str(ts_data)
+head(ts_data)
 ```
 
 Next, we define the **IHACRES model** structure by specifying the two modules. In the chunk below, we use the **`CWI (Catchment Wetness Index)`** for the **loss module** and **`expuh (Exponential Unit Hydrograph)`** for the **routing**. 
@@ -305,7 +306,6 @@ ihacres = hydromad(ts_data,
                    tau_q = c(0.1, 2),   # Quick flow time constant
                    tau_s = c(10, 100),  # Slow flow time constant
                    v_s = c(0, 1))       # Relative volume of slow flow
-ihacres
 ```
 
 To calibrate the parameters of the **IHACRES model**, we will use the **Shuffled Complex Evolution (SCE)** global optimizer. The **`SCE algorithm`**, developed at the **University of Arizona [@DUAN1994265]**, is a global optimization strategy specifically designed to efficiently explore high-dimensional and complex parameter spaces where multiple local optima may exist. It is worth noting that the **IHACRES model** involves up to nine (9) parameters to be optimized (cf. @KIM2015543). We first define a robust **KGE** objective function for **`hydromad`**.
@@ -337,7 +337,7 @@ kge_fun = function(Q, X, ...)
 ```
 
 
-::: {.callout-warning title="Note on Calibration Time"}
+::: {.callout-warning title="Note on calibration time"}
 Calibration of the **IHACRES model** using the **`SCE algorithm`** algorithm can be **computationally intensive**. Depending on the **length of the time serie** and the **computer’s processing power**, this step **may take several minutes to complete**. Please be patient and avoid interrupting the process. For testing purposes, the **`control`** list (e.g., `maxit`, `ncomplex`) can be adjusted to reduce runtime.
 :::
 
@@ -378,10 +378,23 @@ Unlike the **`airGR package`**, which provides a dedicated **built-in plotting f
 #| label: fig-calibihacres
 #| fig-cap: "IHACRES model calibration results: observed versus simulated discharge."
 
+library(lattice)
+library(latticeExtra)
+
 xyplot(fit_ihacres,
        with.standard = TRUE,
        xlab = "Time",
        ylab = "Discharge (m3/s)")
+```
+
+
+As for the GR4J model, we can save the calibrated IHACRES model for future use.
+
+```{r}
+#| echo: true
+#| eval: true
+
+saveRDS(fit_ihacres, file="output_modelcalibration/fittedIHACRES_lez.rds")
 ```
 
 # References

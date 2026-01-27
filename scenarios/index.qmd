@@ -1,0 +1,285 @@
+---
+title: "Scénarios climatiques"
+page-layout: full
+---
+
+# Load necessary libraries
+
+```{r}
+#| echo: true
+#| eval: true
+#| message: false
+#| warning: false
+
+library(zoo)
+library(airGR)
+library(dplyr)
+library(tidyr)
+library(extRemes)
+library(lubridate)
+```
+
+# Load bias corrected data and calibrated GR4J parameters
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+gr4j_param = readRDS("output_modelcalibration/fittedGR4J_lez.rds")
+str(gr4j_param)
+
+adjCLM = readRDS("output_biascorrection/biascorrectedCLM.rds")
+lapply(adjCLM, function(df) head(df, 5))
+```
+
+
+In the previous sections, we have defined a helper function named **`run_gr4j_simulation(...)`** that prepares all required input objects for the GR4J model using already calibrated parameters. We have defined a script named **`run_gr4j_simulation.R`** that contains this function. So we will load it instead of recoding the function.
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+source("scripts/run_gr4j_simulation.R")
+```
+
+
+Next, we run the GR4J over the historical, RCP45 and RCP85 bias-corrected data.
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+gr4jsim_hist_CLM = run_gr4j_simulation(
+  adjCLM[["histCLM_adj"]], "PR_adj", "PET_adj", NA, gr4j_param
+)[,c("Date", "Qsim")]
+
+gr4jsim_rcp45_CLM = run_gr4j_simulation(
+  adjCLM[["rcp45CLM_adj"]], "PR_adj", "PET_adj", NA, gr4j_param
+)[,c("Date", "Qsim")]
+
+gr4jsim_rcp85_CLM = run_gr4j_simulation(
+  adjCLM[["rcp85CLM_adj"]], "PR_adj", "PET_adj", NA, gr4j_param
+)[,c("Date", "Qsim")]
+
+```
+
+
+# Comparison of historical and projected (RCP4.5 and RCP8.5) mean daily and monthly discharge
+
+
+Let's plot the mean daily and monthly  discharge for the historical, RCP4.5 and RCP8.5 simulations. We have already a function named **`compute_mean_daily_cycle(...)`** defined in the previous steps. We have written this function in a script **`compute_mean_daly_Q.R`** named, so we will load it and compute the mean daily discharge.
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+source("scripts/compute_mean_daly_Q.R")
+```
+
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+histGR4J_CLM = compute_mean_daily_cycle(gr4jsim_hist_CLM, "HIST", "Qsim")
+
+rcp45GR4J_CLM = compute_mean_daily_cycle(gr4jsim_rcp45_CLM, "RCP4.5", "Qsim")
+
+rcp85GR4J_CLM = compute_mean_daily_cycle(gr4jsim_rcp85_CLM, "RCP8.5", "Qsim")
+
+```
+
+Now we plot the **mean daily discharge** over the hydrological year to evaluate the climate signal.
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+#| fig-width: 10
+#| fig-height: 6
+#| out-width: "100%"
+#| code-fold: true
+#| code-summary: Show the code
+#| label: fig-climate_sign_avg_mean_doyQ
+#| fig-cap: "Mean monthly discharge simulated by GR4J using bias-corrected RCM data under historical, RCP4.5, and RCP8.5 scenarios (smoothed using a 5-day centered rolling mean)."
+
+all_days = histGR4J_CLM$HydroDOY
+
+hist_rm  = rollmean(histGR4J_CLM$MeanDailyQ,  k = 5, align = "center", fill = NA)
+rcp45_rm = rollmean(rcp45GR4J_CLM$MeanDailyQ, k = 5, align = "center", fill = NA)
+rcp85_rm = rollmean(rcp85GR4J_CLM$MeanDailyQ, k = 5, align = "center", fill = NA)
+
+y_range = range(c(hist_rm, rcp45_rm, rcp85_rm), na.rm = TRUE)
+
+plot(histGR4J_CLM$HydroDOY, hist_rm,
+     type = "l", lwd = 1.5,
+     col = "black",
+     ylim = y_range,
+     cex.lab = 1.2, 
+     cex.axis = 1.2,
+     xlab = "Hydrological day",
+     ylab = "Mean daily discharge (m³/s)")
+
+lines(rcp45GR4J_CLM$HydroDOY, rcp45_rm,
+      col = "blue", lwd = 1.5, lty = 2)
+
+lines(rcp85GR4J_CLM$HydroDOY, rcp85_rm,
+      col = "red", lwd = 1.5, lty = 3)
+
+legend("topright",
+       legend = c("GR4J HIST", "GR4J RCP4.5", "GR4J RCP8.5"),
+       col = c("black", "blue", "red"),
+       lty = c(1, 2, 3),
+       lwd = 2,
+       bty = "o")
+
+```
+
+
+We also plot the **mean monthly discharge** 
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+#| fig-width: 10
+#| fig-height: 6
+#| out-width: "100%"
+#| code-fold: true
+#| code-summary: Show the code
+#| label: fig-climate_sign_avg_mean_monthQ
+#| fig-cap: "Mean monthly discharge simulated by GR4J using bias-corrected RCM data under historical, RCP4.5, and RCP8.5 scenarios."
+
+compute_monthly_mean = function(df, Q_col) {
+  df %>%
+    mutate(
+      Date = as.Date(Date),
+      Month = month(Date)
+    ) %>%
+    group_by(Month) %>%
+    summarise(
+      MeanQ = mean(.data[[Q_col]], na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    arrange(Month)
+}
+
+hist_mon  = compute_monthly_mean(gr4jsim_hist_CLM,  "Qsim")
+rcp45_mon = compute_monthly_mean(gr4jsim_rcp45_CLM, "Qsim")
+rcp85_mon = compute_monthly_mean(gr4jsim_rcp85_CLM, "Qsim")
+
+hydro_months = c(9:12, 1:8)
+hydro_labels = month.abb[hydro_months]
+
+hist_mon  = hist_mon  %>% slice(match(hydro_months, Month))
+rcp45_mon = rcp45_mon %>% slice(match(hydro_months, Month))
+rcp85_mon = rcp85_mon %>% slice(match(hydro_months, Month))
+
+bar_mat = rbind(
+  HIST   = hist_mon$MeanQ,
+  RCP4.5 = rcp45_mon$MeanQ,
+  RCP8.5 = rcp85_mon$MeanQ
+)
+
+
+barplot(bar_mat,
+        beside = TRUE,
+        col = c("black", "#5aa4ff", "#ffb04e"),
+        border = "gray30",
+        ylab = "Mean monthly discharge (m³/s)",
+        xlab = "",
+        cex.lab = 1.2, 
+        cex.axis = 1.2,
+        names.arg = hydro_labels,
+        legend.text = rownames(bar_mat),
+        args.legend = list(
+          x = "topright",
+          bty = "o",
+          cex = 1.5
+        ))
+
+```
+
+
+# Extreme value analysis
+
+To assess the impact of climate change on high flows, we performed an extreme value analysis using the Annual Maximum Flood (AMF) method. Annual peak discharge values were extracted for each hydrological year (September to August) and fitted to a Generalized Extreme Value (GEV) distribution using Generalized Maximum Likelihood Estimation (GMLE). This approach allows us to estimate the magnitude of rare events, which are critical for infrastructure design and flood risk management.
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+#| fig-width: 10
+#| fig-height: 6
+#| out-width: "100%"
+#| code-fold: true
+#| code-summary: Show the code
+#| label: fig-climate_sign_rl
+#| fig-cap: "Return level plots for annual maximum flow (AMF) simulated by the GR4J model. Curves represent the GEV distribution fitted using the Generalized Maximum Likelihood Estimation (GMLE) for the historical (1970-2000) and future (2070-2100) periods under RCP4.5 and RCP8.5 scenarios."
+
+extract_amax = function(df, Q_col = "Qsim") 
+{
+  df %>%
+    mutate(
+      # Revert selected Q from mm to m3/s (assuming area is 178 km2)
+      # .data[[...]] allows us to reference the column dynamically
+      Q_val = (.data[[Q_col]] * 178) / 86.4,
+      Date = as.Date(Date),
+      # Define Water Year (Sept 1st)
+      WaterYear = ifelse(month(Date) >= 9, year(Date) + 1, year(Date))
+    ) %>%
+    group_by(WaterYear) %>%
+    summarise(AMF   = max(Q_val, na.rm = TRUE), .groups = "drop") %>%
+    pull(AMF)
+}
+
+# extract annual maximum flow
+amf_hist = extract_amax(gr4jsim_hist_CLM)
+amf_rcp45 = extract_amax(gr4jsim_rcp45_CLM)
+amf_rcp85 = extract_amax(gr4jsim_rcp85_CLM)
+
+# fit the GEV distribution using the L-moments
+fit_hist  = fevd(amf_hist, type = "GEV", method = "GMLE")
+fit_rcp45 = fevd(amf_rcp45, type = "GEV", method = "GMLE")
+fit_rcp85 = fevd(amf_rcp85, type = "GEV", method = "GMLE")
+
+return_periods <- seq(1.1, 100, length.out = 100)
+
+rl_hist  <- return.level(fit_hist, return.period = return_periods)
+rl_rcp45 <- return.level(fit_rcp45, return.period = return_periods)
+rl_rcp85 <- return.level(fit_rcp85, return.period = return_periods)
+
+y_lims <- range(c(rl_hist, rl_rcp45, rl_rcp85), na.rm = TRUE)
+
+plot(return_periods, rl_hist, type = "l", log = "x",
+     ylim = y_lims, lwd = 2, col = "black",
+     cex.lab = 1.2, 
+     cex.axis = 1.2,
+     xlab = "Return Period (years)",
+     ylab = "Return Level [m3.s]")
+
+lines(return_periods, rl_rcp45, col = "blue", lwd = 2, lty = 2)
+lines(return_periods, rl_rcp85, col = "red", lwd = 2, lty = 3)
+
+legend("topleft", 
+       legend = c("GEV HIST", "GEV RCP4.5", "GEV RCP8.5"),
+       col = c("black", "blue", "red"),
+       lty = c(1, 2, 3), 
+       lwd = 2,
+       bty = "o",
+       cex = .9)
+
+```

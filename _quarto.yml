@@ -39,8 +39,10 @@ website:
         text: Model calibration
       - href: biascorr/index.qmd
         text: Bias correction
-      - href: simulation/index.qmd
-        text: Simulation
+      - href: validation/index.qmd
+        text: Validation
+      - href: scenarios/index.qmd
+        text: Scénarios
       # - href: blockmaxima/index.qmd
       #   text: Block Maxima Approach
       # - href: pot/index.qmd
