@@ -11,7 +11,7 @@ A watershed is the fundamental spatial unit used in hydrological modelling.
 It is considered hydrologically closed: all precipitation falling within the watershed is partitioned into evapotranspiration, infiltration, and runoff.
 Infiltrated water may contribute to subsurface flow and groundwater storage, while all runoff ultimately drains through a single outlet.
 
-![Schematic representation of a watershed. *(Source: Adapted from Karambiri et Diello, 2008)*](images/watershed.png){#fig-Rbenefits width=100% fig-alt="Illustration of a watershed"}
+![Schematic representation of a watershed. *(Source: Adapted from Karambiri et Diello, 2008)*](images/watershed.png){#fig-Rbenefits width=50% fig-alt="Illustration of a watershed"}
 
 
 # Hydrological Modelling
@@ -70,7 +70,7 @@ The bias correction strategy is built on the fundamental assumption that model e
 
 As shown in @fig-biascorr, this method effectively **"shifts"** or **"reshapes"** the model's output to match the historical reality, then applies that same transformation to future projections. The schematic (a) illustrates the relationship between four key variables: present-day observations (**$X_o$**), present-day model simulations **($X_m$)**, future model projections **($X'_m$)**, and the estimated future observations **($X'_o$)**. The bias correction strategy assumes that model discrepancies (biases) remain stationary over time. As shown in the probability density functions (b), the transformation required to align the present-day model (**$X_m$**, solid blue) with historical observations (**$X_o$**, solid red) is applied to the future model projections (**$X'_m$**, solid purple). This results in the calibrated future projected variable (**$X'_o$**, dashed orange), which inherits the statistical characteristics of the observed distribution while accounting for the model-predicted climate change signal.
 
-![Conceptual Framework of the Bias Correction Pathway for Climate Model Projections [@Chun2012].](images/biascorr_illustr.png){#fig-biascorr width=100% fig-alt="Bias correction Illustr"}
+![Conceptual framework of the bias correction pathway for climate model projections [@Chun2012].](images/biascorr_illustr.png){#fig-biascorr width=100% fig-alt="Bias correction Illustr"}
 
 :::
 

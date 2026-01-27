@@ -271,13 +271,13 @@ daily_cycle_plot = histGR4JObsmeanDaily %>%
   left_join(AdjhistGR4JclimAdjmeanDaily %>% select(HydroDOY, Adj = MeanDailyQ), by = "HydroDOY")
 
 # 5-day moving average to reduce noise and highlight the seasonal signal
-daily_cycle_plot$Obs_smooth <- rollmean(daily_cycle_plot$Obs, k = 5, fill = "extend")
-daily_cycle_plot$Raw_smooth <- rollmean(daily_cycle_plot$Raw, k = 5, fill = "extend")
-daily_cycle_plot$Adj_smooth <- rollmean(daily_cycle_plot$Adj, k = 5, fill = "extend")
+daily_cycle_plot$Obs_smooth = rollmean(daily_cycle_plot$Obs, k = 5, fill = "extend")
+daily_cycle_plot$Raw_smooth = rollmean(daily_cycle_plot$Raw, k = 5, fill = "extend")
+daily_cycle_plot$Adj_smooth = rollmean(daily_cycle_plot$Adj, k = 5, fill = "extend")
 
 par(mfrow = c(1, 1), mar = c(5, 5, 2, 2), family = "serif")
 
-y_range <- range(c(daily_cycle_plot$Obs_smooth, 
+y_range = range(c(daily_cycle_plot$Obs_smooth, 
                    daily_cycle_plot$Raw_smooth, 
                    daily_cycle_plot$Adj_smooth), na.rm = TRUE)
 
@@ -327,7 +327,7 @@ legend("topright",
 
 # Prepare the data: Join everything by WaterYear
 # We use the 'Obs' metrics (GR4J with observed data) as our X-axis reference
-plot_data <- histGR4JObsMetrics %>%
+plot_data = histGR4JObsMetrics %>%
   select(WaterYear, Obs_Mean = AnMean, Obs_Max = Amax, Obs_VCN7 = minVCN7) %>%
   left_join(RawhistGR4JclimAdjMetrics %>% 
               select(WaterYear, Raw_Mean = AnMean, Raw_Max = Amax, Raw_VCN7 = minVCN7), 
@@ -336,13 +336,13 @@ plot_data <- histGR4JObsMetrics %>%
               select(WaterYear, Adj_Mean = AnMean, Adj_Max = Amax, Adj_VCN7 = minVCN7), 
             by = "WaterYear")
 
-metrics <- list(
+metrics = list(
   list(obs = "Obs_Mean", var = "_Mean", title = "Annual Mean Discharge"),
   list(obs = "Obs_Max",  var = "_Max",  title = "Annual Max Discharge"),
   list(obs = "Obs_VCN7", var = "_VCN7", title = "Low Flow VCN7")
 )
 
-rows <- c("Raw", "Adj")
+rows = c("Raw", "Adj")
 
 par(mfrow = c(2, 3), mar = c(4.5, 4.5, 3, 1), family = "serif", pty = "s")
 
@@ -350,16 +350,16 @@ for(r in rows) {
   for(m in metrics) {
     
     # Extract the vectors (removing NAs is vital for Q-Q math)
-    obs_vals <- na.omit(plot_data[[m$obs]])
-    sim_col  <- paste0(r, m$var)
-    sim_vals <- na.omit(plot_data[[sim_col]])
+    obs_vals = na.omit(plot_data[[m$obs]])
+    sim_col  = paste0(r, m$var)
+    sim_vals = na.omit(plot_data[[sim_col]])
     
     # Calculate the range based on both distributions to keep the plot square
-    val_range <- range(c(obs_vals, sim_vals), na.rm = TRUE)
+    val_range = range(c(obs_vals, sim_vals), na.rm = TRUE)
     
     # Styling logic
-    pt_color <- ifelse(r == "Raw", "#ffb04e", "#5aa4ff")
-    row_lab  <- ifelse(r == "Raw", "Raw RCM", "Bias-Corrected RCM")
+    pt_color = ifelse(r == "Raw", "#ffb04e", "#5aa4ff")
+    row_lab  = ifelse(r == "Raw", "Raw RCM", "Bias-Corrected RCM")
     
     # Use EventStat's qqPlot
     # This automatically handles the sorting and quantile calculation
@@ -386,3 +386,42 @@ for(r in rows) {
 ```
 
 
+# Validation of the bias correction using calibrated IHACRES hydrological model
+
+You are invited to repeat this validation with the **calibrated IHACRES model** from [calibration section](../modelcalib/index.qmd#sec-gr4jcalib) — a nice exercise for those who want to explore further!
+
+::: {.callout-tip title="Tip: Run the calibrated IHACRES model using historical RCM data"}
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+library(hydromad)
+
+# load the calibrated IHACRES object 
+fit_ihacres = readRDS("output_modelcalibration/fittedIHACRES_lez.rds")
+
+# prepare inputs
+histRCM = adjCLM[["histCLM_adj"]]
+input_data <- data.frame(
+  P = as.numeric(histRCM$PR), 
+  E = as.numeric(histRCM$PET)
+)
+input_data <- zoo(input_data, order.by = as.Date(histRCM$Date))
+
+# run IHACRES prediction
+Qsim_ihacres = predict(fit_ihacres, newdata = input_data)
+
+# combine with dates for convenience
+ihacres_sim = data.frame(
+  Date = histRCM$Date,
+  Qobs = hist_obs$Q,
+  Qsim = Qsim_ihacres
+)
+
+tail(ihacres_sim)
+```
+
+:::

@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: b5dba8f3-1119-4a67-b8f0-23f5ff767917
+      url: 'https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide'

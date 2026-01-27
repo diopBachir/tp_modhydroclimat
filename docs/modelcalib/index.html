@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Introduction to Extreme Value Analysis - Hydrological model calibration over the historical period</title>
+<title>Hydro-Climatic Modelling Workflow: A Practical Guide - Hydrological model calibration over the historical period</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -83,7 +83,7 @@ div.csl-indent {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../evaillustr.png" rel="icon" type="image/png">
+<link href="../raifall-runoff-model-illustr.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -168,14 +168,14 @@ window.Quarto = {
 };
 </script>
 
-<meta property="og:title" content="Introduction to Extreme Value Analysis">
-<meta property="og:description" content="A comprehensive guide to extreme value analysis">
-<meta property="og:image" content="https://github.com/diopBachir/tp_eva/blob/master/docs/evaillustr.png">
-<meta property="og:site_name" content="Introduction to Extreme Value Analysis">
+<meta property="og:title" content="Hydro-Climatic Modelling Workflow: A Practical Guide">
+<meta property="og:description" content="Step-by-step hydro-climatic modelling">
+<meta property="og:image" content="https://github.com/diopBachir/tp_modhydroclimat/blob/main/docs/images/raifall-runoff-model-illustr.png">
+<meta property="og:site_name" content="Hydro-Climatic Modelling Workflow: A Practical Guide">
 <meta property="og:locale" content="fr_FR">
-<meta name="twitter:title" content="Introduction to Extreme Value Analysis - Hydrological model calibration over the historical period">
+<meta name="twitter:title" content="Hydro-Climatic Modelling Workflow: A Practical Guide - Hydrological model calibration over the historical period">
 <meta name="twitter:description" content="">
-<meta name="twitter:image" content="https://github.com/diopBachir/tp_eva/blob/master/docs/evaillustr.png">
+<meta name="twitter:image" content="https://github.com/diopBachir/tp_modhydroclimat/blob/main/docs/images/raifall-runoff-model-illustr.png">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -187,7 +187,7 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../index.html">
-    <span class="navbar-title">Introduction to Extreme Value Analysis</span>
+    <span class="navbar-title">Hydro-Climatic Modelling Workflow: A Practical Guide</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -222,7 +222,7 @@ window.Quarto = {
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../scenarios/index.html"> 
-<span class="menu-text">Scénarios</span></a>
+<span class="menu-text">Climate scenarios</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -242,7 +242,7 @@ window.Quarto = {
   <li><a href="#load-necessary-libraries" id="toc-load-necessary-libraries" class="nav-link active" data-scroll-target="#load-necessary-libraries"><span class="header-section-number">1</span> Load necessary libraries</a></li>
   <li><a href="#load-preprocessed-observational-data" id="toc-load-preprocessed-observational-data" class="nav-link" data-scroll-target="#load-preprocessed-observational-data"><span class="header-section-number">2</span> Load preprocessed observational data</a></li>
   <li><a href="#sec-gr4jcalib" id="toc-sec-gr4jcalib" class="nav-link" data-scroll-target="#sec-gr4jcalib"><span class="header-section-number">3</span> Calibration of the GR4J model</a></li>
-  <li><a href="#further-analysis-calibration-of-the-ihacres-model" id="toc-further-analysis-calibration-of-the-ihacres-model" class="nav-link" data-scroll-target="#further-analysis-calibration-of-the-ihacres-model"><span class="header-section-number">4</span> Further Analysis: Calibration of the IHACRES Model</a></li>
+  <li><a href="#sec-ihacrescalib" id="toc-sec-ihacrescalib" class="nav-link" data-scroll-target="#sec-ihacrescalib"><span class="header-section-number">4</span> Further Analysis: Calibration of the IHACRES Model</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">5</span> References</a></li>
   </ul>
 </nav>
@@ -571,7 +571,7 @@ Figure&nbsp;2: GR4J model calibration results: top row shows the total precipita
 <span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(gr4j_params, <span class="at">file=</span><span class="st">"output_modelcalibration/fittedGR4J_lez.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="further-analysis-calibration-of-the-ihacres-model" class="level1" data-number="4">
+<section id="sec-ihacrescalib" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Further Analysis: Calibration of the IHACRES Model</h1>
 <p>While the <strong>GR4J model</strong> is used for the remainder of the practical, further analysis may include the calibration of the <strong>IHACRES model</strong>. <strong>IHACRES</strong> stands for <strong><code>I</code></strong>dentification of unit <strong><code>H</code></strong>ydrographs <strong><code>A</code></strong>nd <strong><code>C</code></strong>omponent flows from <strong><code>R</code></strong>ainfall, <strong><code>E</code></strong>vaporation and <strong><code>S</code></strong>treamflow data. The IHACRES model is a lumped conceptual rainfall-runoff model which architecture is divided into two fundamental modules (<a href="#fig-ihacresschema" class="quarto-xref">Figure&nbsp;3</a>). The <strong>non-linear loss module</strong> converts observed rainfall into effective rainfall by accounting for antecedent moisture conditions through a catchment wetness index, controlled by a small set of parameters governing catchment drying and rainfall–runoff efficiency, typically influenced by temperature or potential evapotranspiration (<span class="citation" data-cites="ihacresschema">(<a href="#ref-ihacresschema" role="doc-biblioref"><strong>ihacresschema?</strong></a>)</span>). The <strong>linear routing module</strong> then transforms this effective rainfall into discharge using linear reservoirs whose parameters control the response time and relative contribution of quick flow (surface or near-surface runoff) and slow flow (groundwater contribution or baseflow). For a detailed description of the model structure and parameterization, readers are referred to <span class="citation" data-cites="Jakeman93WR00877">Jakeman &amp; Hornberger (<a href="#ref-Jakeman93WR00877" role="doc-biblioref">1993</a>)</span>.</p>
 <div id="fig-ihacresschema" class="quarto-figure quarto-figure-center quarto-float anchored" alt="Schematic structure of the IHACRES model">
@@ -672,16 +672,16 @@ Maximum number of function evaluations or iterations reached.</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-hydromad(DATA = ts_data, tau_q = 1.46908, tau_s = 47.6472, v_s = 0.262652, 
-    sma = "cwi", routing = "expuh", tw = 1.88532, f = 3.13821, 
-    scale = 0.00222142)
+hydromad(DATA = ts_data, tau_q = 1.55327, tau_s = 42.3977, v_s = 0.288903, 
+    sma = "cwi", routing = "expuh", tw = 49.0885, f = 0.00203548, 
+    scale = 0.00246991)
 
 Time steps: 10492 (0 missing).
 Runoff ratio (Q/P): (1.03 / 2.393) = 0.4303
-rel bias: -9.815e-08
-r squared: 0.5904
-r sq sqrt: 0.5483
-r sq log: 0.5246
+rel bias: -9.101e-08
+r squared: 0.6072
+r sq sqrt: 0.5427
+r sq log: 0.485
 
 For definitions see ?hydromad.stats</code></pre>
 </div>
@@ -691,7 +691,7 @@ For definitions see ?hydromad.stats</code></pre>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>kge_val <span class="ot">=</span> <span class="fu">objFunVal</span>(fit_ihacres, <span class="at">objective =</span> kge_fun)</span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"IHACRES calibration KGE:"</span>, kge_val)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IHACRES calibration KGE: 0.7981259</code></pre>
+<pre><code>IHACRES calibration KGE: 0.7999352</code></pre>
 </div>
 </div>
 <p>Unlike the <strong><code>airGR package</code></strong>, which provides a dedicated <strong>built-in plotting function</strong> for visualizing model calibration results, the<strong><code>hydromad package</code></strong> does not include an equivalent comprehensive graphical output. Consequently, we limit the graphical assessment to a direct comparison between observed and simulated discharge time series, which nonetheless provides a clear and informative evaluation of model performance (<a href="#fig-calibihacres" class="quarto-xref">Figure&nbsp;4</a>).</p>
