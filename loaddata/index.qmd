@@ -18,11 +18,10 @@ The file **`dataobs_P_TEMP_ETP_DEBIT.csv`** contains historical observations use
 
 ## Climate model data (projections)
 
-The database includes climate projections from three different RCMs, organized into specific folders:
+The database includes climate projections from two different RCMs, organized into specific folders:
 
-* **CLM:** Community Land Model / Community Earth System Model (USA).
-* **CNRM:** National Centre for Meteorological Research (France).
-* **IPSL:** Institut Pierre-Simon Laplace (France).
+* **`CNRM`:** National Centre for Meteorological Research (France).
+* **`SMHI_MPI`:** Swedish Meteorological and Hydrological Institute – Max Planck Institute Earth System Model
 
 Each model folder contains several CSV files categorized by variable and scenario:
 
@@ -40,7 +39,7 @@ Scenarios:
 The climate files follow a standardized naming convention as below: 
 **`[model]_data[Variable]_[Scenario].csv`**.
 
-**Example:** **`clm_dataTMAX_rcp85.csv`** represents the Maximum Temperature projections for the Lez basin using the CLM model under the pessimistic RCP8.5 scenario.
+**Example:** **`cnrm_dataTMAX_rcp85.csv`** represents the Maximum Temperature projections for the Lez basin using the CLM model under the pessimistic RCP8.5 scenario.
 :::
 
 # Historical (observational) data preparation and time windowing
@@ -57,7 +56,7 @@ In this section, we subset the observed data to a specific historical reference 
 #| message: false
 #| warning: false
 
-library(tidyverse)
+library(dplyr)
 library(lubridate)
 ```
 
@@ -88,11 +87,12 @@ obsdata = read.csv(obs_url, col.names = colnames, colClasses = colclasses)
 obsdata[["Date"]] = as.Date(obsdata[["Date"]], format = "%Y%m%d")
 
 # print data
-# head(obsdata)
+head(obsdata)
 ```
 
 ```{r}
 #| echo: false
+#| eval: false
 #| warning: false
 
 DT::datatable(
@@ -105,6 +105,7 @@ DT::datatable(
 <br>
 
 **Define Time Windows:**
+
 ```{r}
 #| echo: true
 #| eval: true
@@ -294,16 +295,12 @@ climdatapath = file.path(github_repo, "data")
 
 # Process all models
 
-clm_data = prepare_climate_data(
-    "clm", climdatapath, hist_start, hist_end, fut_start, fut_end
-)
-
 cnrm_data = prepare_climate_data(
     "cnrm", climdatapath, hist_start, hist_end, fut_start, fut_end
 )
 
-ipsl_data = prepare_climate_data(
-    "ipsl", climdatapath, hist_start, hist_end, fut_start, fut_end
+shmi_mpi_data = prepare_climate_data(
+    "smhi_mpi", climdatapath, hist_start, hist_end, fut_start, fut_end
 )
 ```
 
@@ -333,9 +330,8 @@ if (!dir.exists("output_preprocessed")) dir.create("output_preprocessed")
 
 # This keeps all Climate Models in a single file
 models_list = list(
-    climdataCLM = clm_data,
     climdataCNRM = cnrm_data,
-    climdataIPSL = ipsl_data
+    climdataSHMI_MPI = shmi_mpi_data
 )
 
 preprocessed_data <- list(

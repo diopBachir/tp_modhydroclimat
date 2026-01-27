@@ -155,7 +155,7 @@ We also plot the **mean monthly discharge**
 #| warning: false
 #| message: false
 #| fig-width: 10
-#| fig-height: 6
+#| fig-height: 4
 #| out-width: "100%"
 #| code-fold: true
 #| code-summary: Show the code
@@ -215,7 +215,7 @@ barplot(bar_mat,
 
 # Extreme value analysis
 
-To assess the impact of climate change on high flows, we performed an extreme value analysis using the Annual Maximum Flood (AMF) method. Annual peak discharge values were extracted for each hydrological year (September to August) and fitted to a Generalized Extreme Value (GEV) distribution using Generalized Maximum Likelihood Estimation (GMLE). This approach allows us to estimate the magnitude of rare events, which are critical for infrastructure design and flood risk management.
+To assess the impact of climate change on high flows, we performed an extreme value analysis using the Annual Maximum Flood (AMF) method. Annual peak discharge values were extracted for each hydrological year (September to August) and a Generalized Extreme Value (GEV) distribution was fitted using the Generalized Maximum Likelihood Estimation (GMLE) method. This approach allows us to estimate the magnitude of rare events, which are critical for infrastructure design and flood risk management.
 
 ```{r}
 #| echo: true

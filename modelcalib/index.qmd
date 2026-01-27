@@ -32,7 +32,7 @@ str(hist_obs)
 
 The **GR4J** (**`G`**énie **`R`**ural à **`4`** paramètres **`J`**ournalier) model is a parsimonious, lumped conceptual rainfall-runoff model widely used in hydrological studies. It represents catchment processes through a production (soil moisture) reservoir, which controls the transformation of precipitation into effective rainfall by accounting for evapotranspiration and soil water storage, and a routing reservoir, which simulates the delayed transfer of water to the outlet (@fig-gr4jschema). As the name suggests, the model is governed by four parameters: the capacity of the production reservoir ($x_1$), the groundwater exchange coefficient ($x_2$), the routing reservoir capacity ($x_3$), and the time base of the unit hydrograph ($x_4$). For a detailed description of the model structure and parameterization, readers are referred to @PERRIN2003275.
 
-![Schematic structure of the **GR4J rainfall-runoff model** [@PERRIN2003275]. $P$ denotes rainfall (mm), $E$ is potential evapotranspiration (mm), $S$ represents the level of the production reservoir (mm), $R$ the level of the routing reservoir (mm), and $Q$ the simulated streamflow (mm). $UH$ refers to the unit hydrograph, and $F(X₂)$ to the groundwater exchange function.](images/gr4j-illustr.png){#fig-gr4jschema width=55% fig-alt="Schematic structure of the daily GR4J model"}
+![Schematic structure of the **GR4J rainfall-runoff model** [@PERRIN2003275]. $P$ denotes rainfall (mm), $E$ is potential evapotranspiration (mm), $S$ represents the level of the production reservoir (mm), $R$ the level of the routing reservoir (mm), and $Q$ the simulated streamflow (mm). $UH$ refers to the unit hydrograph, and $F(X₂)$ to the groundwater exchange function.](images/gr4j-illustr.png){#fig-gr4jschema width=35% fig-alt="Schematic structure of the daily GR4J model"}
 
 To optimize the four parameters of the **GR4J model** ($x_1, x_2, x_3, x_4$), we use the **`Michel calibration algorithm`**, integrated within the **`airGR R package`** [@CORON2017166]. The **`Michel algorithm`** is a gradient-free and iterative local search method which begins by exploring the parameter space using a coarse, predefined grid to identify the most promising region of "good" parameter sets. From the best starting point found in the grid, it performs an iterative local search, adjusting the parameters in directions that maximize an objective function, which measures the goodness-of-fit between observed and simulated discharge. Here we use the the **`Kling-Gupta Efficiency (KGE; @GUPTA200980)`** as objective function. 
 
@@ -234,7 +234,7 @@ Finally, we can vizualize the results of the GR4J model calibration. The **`airG
 #| echo: true
 #| eval: true
 #| fig-width: 12
-#| fig-height: 8
+#| fig-height: 5
 #| out-width: "100%"
 #| label: fig-calibgr4j
 #| fig-cap: "GR4J model calibration results: top row shows the total precipitation time serie; second row displays observed versus simulated discharge; third row (bottom-left) presents the interannual average of daily simulated and observed discharge; bottom-middle shows the cumulative frequency plot of simulated and observed discharge; and bottom-right illustrates the correlation between simulated and observed discharge."

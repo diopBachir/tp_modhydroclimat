@@ -13,8 +13,8 @@ page-layout: full
 
 library(zoo)
 library(MBC)
+library(CDFt)
 library(dplyr)
-library(ggplot2)
 library(lubridate)
 library(EnvStats)
 
@@ -35,16 +35,16 @@ head(hist_obs)
 ```
 
 
-Although data have been prepared and stored for three climate models, only the CLM model is used here for demonstration purposes. Readers interested in further exploration may test the other models as an optional exercise.
+Although data have been prepared and stored for three climate models, only the CNRM model is used here for demonstration purposes. Readers interested in further exploration may test the other models as an optional exercise.
 
 ```{r}
 #| echo: true
 #| eval: true
 
 clim_proj = readRDS("output_preprocessed/processed_climatedata_lez.rds")
-climdataCLM = clim_proj[["climdataCLM"]]
+climdataCNRM = clim_proj[["climdataCNRM"]]
 
-lapply(climdataCLM, function(df) head(df, 5))
+lapply(climdataCNRM, function(df) head(df, 5))
 ```
 
 # Calculate potential evapotranspiration (PET)
@@ -96,37 +96,44 @@ calc_hargreaves = function(df, lat = 44.2)
 #| eval: true
 
 # Apply the calc_hargreaves() function to the 'hist', 'rcp45', and 'rcp85'
-climdataCLM = lapply(climdataCLM, 
+climdataCNRM = lapply(climdataCNRM, 
                       function(df) 
                       {
                         df$PET = calc_hargreaves(df, lat = 44.1958)
                         df[, c("Date", "PR", "PET")]
                       })
 
-lapply(climdataCLM, function(df) head(df, 5))
+lapply(climdataCNRM, function(df) head(df, 5))
 ```
 
-# Bias correction methodology
+
+# Bias correction of climate model data
 
 Bias-correction techniques are commonly applied to reduce systematic discrepancies between climate model simulations and observations, thereby making climate projections suitable for hydrological applications. A wide range of methods has been developed to correct biases in climate variables simulated by climate models.
 
-In this practical, we use the **`MBC package`** to perform bias correction. **`MBC`** stands for **_`M`ultivariate ``B`ias `C`orrection_** and is designed to **calibrate** and **apply multivariate bias-correction algorithms** to climate model simulations involving **multiple climate variables** simultaneously [@Alex2015; @Alex2016; @Alex2018].
+In this practical, we will apply two bias-correction methods:
+
+1. **`MBC method`**: The **_`M`ultivariate `B`ias `C`orrection_** is designed to **calibrate** and **apply multivariate bias-correction algorithms** to climate model simulations involving **multiple climate variables** simultaneously [@Alex2015; @Alex2016; @Alex2018].
+
+2. **`CDF-t method`**: The **_`C`umulative `D`istribution `F`unction `t`ransform_** method is a **quantile mapping approach** that corrects the entire distribution of simulated climate variables by matching it to the observed distribution during a reference period. This method preserves the projected climate change signal while adjusting for biases in mean, variance, and extremes, making it particularly suitable for hydrological applications [@Michelangeli2009GL038401; @VracCDFT].
+
+Both **`MBC`** and **`CDF-t`** aim to reduce biases in climate model outputs, but they differ in scope and complexity. **`MBC`** handles multiple variables simultaneously, accounting for inter-variable correlations, whereas **`CDF-t`** focuses on single-variable distributions, making it simpler but limited to univariate correction. In practice, the choice of method depends on the variables of interest and the need to preserve multivariate dependence structures in impact studies.
 
 
-## The MBCn algorithm
+## Applying the MBCn algorithm
 
-We will use the **`MBCn` (N-dimensional Multivariate Bias Correction) algorithm** to perform bias correction. The **`MBCn` method** is based on a **probability density function transformation**, making it a powerful approach for correcting biases in climate model outputs (see @Alex2018 for methodological details).
+We will use the **`MBCn` (N-dimensional Multivariate Bias Correction) algorithm**, from the **`MBC package`**, to perform bias correction. The **`MBCn` method** is based on a **probability density function transformation**, making it a powerful approach for correcting biases in climate model outputs (see @Alex2018 for methodological details).
 
 Unlike traditional univariate bias-correction methods that adjust each variable independently, **`MBCn`** corrects multiple variables simultaneously, such as **precipitation** and **potential evapotranspiration (PET)**, while explicitly preserving their **multivariate dependence structure**. This property is particularly important for hydrological modelling, where interactions between climate variables directly influence soil moisture dynamics, evapotranspiration, and runoff generation.
 
-## Accounting for seasonality
+### Accounting for seasonality
 
 To properly account for **seasonality**, the bias-correction procedure is applied **separately for each calendar month**. The data are first split into monthly subsets (e.g., all Januaries together, all Februaries together, and so on). The **`MBCn` algorithm** is then applied independently to each monthly “slice”, after which the corrected data are recombined into continuous time series.
 
 This seasonal stratification ensures that statistical relationships learned for **summer rainfall** are not inadvertently applied to **winter precipitation**, thereby improving the physical consistency and reliability of the bias-corrected climate variables.
 
 
-# Apply bias correction
+### Apply bias correction
 
 The function **`seasonalMBCn(...)`** defined in the chunk below provides a clean wrapper around the **`MBCn()`** routine. It automatically extracts date components, applies the multivariate bias correction to historical and future simulations, and returns bias-corrected datasets that are ready for subsequent hydrological modelling.
 
@@ -229,23 +236,23 @@ seasonalMBCn = function(obs,
 
 # correct RCP45
 MBCnSeasonalRCP45 = seasonalMBCn(hist_obs, 
-                                 climdataCLM[["hist"]], 
-                                 climdataCLM[["rcp45"]])
+                                 climdataCNRM[["hist"]], 
+                                 climdataCNRM[["rcp45"]])
 
 # correct RCP85
 MBCnSeasonalRCP85 = seasonalMBCn(hist_obs, 
-                                 climdataCLM[["hist"]], 
-                                 climdataCLM[["rcp85"]])
+                                 climdataCNRM[["hist"]], 
+                                 climdataCNRM[["rcp85"]])
 
 # extract bias corrected data
-histCLM_adj = MBCnSeasonalRCP45[['hist']]
-rcp45CLM_adj = MBCnSeasonalRCP45[['proj']]
-rcp85CLM_adj = MBCnSeasonalRCP85[['proj']]
+histCNRM_MBCn_adj = MBCnSeasonalRCP45[['hist']]
+rcp45CNRM_MBCn_adj = MBCnSeasonalRCP45[['proj']]
+rcp85CNRM_MBCn_adj = MBCnSeasonalRCP85[['proj']]
 ```
        
 
 
-# Visualizing bias correction results
+### Visualizing bias correction results
 
 To visualize the bias correction results, we plot the the **`Empirical Cumulative Distribution Functions (ECDFs)`** to validate the effectiveness of the **`MBCn algorithm`**.
 
@@ -260,26 +267,26 @@ To visualize the bias correction results, we plot the the **`Empirical Cumulativ
 #| fig-height: 5
 #| out-width: "100%"
 #| label: fig-biascorr_hist
-#| fig-cap: "Bias correction results: Q-Q plots comparing observed precipitation (Precip) and PET with raw and bias-corrected RCM outputs over the historical period."
+#| fig-cap: "MBCn bias correction results: Q-Q plots comparing observed precipitation (Precip) and PET with raw and bias-corrected RCM using the MBCn algorithm over the historical period."
 
 vars = c("PR", "PET")
 
 par(mfrow = c(1, 2), mar = c(5, 4, 3, 2)) 
 
 for (v in vars) {
-  adj_v <- paste0(v, "_adj")
+  adj_v = paste0(v, "_adj")
 
-  obs <- na.omit(hist_obs[[v]])
-  raw <- na.omit(histCLM_adj[[v]])
-  adj <- na.omit(histCLM_adj[[adj_v]])
+  obs = na.omit(histCNRM_MBCn_adj[[v]])
+  raw = na.omit(rcp45CNRM_MBCn_adj[[v]])
+  adj = na.omit(rcp85CNRM_MBCn_adj[[adj_v]])
 
   if (v == "PR") {
-    obs <- obs[obs > 0.1]
-    raw <- raw[raw > 0.1]
-    adj <- adj[adj > 0.1]
+    obs = obs[obs > 0.1]
+    raw = raw[raw > 0.1]
+    adj = adj[adj > 0.1]
   }
 
-  lims <- range(c(obs, raw, adj))
+  lims = range(c(obs, raw, adj))
 
   qqPlot(x = obs, y = raw,
          plot.type = "Q-Q",
@@ -293,16 +300,16 @@ for (v in vars) {
          cex.lab = 1.5,
          cex.axis = 1.4,
          xlim = lims, ylim = lims,
-         main = paste("Q-Q Plot:", ifelse(v=="PR", "Precip.", "PET")),
-         xlab = "Observations (mm/d)",
-         ylab = "RCM data (mm/d)")
+         main = paste("MBCn - ", ifelse(v=="PR", "Precip.", "PET")),
+         xlab = "Observations [mm.d]",
+         ylab = "RCM data [mm.d]")
 
-  coords_adj <- qqPlot(x = obs, y = adj, plot.it = FALSE)
+  coords_adj = qqPlot(x = obs, y = adj, plot.it = FALSE)
   points(coords_adj$x, coords_adj$y,
          col = "#5aa4ff",
          pch = 1, cex = 1.2)
 
-  legend("topleft", 
+  legend("bottomright", 
          legend = c("Obs. vs Raw RCM", "Obs. vs  Bias-corrected RCM"),
          col = c("#ffb04e", "#5aa4ff"),
          pch = 1,
@@ -311,105 +318,6 @@ for (v in vars) {
          pt.lwd = 2,
          pt.cex = 1.5)
 }
-```
-
-<!-- To visualize the **climate change signal**, we will now compare the Observed historical data against the Bias-Corrected Future Projections (RCP 4.5 and RCP 8.5). Unlike your previous plot where the green and black lines overlapped perfectly, these plots will show a shift. This shift represents the actual climate change signal (e.g.,different rainfall patterns) after the systematic model biases have been removed. -->
-
-```{r}
-#| echo: false
-#| eval: false
-#| code-fold: false
-#| code-summary: Show the code
-#| warning: false
-#| message: false
-#| fig-width: 12
-#| fig-height: 5
-#| out-width: "100%"
-#| label: fig-biascorr_scenario_fut
-#| fig-cap: "Bias correction results: Observed, Raw Model, and Corrected Model distributions for the RCP 4.5 (orange line) and RCP 8.5 (red line) scenarios"
-
-# vars = c("PR", "PET")
-
-# # Use a 1-row, 2-column layout
-# par(mfrow = c(1, 2), mar = c(4, 4, 2, 1))
-
-# for (v in vars) {
-
-#     # Historical Baseline (Observed)
-#     obs_val  = hist_obs[[v]]
-
-#     # raw RCP 4.5 and RCP 8.5
-#     raw_rcp45_val = rcp45CLM_adj[[v]]
-#     raw_rcp85_val = rcp85CLM_adj[[v]]
-      
-#     # Corrected Future RCP 4.5 and RCP 8.5
-#     adj_rcp45_val = rcp45CLM_adj[[paste0(v, "_adj")]]
-#     adj_rcp85_val = rcp85CLM_adj[[paste0(v, "_adj")]]
-  
-#     # Determine Axis Limits (Including future extremes)
-#     if (v == "PR") {
-#       plot_log = "x"
-#       x_lim = c(0.5, max(c(obs_val, adj_rcp85_val), na.rm = TRUE))
-#       x_label = "Precip (mm/day)"
-#     } else {
-#       plot_log = ""
-#       x_lim = c(0.5, max(c(obs_val, adj_rcp85_val), na.rm = TRUE))
-#       x_label = "PET (mm/day)"
-#     }
-    
-#     # --- PLOTTING ---
-    
-#     # Observed Historical (Black - The Baseline)
-#     plot(
-#       ecdf(obs_val),
-#       do.points = FALSE, verticals = TRUE,
-#       col = "black", lwd = 1,
-#       log = plot_log, xlim = x_lim,
-#       main = ifelse(v=="PR", "Precip.", "PET"),
-#       xlab = paste(v, "(mm/day)"), ylab = "Probability"
-#     )
-
-#     # raw RCP 4.5 (blue) RCP 8.5 (red)
-#     plot(
-#       ecdf(raw_rcp45_val),
-#       add = TRUE,
-#       do.points = FALSE, verticals = TRUE,
-#       col = "blue", lwd = 1, lty = 2
-#     )
-    
-#     plot(
-#       ecdf(raw_rcp85_val),
-#       add = TRUE,
-#       do.points = FALSE, verticals = TRUE,
-#       col = "red", lwd = 1, lty = 2
-#     )
-    
-#     # Corrected RCP 4.5 (green) RCP 8.5 (red)
-#     plot(
-#       ecdf(adj_rcp45_val),
-#       add = TRUE,
-#       do.points = FALSE, verticals = TRUE,
-#       col = "green", lwd = 1, lty = 1
-#     )
-    
-#     plot(
-#       ecdf(adj_rcp85_val),
-#       add = TRUE,
-#       do.points = FALSE, verticals = TRUE,
-#       col = "orange", lwd = 1, lty = 1
-#     )
-    
-#     # Add a legend only to the first plot of each row for clarity
-#     if(v == "PR") {
-#       legend("bottomright", 
-#             legend=c("Obs Hist", 
-#                      "Raw RCP 4.5", 
-#                      "Raw RCP 8.5", 
-#                      "Bias-corrected RCP 4.5", 
-#                      "Bias-corrected RCP 8.5"), 
-#              col=c("black", "blue", "red", "green", "orange"), lwd = 1.5, bty = "o")
-#     }
-# }
 ```
 
 To better understand the seasonal patterns of precipitation and potential evapotranspiration, we compute the mean daily cycle over all years. Unlike a standard calendar year, we align the daily cycle with the hydrological year, starting on September 1st. This allows us to capture the seasonal dynamics of wet and dry periods consistently. To reduce day-to-day variability and highlight the underlying seasonal signal, the resulting daily series are further smoothed using a centered 5-day rolling mean before visualization.
@@ -425,7 +333,7 @@ To better understand the seasonal patterns of precipitation and potential evapot
 #| fig-height: 5
 #| out-width: "100%"
 #| label: fig-biascorr_acycle
-#| fig-cap: "Seasonal Cycle of Precipitation (top row) and PET (bottom row) over the Hydrological Year: observed (black), raw model (red), and bias-corrected (blue) simulations for historical and future scenarios."
+#| fig-cap: "Seasonal Cycle of Precipitation (top row) and PET (bottom row) over the Hydrological Year: observed (black), raw model (red), and bias-corrected (blue) simulations for historical and future scenarios. Bias correction is performed using the MBCn algorithm."
 
 # Helper: compute hydrological day of year (1 = 1 Sept)
 hydro_doy = function(dates)
@@ -446,7 +354,7 @@ daily_climatology_hydro = function(df, vars = c("PR_adj", "PET_adj"))
     ungroup()
 }
 
-roll5 <- function(x) rollmean(x, k = 5, fill = NA, align = "center")
+rollm = function(x) rollmean(x, k = 5, fill = NA, align = "center")
 
 par(mfcol = c(1,2), mar = c(5, 5, 2, 1))
 
@@ -456,9 +364,9 @@ vars = c("PR", "PET")
 cols = c("black", "red", "blue")  # Observed, Raw, Bias-corrected
 
 raw_list = list(
-  "Hist"  = histCLM_adj
-  # "RCP4.5" = rcp45CLM_adj,
-  # "RCP8.5" = rcp85CLM_adj
+  "Hist"  = histCNRM_MBCn_adj
+  # "RCP4.5" = rcp45CNRM_MBCn_adj,
+  # "RCP8.5" = rcp85CNRM_MBCn_adj
 )
 
 obs_list = list(
@@ -475,10 +383,10 @@ for(v in vars) {
     raw_val = daily_climatology_hydro(raw_list[[scn]], vars = v)[[v]]
     adj_val = daily_climatology_hydro(raw_list[[scn]], vars = paste0(v, "_adj"))[[paste0(v, "_adj")]]
     
-    # Apply 5-day rolling mean
-    obs_val  = roll5(obs_val)
-    raw_val  = roll5(raw_val)
-    adj_val  = roll5(adj_val)
+    # Apply rolling mean
+    obs_val  = rollm(obs_val)
+    raw_val  = rollm(raw_val)
+    adj_val  = rollm(adj_val)
     
     # Axis limits
     x_lim = c(1, 365)
@@ -516,28 +424,216 @@ As in the previous sections, the bias-corrected climate datasets are saved using
 if (!dir.exists("output_biascorrection")) dir.create("output_biascorrection")
 
 # Save the bias-corrected climate data while preserving object structure
-saveRDS(list("histCLM_adj" = histCLM_adj,
-             "rcp45CLM_adj" = rcp45CLM_adj,
-             "rcp85CLM_adj" = rcp85CLM_adj), 
-        file="output_biascorrection/biascorrectedCLM.rds")
+saveRDS(list("histCNRM_adj" = histCNRM_MBCn_adj,
+             "rcp45CNRM_adj" = rcp45CNRM_MBCn_adj,
+             "rcp85CNRM_adj" = rcp85CNRM_MBCn_adj), 
+        file="output_biascorrection/biascorrectedCNRM-MBCn.rds")
 ```
 
 
-<!-- # What bias correction does NOT do
+## Exercise
 
-The “days” used in climate models often do not correspond exactly to the calendar days of the real world. This is not an error, but rather a deliberate mathematical simplification that makes the extensive computations required for climate projections more manageable. As a result, different climate models use different calendars, relying on specialized calendars, such as the **360-day calendar** or the **365-day (no-leap)** calendar. Only a few climate models follow the standard (Gregorian) calendar, with 365 days in non-leap years and 366 days in leap years. Therefore, as done with the data used in this practical, it is recommended to convert climate model output to a standard Gregorian calendar before applying bias correction. -->
-
-
+Now that we have successfully bias-corrected the CNRM dataset, it is time to apply the same rigor to the second Regional Climate Model (RCM) in our database : the **`SMHI-MPI`** model.
 
 
+::: {.callout-note title="Hint: load data"}
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+clim_proj = readRDS("output_preprocessed/processed_climatedata_lez.rds")
+climdata_SMHI_MPI = clim_proj[["climdataSMHI_MPI"]]
+
+lapply(climdata_SMHI_MPI, function(df) head(df, 5))
+```
+
+::: 
 
 
-<!-- To illustrate this difference, we plot the time series for the first year of the historical period using both the observed data and the climate model data. -->
+::: {.callout-note title="Hint: Calculate potential evapotranspiration (PET)"}
 
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+# Apply the calc_hargreaves() function to the 'hist', 'rcp45', and 'rcp85'
+climdata_SMHI_MPI = lapply(climdata_SMHI_MPI, 
+                           function(df) 
+                           {
+                              df$PET = calc_hargreaves(df, lat = 44.1958)
+                              df[, c("Date", "PR", "PET")]
+                           })
+
+lapply(climdata_SMHI_MPI, function(df) head(df, 5))
+```
+
+:::
+
+
+With the **`SMHI-MPI`** projections loaded and the PET calculated, below are your tasks:
+
+- Execute the Correction: Run the **`seasonalMBCn(...)`** function across your variable matrix (Precipitation and PET).
+
+- Validation: Use the provided visualization suite to generate comparative plots.
+
+- Analysis: Observe how the distribution of the corrected SMHI-MPI data aligns with the reference observations compared to the raw model output.
+
+::: {.callout-note title="Hint: Target benchmarks"}
+
+Once the seasonalMBCn function has finished processing, your output visualizations should demonstrate the effectiveness of the correction. Specifically, you are looking for the "collapse" of the model's systematic errors toward the historical observation baseline.
 
 ```{r}
 #| echo: false
-#| eval: false
+#| eval: true
+#| warning: false
+#| message: false
+
+
+```
+
+:::
+
+# What bias correction does NOT do
+
+The **`days`** used in climate models often do not correspond exactly to the **calendar days of the real world**. This is **not an error**, but rather a deliberate **mathematical simplification** that makes the extensive computations required for climate projections more manageable. As a result, different climate models use different calendars, relying on specialized calendars, such as the **`360-day calendar`** or the **`365-day (no-leap)`** calendar. Only a few climate models follow the **standard (Gregorian) calendar**, with **365 days in non-leap years** and **366 days in leap years**. Therefore, as done with the data used in this practical, it is recommended to convert climate model output to a standard Gregorian calendar before applying bias correction.
+
+
+
+
+<!-- ## Applying the CDF-t bias-correction method
+
+To perform bias correction using the **`CDF-t`** in **R**, we can use the **`CDFt package`** [@VracCDFT]. The main **`CDFt()`** function to use requires three numeric vectors:
+
+- **`ObsHp`**: Observations during the historical period.
+- **`GCMHp`**: GCM/RCM simulations during the historical period.
+- **`GCMFp`**: GCM/RCM simulations during the future (projection) period.
+
+As for the **`MBC`** method, in we nead to define a clean wrapper around the **`CDFt()`** function. We need to adapt the logic slightly because **`CDFt``** is a univariate method. Unlike **`MBCn`**, which handles multiple columns (matrices) at once, **`CDFt`** must be looped over each variable individually within each month.
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+#| code-fold: true
+#| code-summary: Show the code
+
+# @param obs: Data frame of historical observations (must include a 'Date' column)
+# @param mod_hist: Data frame of historical model outputs
+# @param mod_proj: Data frame of future model projections
+# @param var_names: Vector of column names to process (e.g., c("PR", "PET"))
+seasonalCDFt = function(obs, 
+                        mod_hist, 
+                        mod_proj, 
+                        var_names = c("PR", "PET")) 
+{
+  # Helper function to add date parts
+  add_date_parts = function(df) {
+    df$Year  = as.numeric(format(df$Date, "%Y"))
+    df$Month = as.numeric(format(df$Date, "%m"))
+    df$Day   = as.numeric(format(df$Date, "%d"))
+    df
+  }
+
+  # Add date parts for filtering
+  obs       = add_date_parts(obs)
+  mod_hist  = add_date_parts(mod_hist)
+  mod_proj  = add_date_parts(mod_proj)
+  
+  hist_list = list()
+  proj_list = list()
+  
+  # Loop through each month (1 to 12)
+  for (m in 1:12) {
+    
+    # Subset data for the current month
+    s_obs  = obs[obs$Month == m, ]
+    s_hist = mod_hist[mod_hist$Month == m, ]
+    s_proj = mod_proj[mod_proj$Month == m, ]
+    
+    # Temporary data frames to store results for the current month
+    month_hist_adj = s_hist
+    month_proj_adj = s_proj
+    
+    # CDFt is univariate: Loop through each variable
+    for (v in var_names) {
+      
+      # Extract vectors (removing NAs is essential for CDF construction)
+      v_obs  = na.omit(s_obs[[v]])
+      v_hist = na.omit(s_hist[[v]])
+      v_proj = na.omit(s_proj[[v]])
+      
+      # Run CDFt
+      # DS: Downscaled/Corrected series for the Projection period
+      # To get the corrected Historical period, the package typically requires 
+      # a separate mapping or using the 'FGp' distribution. 
+      # However, for consistency with bias-correction workflows:
+      res = CDFt(ObsRp = v_obs, DataGp = v_hist, DataGf = v_proj)
+      
+      # Extract results
+      # Note: result$DS is the corrected projection
+      month_proj_adj[[paste0(v, "_adj")]] = res$DS
+      
+      # For the historical adjusted, we map mod_hist to obs via standard Quantile Mapping
+      # as CDFt is primarily designed for the 'future' transition.
+      # Many practitioners use the historical transformation provided by the same logic:
+      res_hist = CDFt(ObsRp = v_obs, DataGp = v_hist, DataGf = v_hist)
+      month_hist_adj[[paste0(v, "_adj")]] = res_hist$DS
+    }
+    
+    hist_list[[m]] = month_hist_adj
+    proj_list[[m]] = month_proj_adj
+  }
+  
+  # Recombine and restore chronological order
+  final_hist = do.call(rbind, hist_list)
+  final_proj = do.call(rbind, proj_list)
+  
+  # Order by date
+  final_hist = final_hist[order(final_hist$Year, final_hist$Month, final_hist$Day), ]
+  final_proj = final_proj[order(final_proj$Year, final_proj$Month, final_proj$Day), ]
+  
+  # Select final columns (Date, Original variables, and Adjusted variables)
+  out_cols = c("Date", var_names, paste0(var_names, "_adj"))
+  
+  return(list(hist = final_hist[, out_cols], 
+              proj = final_proj[, out_cols]))
+}
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| message: false
+#| warning: false
+
+# correct RCP45
+CDFtSeasonalRCP45 = seasonalCDFt(hist_obs, 
+                                 climdataCNRM[["hist"]], 
+                                 climdataCNRM[["rcp45"]])
+
+# correct RCP85
+CDFtSeasonalRCP85 = seasonalCDFt(hist_obs, 
+                                 climdataCNRM[["hist"]], 
+                                 climdataCNRM[["rcp85"]])
+
+# extract bias corrected data
+histCNRM_CDFt_adj = CDFtSeasonalRCP45[['hist']]
+rcp45CNRM_CDFt_adj = CDFtSeasonalRCP45[['proj']]
+rcp85CNRM_CDFt_adj = CDFtSeasonalRCP85[['proj']]
+```
+
+
+We plot the the **`Empirical Cumulative Distribution Functions (ECDFs)`** to validate the effectiveness of the **`CDF-t algorithm`**.
+
+```{r}
+#| echo: true
+#| eval: true
 #| code-fold: true
 #| code-summary: Show the code
 #| warning: false
@@ -545,57 +641,172 @@ The “days” used in climate models often do not correspond exactly to the cal
 #| fig-width: 12
 #| fig-height: 5
 #| out-width: "100%"
-#| label: fig-calendarcomp
-#| fig-cap: "Time series for the first year of the historical period using both the observed data and the climate model data. The year 2000 is used as a reference year for illustration."
+#| label: fig-biascorr_hist_cdft
+#| fig-cap: "CDF-t bias correction results: Q-Q plots comparing observed precipitation (Precip) and PET with raw and bias-corrected RCM using the CDF-t method over the historical period."
 
-# Reference year
-# ref_year <- 2000
-# var <- "PR"
+vars = c("PR", "PET")
 
-# hist_obs$Date    <- as.Date(hist_obs$Date)
-# histCLM_adj$Date <- as.Date(histCLM_adj$Date)
+par(mfrow = c(1, 2), mar = c(5, 4, 3, 2))
 
-# obs_year <- hist_obs[year(hist_obs$Date) == ref_year, ]
-# clm_year <- histCLM_adj[year(histCLM_adj$Date) == ref_year, ]
+for (v in vars) {
+  adj_v = paste0(v, "_adj")
 
-# obs_year$day <- seq_len(nrow(obs_year))
-# clm_year$day <- seq_len(nrow(clm_year))
+  obs = na.omit(histCNRM_CDFt_adj[[v]])
+  raw = na.omit(rcp45CNRM_CDFt_adj[[v]])
+  adj = na.omit(rcp85CNRM_CDFt_adj[[adj_v]])
 
-# # Identify the 'leap day' index
-# # In 2000 (Leap Year), Feb 29 is index 60.
-# leap_day_idx <- 60
+  if (v == "PR") {
+    obs = obs[obs > 0.1]
+    raw = raw[raw > 0.1]
+    adj = adj[adj > 0.1]
+  }
 
-# plot(obs_year$day, obs_year[[var]],
-#      type = "l", lwd = 1.3,
-#      col = "black",
-#      cex.lab = 1.5,
-#      cex.axis = 1.4,
-#      xlab = "Day of year",
-#      ylab = "Precipitation (mm/d)",
-#      ylim = range(c(obs_year[[var]], clm_year[[var]]), na.rm = TRUE))
+  lims = range(c(obs, raw, adj))
 
-# lines(clm_year$day, clm_year[[var]],
-#       col = "red", lwd = 1.5, lty = 2)
+  qqPlot(x = obs, y = raw,
+         plot.type = "Q-Q",
+         qq.line.type = "0-1", 
+         add.line = TRUE,
+         points.col = "#ffb04e",
+         line.col = "gray50",
+         cex = 1.2,
+         pch = 1,
+         cex.main = 1.3,
+         cex.lab = 1.5,
+         cex.axis = 1.4,
+         xlim = lims, ylim = lims,
+         main = paste("CDFt - ", ifelse(v=="PR", "Precip.", "PET")),
+         xlab = "Observations [mm.d]",
+         ylab = "RCM data [mm.d]")
 
-# lines(clm_year$day, clm_year[[paste0(var, "_adj")]],
-#       col = "blue", lwd = 1.5, lty = 3)
+  coords_adj = qqPlot(x = obs, y = adj, plot.it = FALSE)
+  points(coords_adj$x, coords_adj$y,
+         col = "#5aa4ff",
+         pch = 1, cex = 1.2)
 
-# abline(v = leap_day_idx, col = "gray", lty = 4)
-# text(leap_day_idx, max(obs_year[[var]]), "Feb 29th", pos = 2, cex = 0.8)
-
-# legend("topleft",
-#        legend = c("Observation",
-#                   "Raw RCM",
-#                   "Bias-corrected RCM"),
-#        col = c("black", 
-#                "red", 
-#                "blue"),
-#        lty = c(1, 2, 3),
-#        lwd = 3,
-#        cex = 1.2,
-#        bty = "o")
-
+  legend("bottomright", 
+         legend = c("Obs. vs Raw RCM", "Obs. vs  Bias-corrected RCM"),
+         col = c("#ffb04e", "#5aa4ff"),
+         pch = 1,
+         bty = "o",
+         cex = 1.3,
+         pt.lwd = 2,
+         pt.cex = 1.5)
+}
 ```
+
+We also plot the seasonal patterns of precipitation and potential evapotranspiration, aligning the daily cycle with the hydrological year.
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-fold: true
+#| code-summary: Show the code
+#| warning: false
+#| message: false
+#| fig-width: 12
+#| fig-height: 5
+#| out-width: "100%"
+#| label: fig-biascorr_acycle_cdft
+#| fig-cap: "Seasonal Cycle of Precipitation (top row) and PET (bottom row) over the Hydrological Year: observed (black), raw model (red), and bias-corrected (blue) simulations for historical and future scenarios. Bias correction is performed using the CDFt algorithm."
+
+# Helper: compute hydrological day of year (1 = 1 Sept)
+hydro_doy = function(dates)
+{
+  # Shift the year so that 1 Sept = day 1
+  doy = yday(dates - months(8))
+  return(doy)
+}
+
+
+# Daily climatology based on hydrological year
+daily_climatology_hydro = function(df, vars = c("PR_adj", "PET_adj")) 
+{
+  df %>%
+    mutate(HydroDOY = hydro_doy(Date)) %>%
+    group_by(HydroDOY) %>%
+    summarise(across(all_of(vars), ~mean(.x, na.rm = TRUE))) %>%
+    ungroup()
+}
+
+rollm = function(x) rollmean(x, k = 5, fill = NA, align = "center")
+
+par(mfcol = c(1,2), mar = c(5, 5, 2, 1))
+
+# scenarios = c("Hist", "RCP4.5", "RCP8.5")
+scenarios = "Hist"
+vars = c("PR", "PET")
+cols = c("black", "red", "blue")  # Observed, Raw, Bias-corrected
+
+raw_list = list(
+  "Hist"  = histCNRM_CDFt_adj
+  # "RCP4.5" = rcp45CNRM_CDFt_adj,
+  # "RCP8.5" = rcp85CNRM_CDFt_adj
+)
+
+obs_list = list(
+  "Hist" = hist_obs
+  # "RCP4.5" = hist_obs,
+  # "RCP8.5" = hist_obs
+)
+
+for(v in vars) {
+  for(scn in scenarios) {
+    
+    # Observed, Raw, Bias-corrected
+    obs_val = daily_climatology_hydro(obs_list[[scn]], vars = v)[[v]]
+    raw_val = daily_climatology_hydro(raw_list[[scn]], vars = v)[[v]]
+    adj_val = daily_climatology_hydro(raw_list[[scn]], vars = paste0(v, "_adj"))[[paste0(v, "_adj")]]
+    
+    # Apply rolling mean
+    obs_val  = rollm(obs_val)
+    raw_val  = rollm(raw_val)
+    adj_val  = rollm(adj_val)
+    
+    # Axis limits
+    x_lim = c(1, 365)
+    y_lim = range(c(obs_val, raw_val, adj_val), na.rm = TRUE)
+    
+    # Plot panel
+    plot(1:365, obs_val, type="l", lwd=2, col=cols[1], ylim=y_lim,
+         xlab="Hydro day of year", 
+         ylab=ifelse(v=="PR", "Precip", "PET"),
+         main=paste(ifelse(v=="PR", "Precip", "PET"), "-", scn),
+         cex.lab = 1.5,   # axis labels
+         cex.axis = 1.3,  # axis numbers
+         cex.main = 1.5)
+    lines(1:365, raw_val, col=cols[2], lwd=1, lty=2)
+    lines(1:365, adj_val, col=cols[3], lwd=1, lty=3)
+    
+    # Legend only for top-left panel (PR-Hist)
+    if(v == "PR" && scn == "Hist") {
+      legend("topright", legend=c("Observed", "Raw Model", "Bias-corrected"),
+             col=cols, lwd=c(2,1.5,1.5), lty=c(1,2,3), bty="o", cex=1.2)
+    }
+  }
+}
+```
+
+We save bias-corrected dataset for subsequent use in further analyses:
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+# Create an output directory if it doesn't exist
+if (!dir.exists("output_biascorrection")) dir.create("output_biascorrection")
+
+# Save the bias-corrected climate data while preserving object structure
+saveRDS(list("histCNRM_adj" = histCNRM_CDFt_adj,
+             "rcp45CNRM_adj" = rcp45CNRM_CDFt_adj,
+             "rcp85CNRM_adj" = rcp85CNRM_CDFt_adj), 
+        file="output_biascorrection/biascorrectedCNRM-CDFt.rds")
+``` -->
+
+
+
 
 
 

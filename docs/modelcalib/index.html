@@ -302,7 +302,7 @@ window.Quarto = {
 <div id="fig-gr4jschema" class="quarto-figure quarto-figure-center quarto-float anchored" alt="Schematic structure of the daily GR4J model">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-gr4jschema-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/gr4j-illustr.png" class="img-fluid figure-img" style="width:55.0%" alt="Schematic structure of the daily GR4J model">
+<img src="images/gr4j-illustr.png" class="img-fluid figure-img" style="width:35.0%" alt="Schematic structure of the daily GR4J model">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gr4jschema-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: Schematic structure of the <strong>GR4J rainfall-runoff model</strong> <span class="citation" data-cites="PERRIN2003275">(<a href="#ref-PERRIN2003275" role="doc-biblioref">Perrin et al., 2003</a>)</span>. <span class="math inline">P</span> denotes rainfall (mm), <span class="math inline">E</span> is potential evapotranspiration (mm), <span class="math inline">S</span> represents the level of the production reservoir (mm), <span class="math inline">R</span> the level of the routing reservoir (mm), and <span class="math inline">Q</span> the simulated streamflow (mm). <span class="math inline">UH</span> refers to the unit hydrograph, and <span class="math inline">F(X₂)</span> to the groundwater exchange function.
@@ -672,16 +672,16 @@ Maximum number of function evaluations or iterations reached.</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-hydromad(DATA = ts_data, tau_q = 1.99921, tau_s = 57.9451, v_s = 0.291405, 
-    sma = "cwi", routing = "expuh", tw = 20.772, f = 0.401522, 
-    scale = 0.00324525)
+hydromad(DATA = ts_data, tau_q = 1.99122, tau_s = 12.9206, v_s = 0.223345, 
+    sma = "cwi", routing = "expuh", tw = 33.6251, f = 0.47203, 
+    scale = 0.00225022)
 
 Time steps: 10492 (0 missing).
 Runoff ratio (Q/P): (1.03 / 2.393) = 0.4303
-rel bias: -5.61e-08
-r squared: 0.6475
-r sq sqrt: 0.6108
-r sq log: 0.528
+rel bias: -4.773e-08
+r squared: 0.642
+r sq sqrt: 0.5443
+r sq log: 0.3871
 
 For definitions see ?hydromad.stats</code></pre>
 </div>
@@ -691,7 +691,7 @@ For definitions see ?hydromad.stats</code></pre>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>kge_val <span class="ot">=</span> <span class="fu">objFunVal</span>(fit_ihacres, <span class="at">objective =</span> kge_fun)</span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"IHACRES calibration KGE:"</span>, kge_val)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IHACRES calibration KGE: 0.8204751</code></pre>
+<pre><code>IHACRES calibration KGE: 0.8223708</code></pre>
 </div>
 </div>
 <p>Unlike the <strong><code>airGR package</code></strong>, which provides a dedicated <strong>built-in plotting function</strong> for visualizing model calibration results, the<strong><code>hydromad package</code></strong> does not include an equivalent comprehensive graphical output. Consequently, we limit the graphical assessment to a direct comparison between observed and simulated discharge time series, which nonetheless provides a clear and informative evaluation of model performance (<a href="#fig-calibihacres" class="quarto-xref">Figure&nbsp;4</a>).</p>
@@ -829,7 +829,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/sbdiop\.quarto\.pub\/hydro-climatic-modelling-workflow-a-practical-guide");
+      var filterRegex = new RegExp("https:\/\/diopbachir\.github\.io\/tp_eva\/index\.html");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

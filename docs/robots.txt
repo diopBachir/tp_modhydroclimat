@@ -1,1 +1,1 @@
-Sitemap: https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/sitemap.xml
+Sitemap: https://diopbachir.github.io/tp_eva/index.html/sitemap.xml

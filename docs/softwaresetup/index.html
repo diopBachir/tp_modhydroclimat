@@ -215,7 +215,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="get-the-data-used" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Get the Data Used</h1>
-<p>The data used in this practical session are available in the project’s dedicated <a href="https://github.com/diopBachir/tp_modhydroclimat/">GitHub repository</a>. The analysis is based on daily observed streamflow records and climate projection data for the <code>LEZ</code> watershed. Detailed metadata for this watershed are available on the <a href="https://www.sandre.eaufrance.fr/geo/CoursEau_Carthage2017/V52-0400">HydroPortail website (here)</a>.</p>
+<p>The data used in this practical session are available in the project’s dedicated <a href="https://github.com/diopBachir/tp_modhydroclimat/">GitHub repository</a>. The analysis is based on daily observed streamflow records and climate projection data for the <code>LEZ</code> watershed. Detailed metadata for this watershed are available on the <a href="https://www.hydro.eaufrance.fr/stationhydro/Y320002001/fiche">HydroPortail website (here)</a>.</p>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -299,61 +299,43 @@ Figure&nbsp;3: <strong>R environment</strong>, the engine powering your data ana
 </section>
 <section id="libraries-packages" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Libraries (Packages)</h1>
-<div class="callout callout-style-default callout-important callout-titled">
+<p>Below are the <strong>R packages</strong> used in this practical, with links and short descriptions. The simplest, general way to install any R package is:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"package_name"</span>) <span class="co"># install from CRAN</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(package_name)            <span class="co"># Load it after installation</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If the package is on <a href="https://github.com/"><strong>GitHub</strong></a>, we can use the <strong><code>remotes</code></strong> or <strong><code>devtools</code></strong> package:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># onstall remotes if not already installed</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"remotes"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) <span class="fu">install.packages</span>(<span class="st">"remotes"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># install a package from GitHub</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"username/repo_name"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Load it</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(package_name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="The R packages used in this practical">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Must-haves
+The R packages used in this practical
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(trend)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(extRemes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>📦 <a href="https://dplyr.tidyverse.org/"><strong><code>{dplyr}</code></strong></a> — Grammar of data manipulation, providing a consistent set of verbs that solve the most common data manipulation challenge.</p>
+<p>📦 <a href="https://tidyr.tidyverse.org/"><strong><code>{tidyr}</code></strong></a> — Help you create tidy data.</p>
+<p>📦 <a href="https://cran.r-project.org/web/packages/zoo/index.html"><strong><code>{zoo}</code></strong></a> — Tools and functions for time series analysis and manipulation.</p>
+<p>📦 <a href="https://cran.r-project.org/web/packages/trend/index.html"><strong><code>{trend}</code></strong></a> — Provides non-parametric tests test for trend detection.</p>
+<p>📦 <a href="https://cran.r-project.org/web/packages/lubridate/index.html"><strong>`{lubridate}</strong></a> — To work with date-times and time-spans.</p>
+<p>📦 <a href="https://www.jstatsoft.org/article/view/v072i08"><strong><code>{extRemes}</code></strong></a> — For fitting and analyzing extreme value distributions.</p>
+<p>📦 <a href="https://hydrogr.github.io/airGR/"><strong><code>{airGR}</code></strong></a> — GR hydrological models toolbox for rainfall–runoff modeling.</p>
+<p>📦 <a href="https://hydromad.github.io/"><strong><code>{hydromad}</code></strong></a> — Provide a modelling framework for environmental hydrology.</p>
+<p>📦 <a href="https://cran.r-project.org/web/packages/EnvStats/index.html"><strong><code>{EventStats}</code></strong></a> — Graphical and statistical analyses of environmental data.</p>
+<p>📦 <a href="https://github.com/cran/MBC/tree/master"><strong><code>{MBC}</code></strong></a> — For calibrating and applying univariate and multivariate bias correction algorithms for climate model simulations of multiple climate variables.</p>
 </div>
-</div>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The packages <code>dplyr</code>, <code>ggplot2</code> and <code>lubridate</code> are part of the <a href="https://www.tidyverse.org/packages/"><code>tidyverse</code></a> collection of R packages. The <code>core tidyverse</code> includes the packages that you’re likely to use in everyday data analyses. It’s is advised to install this set of packages, including <code>dplyr</code>, <code>ggplot2</code> and <code>lubridate</code>, together by running:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tidyverse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div>
-<p>📦 <a href="https://www.jstatsoft.org/article/view/v072i08">{extRemes}</a> — For fitting and analyzing extreme value distributions.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"extRemes"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>📦 <a href="https://cran.r-project.org/web/packages/trend/index.html">{trend}</a> — Provides non-parametric tests test for trend detection.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"trend"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>📦 <a href="https://cran.r-project.org/web/packages/dplyr/index.html">{dplyr}</a> — For data manipulation and tidy workflows</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"dplyr"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>📦 <a href="https://cran.r-project.org/web/packages/ggplot2/index.html">{ggplot2}</a> — For creating clear and publication-quality plots</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"ggplot2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>📦 <a href="https://cran.r-project.org/web/packages/lubridate/index.html">{lubridate}</a> — To work with date-times and time-spans.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"lubridate"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
@@ -441,7 +423,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/sbdiop\.quarto\.pub\/hydro-climatic-modelling-workflow-a-practical-guide");
+      var filterRegex = new RegExp("https:\/\/diopbachir\.github\.io\/tp_eva\/index\.html");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

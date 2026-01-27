@@ -199,14 +199,17 @@ div.csl-indent {
   <li><a href="#load-necessary-libraries" id="toc-load-necessary-libraries" class="nav-link active" data-scroll-target="#load-necessary-libraries"><span class="header-section-number">1</span> Load necessary libraries</a></li>
   <li><a href="#load-preprocessed-data" id="toc-load-preprocessed-data" class="nav-link" data-scroll-target="#load-preprocessed-data"><span class="header-section-number">2</span> Load preprocessed data</a></li>
   <li><a href="#calculate-potential-evapotranspiration-pet" id="toc-calculate-potential-evapotranspiration-pet" class="nav-link" data-scroll-target="#calculate-potential-evapotranspiration-pet"><span class="header-section-number">3</span> Calculate potential evapotranspiration (PET)</a></li>
-  <li><a href="#bias-correction-methodology" id="toc-bias-correction-methodology" class="nav-link" data-scroll-target="#bias-correction-methodology"><span class="header-section-number">4</span> Bias correction methodology</a>
+  <li><a href="#bias-correction-of-climate-model-data" id="toc-bias-correction-of-climate-model-data" class="nav-link" data-scroll-target="#bias-correction-of-climate-model-data"><span class="header-section-number">4</span> Bias correction of climate model data</a>
   <ul>
-  <li><a href="#the-mbcn-algorithm" id="toc-the-mbcn-algorithm" class="nav-link" data-scroll-target="#the-mbcn-algorithm"><span class="header-section-number">4.1</span> The MBCn algorithm</a></li>
-  <li><a href="#accounting-for-seasonality" id="toc-accounting-for-seasonality" class="nav-link" data-scroll-target="#accounting-for-seasonality"><span class="header-section-number">4.2</span> Accounting for seasonality</a></li>
+  <li><a href="#applying-the-mbcn-algorithm" id="toc-applying-the-mbcn-algorithm" class="nav-link" data-scroll-target="#applying-the-mbcn-algorithm"><span class="header-section-number">4.1</span> Applying the MBCn algorithm</a>
+  <ul>
+  <li><a href="#accounting-for-seasonality" id="toc-accounting-for-seasonality" class="nav-link" data-scroll-target="#accounting-for-seasonality"><span class="header-section-number">4.1.1</span> Accounting for seasonality</a></li>
+  <li><a href="#apply-bias-correction" id="toc-apply-bias-correction" class="nav-link" data-scroll-target="#apply-bias-correction"><span class="header-section-number">4.1.2</span> Apply bias correction</a></li>
+  <li><a href="#visualizing-bias-correction-results" id="toc-visualizing-bias-correction-results" class="nav-link" data-scroll-target="#visualizing-bias-correction-results"><span class="header-section-number">4.1.3</span> Visualizing bias correction results</a></li>
   </ul></li>
-  <li><a href="#apply-bias-correction" id="toc-apply-bias-correction" class="nav-link" data-scroll-target="#apply-bias-correction"><span class="header-section-number">5</span> Apply bias correction</a></li>
-  <li><a href="#visualizing-bias-correction-results" id="toc-visualizing-bias-correction-results" class="nav-link" data-scroll-target="#visualizing-bias-correction-results"><span class="header-section-number">6</span> Visualizing bias correction results</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">7</span> References</a></li>
+  </ul></li>
+  <li><a href="#what-bias-correction-does-not-do" id="toc-what-bias-correction-does-not-do" class="nav-link" data-scroll-target="#what-bias-correction-does-not-do"><span class="header-section-number">5</span> What bias correction does NOT do</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">6</span> References</a></li>
   </ul>
 </nav>
 </nav>
@@ -241,8 +244,8 @@ div.csl-indent {
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(zoo)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MBC)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(CDFt)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EnvStats)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -256,45 +259,45 @@ div.csl-indent {
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(hist_obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>        Date   PR      T  PET     Q
-1 1977-01-01 2.85 6.8425 0.75 30.00
-2 1977-01-02 0.00 4.6035 0.90 24.00
-3 1977-01-03 0.00 3.3415 1.55 16.00
-4 1977-01-04 1.70 2.9455 2.25 12.00
-5 1977-01-05 6.40 3.9835 1.00 10.00
-6 1977-01-06 5.95 4.8015 0.70  8.23</code></pre>
+<pre><code>        Date   PR      T  PET         Q
+1 1977-01-01 2.85 6.8425 0.75 14.561798
+2 1977-01-02 0.00 4.6035 0.90 11.649438
+3 1977-01-03 0.00 3.3415 1.55  7.766292
+4 1977-01-04 1.70 2.9455 2.25  5.824719
+5 1977-01-05 6.40 3.9835 1.00  4.853933
+6 1977-01-06 5.95 4.8015 0.70  3.994787</code></pre>
 </div>
 </div>
-<p>Although data have been prepared and stored for three climate models, only the CLM model is used here for demonstration purposes. Readers interested in further exploration may test the other models as an optional exercise.</p>
+<p>Although data have been prepared and stored for three climate models, only the CNRM model is used here for demonstration purposes. Readers interested in further exploration may test the other models as an optional exercise.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>clim_proj <span class="ot">=</span> <span class="fu">readRDS</span>(<span class="st">"output_preprocessed/processed_climatedata_lez.rds"</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>climdataCLM <span class="ot">=</span> clim_proj[[<span class="st">"climdataCLM"</span>]]</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>climdataCNRM <span class="ot">=</span> clim_proj[[<span class="st">"climdataCNRM"</span>]]</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(climdataCLM, <span class="cf">function</span>(df) <span class="fu">head</span>(df, <span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(climdataCNRM, <span class="cf">function</span>(df) <span class="fu">head</span>(df, <span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$hist
-        Date           PR      TMAX     TMIN
-1 1977-01-01 0.000000e+00 10.634454 4.408624
-2 1977-01-02 0.000000e+00 10.564752 3.772394
-3 1977-01-03 0.000000e+00 10.311456 5.091058
-4 1977-01-04 0.000000e+00  9.927667 4.418695
-5 1977-01-05 6.567379e-13 10.119714 3.272882
+        Date PR     TMAX      TMIN
+1 1977-01-01  0 7.474085 -3.521094
+2 1977-01-02  0 7.479120 -3.715949
+3 1977-01-03  0 9.484460 -0.795813
+4 1977-01-04  0 7.966333 -2.303076
+5 1977-01-05  0 8.868677 -2.638831
 
 $rcp45
-        Date       PR      TMAX     TMIN
-1 2070-01-01 6.393243  7.478754 2.955530
-2 2070-01-02 0.595136 10.662714 4.472620
-3 2070-01-03 0.000000 11.295404 3.219141
-4 2070-01-04 0.000000 15.597681 3.559595
-5 2070-01-05 0.846583 10.681757 3.497949
+        Date          PR     TMAX       TMIN
+1 2070-01-01 0.000000000 2.595703 -6.4942627
+2 2070-01-02 1.168189000 5.320526 -2.3272095
+3 2070-01-03 0.001963279 9.912323 -0.5286560
+4 2070-01-04 0.196316200 9.035370 -0.5024109
+5 2070-01-05 3.104928400 4.129059 -2.2958374
 
 $rcp85
-        Date           PR     TMAX     TMIN
-1 2070-01-01 5.968328e+00 16.75662 13.41622
-2 2070-01-02 2.323533e+00 15.52532 12.69198
-3 2070-01-03 5.213855e-08 18.70010 14.37487
-4 2070-01-04 1.117414e-12 19.86437 13.56204
-5 2070-01-05 1.930715e+00 18.93273 11.84304</code></pre>
+        Date            PR      TMAX      TMIN
+1 2070-01-01  0.2903769400  9.914001 2.3915100
+2 2070-01-02  3.8921249000 10.294708 0.8305969
+3 2070-01-03  0.6235048400 12.759613 6.0958252
+4 2070-01-04 -0.0003165852 14.696930 4.5603638
+5 2070-01-05  0.0802319720 15.240601 2.0722351</code></pre>
 </div>
 </div>
 </section>
@@ -340,58 +343,61 @@ $rcp85
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the calc_hargreaves() function to the 'hist', 'rcp45', and 'rcp85'</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>climdataCLM <span class="ot">=</span> <span class="fu">lapply</span>(climdataCLM, </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>climdataCNRM <span class="ot">=</span> <span class="fu">lapply</span>(climdataCNRM, </span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                      <span class="cf">function</span>(df) </span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                      {</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                        df<span class="sc">$</span>PET <span class="ot">=</span> <span class="fu">calc_hargreaves</span>(df, <span class="at">lat =</span> <span class="fl">44.1958</span>)</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                        df[, <span class="fu">c</span>(<span class="st">"Date"</span>, <span class="st">"PR"</span>, <span class="st">"PET"</span>)]</span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                      })</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(climdataCLM, <span class="cf">function</span>(df) <span class="fu">head</span>(df, <span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(climdataCNRM, <span class="cf">function</span>(df) <span class="fu">head</span>(df, <span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$hist
-        Date           PR       PET
-1 1977-01-01 0.000000e+00 0.6665906
-2 1977-01-02 0.000000e+00 0.6899372
-3 1977-01-03 0.000000e+00 0.6210347
-4 1977-01-04 0.000000e+00 0.6283008
-5 1977-01-05 6.567379e-13 0.6912191
+        Date PR       PET
+1 1977-01-01  0 0.6918644
+2 1977-01-02  0 0.6981986
+3 1977-01-03  0 0.7567758
+4 1977-01-04  0 0.7087037
+5 1977-01-05  0 0.7650985
 
 $rcp45
-        Date       PR       PET
-1 2070-01-01 6.393243 0.5164710
-2 2070-01-02 0.595136 0.6691673
-3 2070-01-03 0.000000 0.7589995
-4 2070-01-04 0.000000 1.0182373
-5 2070-01-05 0.846583 0.7193995
+        Date          PR       PET
+1 2070-01-01 0.000000000 0.5041974
+2 2070-01-02 1.168189000 0.5657884
+3 2070-01-03 0.001963279 0.7746365
+4 2070-01-04 0.196316200 0.7304915
+5 2070-01-05 3.104928400 0.5116002
 
 $rcp85
-        Date           PR       PET
-1 2070-01-01 5.968328e+00 0.6341410
-2 2070-01-02 2.323533e+00 0.5694604
-3 2070-01-03 5.213855e-08 0.7611589
-4 2070-01-04 1.117414e-12 0.9287409
-5 2070-01-05 1.930715e+00 0.9529359</code></pre>
+        Date            PR       PET
+1 2070-01-01  0.2903769400 0.6931174
+2 2070-01-02  3.8921249000 0.7620222
+3 2070-01-03  0.6235048400 0.7491595
+4 2070-01-04 -0.0003165852 0.9360698
+5 2070-01-05  0.0802319720 1.0353029</code></pre>
 </div>
 </div>
 </section>
-<section id="bias-correction-methodology" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Bias correction methodology</h1>
+<section id="bias-correction-of-climate-model-data" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Bias correction of climate model data</h1>
 <p>Bias-correction techniques are commonly applied to reduce systematic discrepancies between climate model simulations and observations, thereby making climate projections suitable for hydrological applications. A wide range of methods has been developed to correct biases in climate variables simulated by climate models.</p>
-<p>In this practical, we use the <strong><code>MBC package</code></strong> to perform bias correction. <strong><code>MBC</code></strong> stands for <strong><em><code>M</code>ultivariate `<code>B</code>ias <code>C</code>orrection</em></strong> and is designed to <strong>calibrate</strong> and <strong>apply multivariate bias-correction algorithms</strong> to climate model simulations involving <strong>multiple climate variables</strong> simultaneously <span class="citation" data-cites="Alex2015 Alex2016 Alex2018">(<a href="#ref-Alex2015" role="doc-biblioref">Cannon et al., 2015</a>; <a href="#ref-Alex2016" role="doc-biblioref">Cannon, 2016</a>, <a href="#ref-Alex2018" role="doc-biblioref">2018</a>)</span>.</p>
-<section id="the-mbcn-algorithm" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="the-mbcn-algorithm"><span class="header-section-number">4.1</span> The MBCn algorithm</h2>
-<p>We will use the <strong><code>MBCn</code> (N-dimensional Multivariate Bias Correction) algorithm</strong> to perform bias correction. The <strong><code>MBCn</code> method</strong> is based on a <strong>probability density function transformation</strong>, making it a powerful approach for correcting biases in climate model outputs (see <span class="citation" data-cites="Alex2018">Cannon (<a href="#ref-Alex2018" role="doc-biblioref">2018</a>)</span> for methodological details).</p>
+<p>In this practical, we will apply two bias-correction methods:</p>
+<ol type="1">
+<li><p><strong><code>MBC method</code></strong>: The <strong><em><code>M</code>ultivariate <code>B</code>ias <code>C</code>orrection</em></strong> is designed to <strong>calibrate</strong> and <strong>apply multivariate bias-correction algorithms</strong> to climate model simulations involving <strong>multiple climate variables</strong> simultaneously <span class="citation" data-cites="Alex2015 Alex2016 Alex2018">(<a href="#ref-Alex2015" role="doc-biblioref">Cannon et al., 2015</a>; <a href="#ref-Alex2016" role="doc-biblioref">Cannon, 2016</a>, <a href="#ref-Alex2018" role="doc-biblioref">2018</a>)</span>.</p></li>
+<li><p><strong><code>CDF-t method</code></strong>: The <strong><em><code>C</code>umulative <code>D</code>istribution <code>F</code>unction <code>t</code>ransform</em></strong> method is a <strong>quantile mapping approach</strong> that corrects the entire distribution of simulated climate variables by matching it to the observed distribution during a reference period. This method preserves the projected climate change signal while adjusting for biases in mean, variance, and extremes, making it particularly suitable for hydrological applications <span class="citation" data-cites="Michelangeli2009GL038401 VracCDFT">(<a href="#ref-Michelangeli2009GL038401" role="doc-biblioref">Michelangeli et al., 2009</a>; <a href="#ref-VracCDFT" role="doc-biblioref">Vrac &amp; Michelangeli, 2021</a>)</span>.</p></li>
+</ol>
+<p>Both <strong><code>MBC</code></strong> and <strong><code>CDF-t</code></strong> aim to reduce biases in climate model outputs, but they differ in scope and complexity. <strong><code>MBC</code></strong> handles multiple variables simultaneously, accounting for inter-variable correlations, whereas <strong><code>CDF-t</code></strong> focuses on single-variable distributions, making it simpler but limited to univariate correction. In practice, the choice of method depends on the variables of interest and the need to preserve multivariate dependence structures in impact studies.</p>
+<section id="applying-the-mbcn-algorithm" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="applying-the-mbcn-algorithm"><span class="header-section-number">4.1</span> Applying the MBCn algorithm</h2>
+<p>We will use the <strong><code>MBCn</code> (N-dimensional Multivariate Bias Correction) algorithm</strong>, from the <strong><code>MBC package</code></strong>, to perform bias correction. The <strong><code>MBCn</code> method</strong> is based on a <strong>probability density function transformation</strong>, making it a powerful approach for correcting biases in climate model outputs (see <span class="citation" data-cites="Alex2018">Cannon (<a href="#ref-Alex2018" role="doc-biblioref">2018</a>)</span> for methodological details).</p>
 <p>Unlike traditional univariate bias-correction methods that adjust each variable independently, <strong><code>MBCn</code></strong> corrects multiple variables simultaneously, such as <strong>precipitation</strong> and <strong>potential evapotranspiration (PET)</strong>, while explicitly preserving their <strong>multivariate dependence structure</strong>. This property is particularly important for hydrological modelling, where interactions between climate variables directly influence soil moisture dynamics, evapotranspiration, and runoff generation.</p>
-</section>
-<section id="accounting-for-seasonality" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="accounting-for-seasonality"><span class="header-section-number">4.2</span> Accounting for seasonality</h2>
+<section id="accounting-for-seasonality" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="accounting-for-seasonality"><span class="header-section-number">4.1.1</span> Accounting for seasonality</h3>
 <p>To properly account for <strong>seasonality</strong>, the bias-correction procedure is applied <strong>separately for each calendar month</strong>. The data are first split into monthly subsets (e.g., all Januaries together, all Februaries together, and so on). The <strong><code>MBCn</code> algorithm</strong> is then applied independently to each monthly “slice”, after which the corrected data are recombined into continuous time series.</p>
 <p>This seasonal stratification ensures that statistical relationships learned for <strong>summer rainfall</strong> are not inadvertently applied to <strong>winter precipitation</strong>, thereby improving the physical consistency and reliability of the bias-corrected climate variables.</p>
 </section>
-</section>
-<section id="apply-bias-correction" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Apply bias correction</h1>
+<section id="apply-bias-correction" class="level3" data-number="4.1.2">
+<h3 data-number="4.1.2" class="anchored" data-anchor-id="apply-bias-correction"><span class="header-section-number">4.1.2</span> Apply bias correction</h3>
 <p>The function <strong><code>seasonalMBCn(...)</code></strong> defined in the chunk below provides a clean wrapper around the <strong><code>MBCn()</code></strong> routine. It automatically extracts date components, applies the multivariate bias correction to historical and future simulations, and returns bias-corrected datasets that are ready for subsequent hydrological modelling.</p>
 <div class="cell">
 <details class="code-fold">
@@ -481,22 +487,22 @@ $rcp85
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># correct RCP45</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>MBCnSeasonalRCP45 <span class="ot">=</span> <span class="fu">seasonalMBCn</span>(hist_obs, </span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                                 climdataCLM[[<span class="st">"hist"</span>]], </span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                                 climdataCLM[[<span class="st">"rcp45"</span>]])</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                                 climdataCNRM[[<span class="st">"hist"</span>]], </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                                 climdataCNRM[[<span class="st">"rcp45"</span>]])</span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># correct RCP85</span></span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>MBCnSeasonalRCP85 <span class="ot">=</span> <span class="fu">seasonalMBCn</span>(hist_obs, </span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                                 climdataCLM[[<span class="st">"hist"</span>]], </span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                                 climdataCLM[[<span class="st">"rcp85"</span>]])</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                                 climdataCNRM[[<span class="st">"hist"</span>]], </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                                 climdataCNRM[[<span class="st">"rcp85"</span>]])</span>
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co"># extract bias corrected data</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>histCLM_adj <span class="ot">=</span> MBCnSeasonalRCP45[[<span class="st">'hist'</span>]]</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>rcp45CLM_adj <span class="ot">=</span> MBCnSeasonalRCP45[[<span class="st">'proj'</span>]]</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>rcp85CLM_adj <span class="ot">=</span> MBCnSeasonalRCP85[[<span class="st">'proj'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>histCNRM_MBCn_adj <span class="ot">=</span> MBCnSeasonalRCP45[[<span class="st">'hist'</span>]]</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>rcp45CNRM_MBCn_adj <span class="ot">=</span> MBCnSeasonalRCP45[[<span class="st">'proj'</span>]]</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>rcp85CNRM_MBCn_adj <span class="ot">=</span> MBCnSeasonalRCP85[[<span class="st">'proj'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="visualizing-bias-correction-results" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Visualizing bias correction results</h1>
+<section id="visualizing-bias-correction-results" class="level3" data-number="4.1.3">
+<h3 data-number="4.1.3" class="anchored" data-anchor-id="visualizing-bias-correction-results"><span class="header-section-number">4.1.3</span> Visualizing bias correction results</h3>
 <p>To visualize the bias correction results, we plot the the <strong><code>Empirical Cumulative Distribution Functions (ECDFs)</code></strong> to validate the effectiveness of the <strong><code>MBCn algorithm</code></strong>.</p>
 <div class="cell">
 <details class="code-fold">
@@ -506,19 +512,19 @@ $rcp85
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>)) </span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (v <span class="cf">in</span> vars) {</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  adj_v <span class="ot">&lt;-</span> <span class="fu">paste0</span>(v, <span class="st">"_adj"</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  adj_v <span class="ot">=</span> <span class="fu">paste0</span>(v, <span class="st">"_adj"</span>)</span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  obs <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(hist_obs[[v]])</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  raw <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(histCLM_adj[[v]])</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  adj <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(histCLM_adj[[adj_v]])</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  obs <span class="ot">=</span> <span class="fu">na.omit</span>(histCNRM_MBCn_adj[[v]])</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  raw <span class="ot">=</span> <span class="fu">na.omit</span>(rcp45CNRM_MBCn_adj[[v]])</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  adj <span class="ot">=</span> <span class="fu">na.omit</span>(rcp85CNRM_MBCn_adj[[adj_v]])</span>
 <span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (v <span class="sc">==</span> <span class="st">"PR"</span>) {</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    obs <span class="ot">&lt;-</span> obs[obs <span class="sc">&gt;</span> <span class="fl">0.1</span>]</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    raw <span class="ot">&lt;-</span> raw[raw <span class="sc">&gt;</span> <span class="fl">0.1</span>]</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    adj <span class="ot">&lt;-</span> adj[adj <span class="sc">&gt;</span> <span class="fl">0.1</span>]</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    obs <span class="ot">=</span> obs[obs <span class="sc">&gt;</span> <span class="fl">0.1</span>]</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    raw <span class="ot">=</span> raw[raw <span class="sc">&gt;</span> <span class="fl">0.1</span>]</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    adj <span class="ot">=</span> adj[adj <span class="sc">&gt;</span> <span class="fl">0.1</span>]</span>
 <span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  lims <span class="ot">&lt;-</span> <span class="fu">range</span>(<span class="fu">c</span>(obs, raw, adj))</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  lims <span class="ot">=</span> <span class="fu">range</span>(<span class="fu">c</span>(obs, raw, adj))</span>
 <span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">qqPlot</span>(<span class="at">x =</span> obs, <span class="at">y =</span> raw,</span>
 <span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">plot.type =</span> <span class="st">"Q-Q"</span>,</span>
@@ -532,16 +538,16 @@ $rcp85
 <span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>         <span class="at">cex.lab =</span> <span class="fl">1.5</span>,</span>
 <span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>         <span class="at">cex.axis =</span> <span class="fl">1.4</span>,</span>
 <span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>         <span class="at">xlim =</span> lims, <span class="at">ylim =</span> lims,</span>
-<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>         <span class="at">main =</span> <span class="fu">paste</span>(<span class="st">"Q-Q Plot:"</span>, <span class="fu">ifelse</span>(v<span class="sc">==</span><span class="st">"PR"</span>, <span class="st">"Precip."</span>, <span class="st">"PET"</span>)),</span>
-<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>         <span class="at">xlab =</span> <span class="st">"Observations (mm/d)"</span>,</span>
-<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>         <span class="at">ylab =</span> <span class="st">"RCM data (mm/d)"</span>)</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>         <span class="at">main =</span> <span class="fu">paste</span>(<span class="st">"MBCn - "</span>, <span class="fu">ifelse</span>(v<span class="sc">==</span><span class="st">"PR"</span>, <span class="st">"Precip."</span>, <span class="st">"PET"</span>)),</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>         <span class="at">xlab =</span> <span class="st">"Observations [mm.d]"</span>,</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>         <span class="at">ylab =</span> <span class="st">"RCM data [mm.d]"</span>)</span>
 <span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>  coords_adj <span class="ot">&lt;-</span> <span class="fu">qqPlot</span>(<span class="at">x =</span> obs, <span class="at">y =</span> adj, <span class="at">plot.it =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>  coords_adj <span class="ot">=</span> <span class="fu">qqPlot</span>(<span class="at">x =</span> obs, <span class="at">y =</span> adj, <span class="at">plot.it =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">points</span>(coords_adj<span class="sc">$</span>x, coords_adj<span class="sc">$</span>y,</span>
 <span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>         <span class="at">col =</span> <span class="st">"#5aa4ff"</span>,</span>
 <span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>         <span class="at">pch =</span> <span class="dv">1</span>, <span class="at">cex =</span> <span class="fl">1.2</span>)</span>
 <span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">"topleft"</span>, </span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">"bottomright"</span>, </span>
 <span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>         <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Obs. vs Raw RCM"</span>, <span class="st">"Obs. vs  Bias-corrected RCM"</span>),</span>
 <span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>         <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"#ffb04e"</span>, <span class="st">"#5aa4ff"</span>),</span>
 <span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>         <span class="at">pch =</span> <span class="dv">1</span>,</span>
@@ -558,7 +564,7 @@ $rcp85
 <img src="index_files/figure-html/fig-biascorr_hist-1.png" class="img-fluid figure-img" style="width:100.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-biascorr_hist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Bias correction results: Q-Q plots comparing observed precipitation (Precip) and PET with raw and bias-corrected RCM outputs over the historical period.
+Figure&nbsp;1: MBCn bias correction results: Q-Q plots comparing observed precipitation (Precip) and PET with raw and bias-corrected RCM using the MBCn algorithm over the historical period.
 </figcaption>
 </figure>
 </div>
@@ -588,7 +594,7 @@ Figure&nbsp;1: Bias correction results: Q-Q plots comparing observed precipitati
 <span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>()</span>
 <span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>roll5 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">rollmean</span>(x, <span class="at">k =</span> <span class="dv">5</span>, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">align =</span> <span class="st">"center"</span>)</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>rollm <span class="ot">=</span> <span class="cf">function</span>(x) <span class="fu">rollmean</span>(x, <span class="at">k =</span> <span class="dv">5</span>, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">align =</span> <span class="st">"center"</span>)</span>
 <span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfcol =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">2</span>, <span class="dv">1</span>))</span>
 <span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a></span>
@@ -598,9 +604,9 @@ Figure&nbsp;1: Bias correction results: Q-Q plots comparing observed precipitati
 <span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"red"</span>, <span class="st">"blue"</span>)  <span class="co"># Observed, Raw, Bias-corrected</span></span>
 <span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>raw_list <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Hist"</span>  <span class="ot">=</span> histCLM_adj</span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>  <span class="co"># "RCP4.5" = rcp45CLM_adj,</span></span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># "RCP8.5" = rcp85CLM_adj</span></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Hist"</span>  <span class="ot">=</span> histCNRM_MBCn_adj</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>  <span class="co"># "RCP4.5" = rcp45CNRM_MBCn_adj,</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># "RCP8.5" = rcp85CNRM_MBCn_adj</span></span>
 <span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>obs_list <span class="ot">=</span> <span class="fu">list</span>(</span>
@@ -617,10 +623,10 @@ Figure&nbsp;1: Bias correction results: Q-Q plots comparing observed precipitati
 <span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    raw_val <span class="ot">=</span> <span class="fu">daily_climatology_hydro</span>(raw_list[[scn]], <span class="at">vars =</span> v)[[v]]</span>
 <span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>    adj_val <span class="ot">=</span> <span class="fu">daily_climatology_hydro</span>(raw_list[[scn]], <span class="at">vars =</span> <span class="fu">paste0</span>(v, <span class="st">"_adj"</span>))[[<span class="fu">paste0</span>(v, <span class="st">"_adj"</span>)]]</span>
 <span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Apply 5-day rolling mean</span></span>
-<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>    obs_val  <span class="ot">=</span> <span class="fu">roll5</span>(obs_val)</span>
-<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>    raw_val  <span class="ot">=</span> <span class="fu">roll5</span>(raw_val)</span>
-<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>    adj_val  <span class="ot">=</span> <span class="fu">roll5</span>(adj_val)</span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Apply rolling mean</span></span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>    obs_val  <span class="ot">=</span> <span class="fu">rollm</span>(obs_val)</span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>    raw_val  <span class="ot">=</span> <span class="fu">rollm</span>(raw_val)</span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>    adj_val  <span class="ot">=</span> <span class="fu">rollm</span>(adj_val)</span>
 <span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Axis limits</span></span>
 <span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>    x_lim <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">365</span>)</span>
@@ -652,7 +658,7 @@ Figure&nbsp;1: Bias correction results: Q-Q plots comparing observed precipitati
 <img src="index_files/figure-html/fig-biascorr_acycle-1.png" class="img-fluid figure-img" style="width:100.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-biascorr_acycle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Seasonal Cycle of Precipitation (top row) and PET (bottom row) over the Hydrological Year: observed (black), raw model (red), and bias-corrected (blue) simulations for historical and future scenarios.
+Figure&nbsp;2: Seasonal Cycle of Precipitation (top row) and PET (bottom row) over the Hydrological Year: observed (black), raw model (red), and bias-corrected (blue) simulations for historical and future scenarios. Bias correction is performed using the MBCn algorithm.
 </figcaption>
 </figure>
 </div>
@@ -664,18 +670,309 @@ Figure&nbsp;2: Seasonal Cycle of Precipitation (top row) and PET (bottom row) ov
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">dir.exists</span>(<span class="st">"output_biascorrection"</span>)) <span class="fu">dir.create</span>(<span class="st">"output_biascorrection"</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the bias-corrected climate data while preserving object structure</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="fu">list</span>(<span class="st">"histCLM_adj"</span> <span class="ot">=</span> histCLM_adj,</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>             <span class="st">"rcp45CLM_adj"</span> <span class="ot">=</span> rcp45CLM_adj,</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>             <span class="st">"rcp85CLM_adj"</span> <span class="ot">=</span> rcp85CLM_adj), </span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">file=</span><span class="st">"output_biascorrection/biascorrectedCLM.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="fu">list</span>(<span class="st">"histCNRM_adj"</span> <span class="ot">=</span> histCNRM_MBCn_adj,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>             <span class="st">"rcp45CNRM_adj"</span> <span class="ot">=</span> rcp45CNRM_MBCn_adj,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>             <span class="st">"rcp85CNRM_adj"</span> <span class="ot">=</span> rcp85CNRM_MBCn_adj), </span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">file=</span><span class="st">"output_biascorrection/biascorrectedCNRM-MBCn.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<!-- # What bias correction does NOT do
-
-The “days” used in climate models often do not correspond exactly to the calendar days of the real world. This is not an error, but rather a deliberate mathematical simplification that makes the extensive computations required for climate projections more manageable. As a result, different climate models use different calendars, relying on specialized calendars, such as the **360-day calendar** or the **365-day (no-leap)** calendar. Only a few climate models follow the standard (Gregorian) calendar, with 365 days in non-leap years and 366 days in leap years. Therefore, as done with the data used in this practical, it is recommended to convert climate model output to a standard Gregorian calendar before applying bias correction. -->
-<!-- To illustrate this difference, we plot the time series for the first year of the historical period using both the observed data and the climate model data. -->
 </section>
-<section id="references" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> References</h1>
+</section>
+</section>
+<section id="what-bias-correction-does-not-do" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> What bias correction does NOT do</h1>
+<p>The <strong><code>days</code></strong> used in climate models often do not correspond exactly to the <strong>calendar days of the real world</strong>. This is <strong>not an error</strong>, but rather a deliberate <strong>mathematical simplification</strong> that makes the extensive computations required for climate projections more manageable. As a result, different climate models use different calendars, relying on specialized calendars, such as the <strong><code>360-day calendar</code></strong> or the <strong><code>365-day (no-leap)</code></strong> calendar. Only a few climate models follow the <strong>standard (Gregorian) calendar</strong>, with <strong>365 days in non-leap years</strong> and <strong>366 days in leap years</strong>. Therefore, as done with the data used in this practical, it is recommended to convert climate model output to a standard Gregorian calendar before applying bias correction.</p>
+<!-- ## Applying the CDF-t bias-correction method
+
+To perform bias correction using the **`CDF-t`** in **R**, we can use the **`CDFt package`** [@VracCDFT]. The main **`CDFt()`** function to use requires three numeric vectors:
+
+- **`ObsHp`**: Observations during the historical period.
+- **`GCMHp`**: GCM/RCM simulations during the historical period.
+- **`GCMFp`**: GCM/RCM simulations during the future (projection) period.
+
+As for the **`MBC`** method, in we nead to define a clean wrapper around the **`CDFt()`** function. We need to adapt the logic slightly because **`CDFt``** is a univariate method. Unlike **`MBCn`**, which handles multiple columns (matrices) at once, **`CDFt`** must be looped over each variable individually within each month.
+
+
+::: {.cell}
+
+```{.r .cell-code  code-fold="true" code-summary="Show the code"}
+# @param obs: Data frame of historical observations (must include a 'Date' column)
+# @param mod_hist: Data frame of historical model outputs
+# @param mod_proj: Data frame of future model projections
+# @param var_names: Vector of column names to process (e.g., c("PR", "PET"))
+seasonalCDFt = function(obs, 
+                        mod_hist, 
+                        mod_proj, 
+                        var_names = c("PR", "PET")) 
+{
+  # Helper function to add date parts
+  add_date_parts = function(df) {
+    df$Year  = as.numeric(format(df$Date, "%Y"))
+    df$Month = as.numeric(format(df$Date, "%m"))
+    df$Day   = as.numeric(format(df$Date, "%d"))
+    df
+  }
+
+  # Add date parts for filtering
+  obs       = add_date_parts(obs)
+  mod_hist  = add_date_parts(mod_hist)
+  mod_proj  = add_date_parts(mod_proj)
+  
+  hist_list = list()
+  proj_list = list()
+  
+  # Loop through each month (1 to 12)
+  for (m in 1:12) {
+    
+    # Subset data for the current month
+    s_obs  = obs[obs$Month == m, ]
+    s_hist = mod_hist[mod_hist$Month == m, ]
+    s_proj = mod_proj[mod_proj$Month == m, ]
+    
+    # Temporary data frames to store results for the current month
+    month_hist_adj = s_hist
+    month_proj_adj = s_proj
+    
+    # CDFt is univariate: Loop through each variable
+    for (v in var_names) {
+      
+      # Extract vectors (removing NAs is essential for CDF construction)
+      v_obs  = na.omit(s_obs[[v]])
+      v_hist = na.omit(s_hist[[v]])
+      v_proj = na.omit(s_proj[[v]])
+      
+      # Run CDFt
+      # DS: Downscaled/Corrected series for the Projection period
+      # To get the corrected Historical period, the package typically requires 
+      # a separate mapping or using the 'FGp' distribution. 
+      # However, for consistency with bias-correction workflows:
+      res = CDFt(ObsRp = v_obs, DataGp = v_hist, DataGf = v_proj)
+      
+      # Extract results
+      # Note: result$DS is the corrected projection
+      month_proj_adj[[paste0(v, "_adj")]] = res$DS
+      
+      # For the historical adjusted, we map mod_hist to obs via standard Quantile Mapping
+      # as CDFt is primarily designed for the 'future' transition.
+      # Many practitioners use the historical transformation provided by the same logic:
+      res_hist = CDFt(ObsRp = v_obs, DataGp = v_hist, DataGf = v_hist)
+      month_hist_adj[[paste0(v, "_adj")]] = res_hist$DS
+    }
+    
+    hist_list[[m]] = month_hist_adj
+    proj_list[[m]] = month_proj_adj
+  }
+  
+  # Recombine and restore chronological order
+  final_hist = do.call(rbind, hist_list)
+  final_proj = do.call(rbind, proj_list)
+  
+  # Order by date
+  final_hist = final_hist[order(final_hist$Year, final_hist$Month, final_hist$Day), ]
+  final_proj = final_proj[order(final_proj$Year, final_proj$Month, final_proj$Day), ]
+  
+  # Select final columns (Date, Original variables, and Adjusted variables)
+  out_cols = c("Date", var_names, paste0(var_names, "_adj"))
+  
+  return(list(hist = final_hist[, out_cols], 
+              proj = final_proj[, out_cols]))
+}
+```
+:::
+
+::: {.cell}
+
+```{.r .cell-code}
+# correct RCP45
+CDFtSeasonalRCP45 = seasonalCDFt(hist_obs, 
+                                 climdataCNRM[["hist"]], 
+                                 climdataCNRM[["rcp45"]])
+
+# correct RCP85
+CDFtSeasonalRCP85 = seasonalCDFt(hist_obs, 
+                                 climdataCNRM[["hist"]], 
+                                 climdataCNRM[["rcp85"]])
+
+# extract bias corrected data
+histCNRM_CDFt_adj = CDFtSeasonalRCP45[['hist']]
+rcp45CNRM_CDFt_adj = CDFtSeasonalRCP45[['proj']]
+rcp85CNRM_CDFt_adj = CDFtSeasonalRCP85[['proj']]
+```
+:::
+
+
+
+We plot the the **`Empirical Cumulative Distribution Functions (ECDFs)`** to validate the effectiveness of the **`CDF-t algorithm`**.
+
+
+::: {.cell}
+
+```{.r .cell-code  code-fold="true" code-summary="Show the code"}
+vars = c("PR", "PET")
+
+par(mfrow = c(1, 2), mar = c(5, 4, 3, 2))
+
+for (v in vars) {
+  adj_v = paste0(v, "_adj")
+
+  obs = na.omit(histCNRM_CDFt_adj[[v]])
+  raw = na.omit(rcp45CNRM_CDFt_adj[[v]])
+  adj = na.omit(rcp85CNRM_CDFt_adj[[adj_v]])
+
+  if (v == "PR") {
+    obs = obs[obs > 0.1]
+    raw = raw[raw > 0.1]
+    adj = adj[adj > 0.1]
+  }
+
+  lims = range(c(obs, raw, adj))
+
+  qqPlot(x = obs, y = raw,
+         plot.type = "Q-Q",
+         qq.line.type = "0-1", 
+         add.line = TRUE,
+         points.col = "#ffb04e",
+         line.col = "gray50",
+         cex = 1.2,
+         pch = 1,
+         cex.main = 1.3,
+         cex.lab = 1.5,
+         cex.axis = 1.4,
+         xlim = lims, ylim = lims,
+         main = paste("CDFt - ", ifelse(v=="PR", "Precip.", "PET")),
+         xlab = "Observations [mm.d]",
+         ylab = "RCM data [mm.d]")
+
+  coords_adj = qqPlot(x = obs, y = adj, plot.it = FALSE)
+  points(coords_adj$x, coords_adj$y,
+         col = "#5aa4ff",
+         pch = 1, cex = 1.2)
+
+  legend("bottomright", 
+         legend = c("Obs. vs Raw RCM", "Obs. vs  Bias-corrected RCM"),
+         col = c("#ffb04e", "#5aa4ff"),
+         pch = 1,
+         bty = "o",
+         cex = 1.3,
+         pt.lwd = 2,
+         pt.cex = 1.5)
+}
+```
+
+::: {.cell-output-display}
+![CDF-t bias correction results: Q-Q plots comparing observed precipitation (Precip) and PET with raw and bias-corrected RCM using the CDF-t method over the historical period.](index_files/figure-html/fig-biascorr_hist_cdft-1.png){#fig-biascorr_hist_cdft width=100%}
+:::
+:::
+
+
+We also plot the seasonal patterns of precipitation and potential evapotranspiration, aligning the daily cycle with the hydrological year.
+
+
+::: {.cell}
+
+```{.r .cell-code  code-fold="true" code-summary="Show the code"}
+# Helper: compute hydrological day of year (1 = 1 Sept)
+hydro_doy = function(dates)
+{
+  # Shift the year so that 1 Sept = day 1
+  doy = yday(dates - months(8))
+  return(doy)
+}
+
+
+# Daily climatology based on hydrological year
+daily_climatology_hydro = function(df, vars = c("PR_adj", "PET_adj")) 
+{
+  df %>%
+    mutate(HydroDOY = hydro_doy(Date)) %>%
+    group_by(HydroDOY) %>%
+    summarise(across(all_of(vars), ~mean(.x, na.rm = TRUE))) %>%
+    ungroup()
+}
+
+rollm = function(x) rollmean(x, k = 5, fill = NA, align = "center")
+
+par(mfcol = c(1,2), mar = c(5, 5, 2, 1))
+
+# scenarios = c("Hist", "RCP4.5", "RCP8.5")
+scenarios = "Hist"
+vars = c("PR", "PET")
+cols = c("black", "red", "blue")  # Observed, Raw, Bias-corrected
+
+raw_list = list(
+  "Hist"  = histCNRM_CDFt_adj
+  # "RCP4.5" = rcp45CNRM_CDFt_adj,
+  # "RCP8.5" = rcp85CNRM_CDFt_adj
+)
+
+obs_list = list(
+  "Hist" = hist_obs
+  # "RCP4.5" = hist_obs,
+  # "RCP8.5" = hist_obs
+)
+
+for(v in vars) {
+  for(scn in scenarios) {
+    
+    # Observed, Raw, Bias-corrected
+    obs_val = daily_climatology_hydro(obs_list[[scn]], vars = v)[[v]]
+    raw_val = daily_climatology_hydro(raw_list[[scn]], vars = v)[[v]]
+    adj_val = daily_climatology_hydro(raw_list[[scn]], vars = paste0(v, "_adj"))[[paste0(v, "_adj")]]
+    
+    # Apply rolling mean
+    obs_val  = rollm(obs_val)
+    raw_val  = rollm(raw_val)
+    adj_val  = rollm(adj_val)
+    
+    # Axis limits
+    x_lim = c(1, 365)
+    y_lim = range(c(obs_val, raw_val, adj_val), na.rm = TRUE)
+    
+    # Plot panel
+    plot(1:365, obs_val, type="l", lwd=2, col=cols[1], ylim=y_lim,
+         xlab="Hydro day of year", 
+         ylab=ifelse(v=="PR", "Precip", "PET"),
+         main=paste(ifelse(v=="PR", "Precip", "PET"), "-", scn),
+         cex.lab = 1.5,   # axis labels
+         cex.axis = 1.3,  # axis numbers
+         cex.main = 1.5)
+    lines(1:365, raw_val, col=cols[2], lwd=1, lty=2)
+    lines(1:365, adj_val, col=cols[3], lwd=1, lty=3)
+    
+    # Legend only for top-left panel (PR-Hist)
+    if(v == "PR" && scn == "Hist") {
+      legend("topright", legend=c("Observed", "Raw Model", "Bias-corrected"),
+             col=cols, lwd=c(2,1.5,1.5), lty=c(1,2,3), bty="o", cex=1.2)
+    }
+  }
+}
+```
+
+::: {.cell-output-display}
+![Seasonal Cycle of Precipitation (top row) and PET (bottom row) over the Hydrological Year: observed (black), raw model (red), and bias-corrected (blue) simulations for historical and future scenarios. Bias correction is performed using the CDFt algorithm.](index_files/figure-html/fig-biascorr_acycle_cdft-1.png){#fig-biascorr_acycle_cdft width=100%}
+:::
+:::
+
+
+We save bias-corrected dataset for subsequent use in further analyses:
+
+
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+# Create an output directory if it doesn't exist
+if (!dir.exists("output_biascorrection")) dir.create("output_biascorrection")
+
+# Save the bias-corrected climate data while preserving object structure
+saveRDS(list("histCNRM_adj" = histCNRM_CDFt_adj,
+             "rcp45CNRM_adj" = rcp45CNRM_CDFt_adj,
+             "rcp85CNRM_adj" = rcp85CNRM_CDFt_adj), 
+        file="output_biascorrection/biascorrectedCNRM-CDFt.rds")
+``` -->
+</section>
+<section id="references" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
 <div id="ref-Alex2016" class="csl-entry" role="listitem">
 Cannon, A. J. (2016). Multivariate bias correction of climate model output: Matching marginal distributons and inter-variable dependence structure. <em>Journal of Climate</em>, <em>29</em>, 7045–7064. <a href="https://doi.org/10.1175/JCLI-D-15-0679.1">https://doi.org/10.1175/JCLI-D-15-0679.1</a>
@@ -688,6 +985,12 @@ Cannon, A. J., Sobie, S. R., &amp; Murdock, T. Q. (2015). Bias correction of GCM
 </div>
 <div id="ref-Hargreaves1985" class="csl-entry" role="listitem">
 Hargreaves, G. H., &amp; Samani, Z. A. (1985). Reference crop evapotranspiration from temperature. <em>Applied Engineering in Agriculture</em>, <em>1</em>(2), 96–99. <a href="https://doi.org/10.13031/2013.26773">https://doi.org/10.13031/2013.26773</a>
+</div>
+<div id="ref-Michelangeli2009GL038401" class="csl-entry" role="listitem">
+Michelangeli, P.-A., Vrac, M., &amp; Loukos, H. (2009). Probabilistic downscaling approaches: Application to wind cumulative distribution functions. <em>Geophysical Research Letters</em>, <em>36</em>(11). https://doi.org/<a href="https://doi.org/10.1029/2009GL038401">https://doi.org/10.1029/2009GL038401</a>
+</div>
+<div id="ref-VracCDFT" class="csl-entry" role="listitem">
+Vrac, M., &amp; Michelangeli, P.-A. (2021). <em>CDFt: Downscaling and bias correction via non-parametric CDF-transform</em>. <a href="https://CRAN.R-project.org/package=CDFt">https://CRAN.R-project.org/package=CDFt</a>
 </div>
 </div>
 
@@ -776,7 +1079,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/sbdiop\.quarto\.pub\/hydro-climatic-modelling-workflow-a-practical-guide");
+      var filterRegex = new RegExp("https:\/\/diopbachir\.github\.io\/tp_eva\/index\.html");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

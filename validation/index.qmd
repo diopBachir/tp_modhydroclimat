@@ -30,11 +30,14 @@ library(EnvStats)
 hist_obs = readRDS("output_preprocessed/processed_obsdata_lez.rds")
 head(hist_obs)
 
-adjCLM = readRDS("output_biascorrection/biascorrectedCLM.rds")
-lapply(adjCLM, function(df) head(df, 5))
+adjCNRM_MBCn = readRDS("output_biascorrection/biascorrectedCNRM-MBCn.rds")
+lapply(adjCNRM_MBCn, function(df) head(df, 5))
+
+adjCNRM_CDFt = readRDS("output_biascorrection/biascorrectedCNRM-CDFt.rds")
+lapply(adjCNRM_CDFt, function(df) head(df, 5))
 ```
 
-# Validation of the bias correction using calibrated GR4J hydrological model over the historical period
+# Validation of the MBCn bias correction using calibrated GR4J hydrological model over the historical period
 
 In this section, we will run hydrological experiments or simulations using calibrated GR4J model driven  by observed hydroclimatic data and bias-corrected RCMs outputs. We first load the optimized GR4J parameters derived in the [GR4J model calibration section](../modelcalib/index.qmd#sec-gr4jcalib).
 
@@ -124,15 +127,15 @@ Next, we run the GR4J over the historical raw and bias-corrected data.
 #| warning: false
 #| message: false
 
-gr4jsim_histCLM_raw = run_gr4j_simulation(
-  na.omit(adjCLM[["histCLM_adj"]]), "PR", "PET", Qobs_data, gr4j_param
+gr4jsim_histCNRM_raw = run_gr4j_simulation(
+  na.omit(adjCNRM_MBCn[["histCNRM_adj"]]), "PR", "PET", Qobs_data, gr4j_param
 )
-head(gr4jsim_histCLM_raw)
+head(gr4jsim_histCNRM_raw)
 
-gr4jsim_histCLM_adj = run_gr4j_simulation(
-  adjCLM[["histCLM_adj"]], "PR_adj", "PET_adj", Qobs_data, gr4j_param
+gr4jsim_histCNRM_adj = run_gr4j_simulation(
+  adjCNRM_MBCn[["histCNRM_adj"]], "PR_adj", "PET_adj", Qobs_data, gr4j_param
 )
-head(gr4jsim_histCLM_adj)
+head(gr4jsim_histCNRM_adj)
 ```
 
 We define the **`hydrological year`** starting on **`September 1st`**. Once the hydrological year defined, we will compute the following statistics for the observations and for each climate model simulation:
@@ -211,6 +214,11 @@ We can apply these functions to compute the indices for the observed and climate
 #| warning: false
 #| message: false
 
+# Mean daily streamflow data for GR4J with observed data
+ObsmeanDaily = compute_mean_daily_cycle(
+  gr4jsim_hist_obs, "Observed", "Qobs"
+)
+
 # Mean annual discharge, Annual Maximum, and VCN7 for GR4J with observed data
 histGR4JObsMetrics = compute_hydro_indices(
   gr4jsim_hist_obs, "GR4J with observed", "Qsim"
@@ -225,26 +233,26 @@ histGR4JObsmeanDaily = compute_mean_daily_cycle(
 
 # Mean annual discharge, Annual Maximum, and VCN7 for GR4J with bias-corrected data
 RawhistGR4JclimAdjMetrics = compute_hydro_indices(
-  gr4jsim_histCLM_raw, "GR4J with raw RCM data", "Qsim"
+  gr4jsim_histCNRM_raw, "GR4J with raw RCM data", "Qsim"
 )
 # head(RawhistGR4JclimAdjMetrics)
 
 # Mean daily streamflow for GR4J with observed data
 RawhistGR4JclimAdjmeanDaily = compute_mean_daily_cycle(
-  gr4jsim_histCLM_raw, "GR4J with raw RCM data", "Qsim"
+  gr4jsim_histCNRM_raw, "GR4J with raw RCM data", "Qsim"
 )
 # head(RawhistGR4JclimAdjmeanDaily)
 
 
 # Mean annual discharge, Annual Maximum, and VCN7 for GR4J with bias-corrected data
 AdjhistGR4JclimAdjMetrics = compute_hydro_indices(
-  gr4jsim_histCLM_adj, "GR4J with bias-corrected data", "Qsim"
+  gr4jsim_histCNRM_adj, "GR4J with bias-corrected data", "Qsim"
 )
 # head(AdjhistGR4JclimAdjMetrics)
 
 # Mean daily streamflow for GR4J with observed data
 AdjhistGR4JclimAdjmeanDaily = compute_mean_daily_cycle(
-  gr4jsim_histCLM_adj, "GR4J with bias-corrected data", "Qsim"
+  gr4jsim_histCNRM_adj, "GR4J with bias-corrected data", "Qsim"
 )
 # head(AdjhistGR4JclimAdjmeanDaily)
 ```
@@ -256,36 +264,42 @@ We can now compare observed indices with their simulated counterparts. For **mea
 #| eval: true
 #| warning: false
 #| message: false
-#| fig-width: 8
-#| fig-height: 4
-#| out-width: "100%"
+#| fig-width: 10
+#| fig-height: 6
+#| out-width: "75%"
 #| code-fold: true
 #| code-summary: Show the code
 #| label: fig-acyclegr4j
-#| fig-cap: "Mean daily discharge simulated by GR4J using observed data, raw RCM outputs, and bias-corrected RCM data (5-day rolling mean)."
+#| fig-cap: "Mean daily discharge simulated by GR4J using observed data, raw RCM outputs, and bias-corrected RCM data."
 
 # Combine observed, raw, and adjusted mean daily cycles into a single data frame
-daily_cycle_plot = histGR4JObsmeanDaily %>%
+daily_cycle_plot = ObsmeanDaily %>%
   select(HydroDOY, Obs = MeanDailyQ) %>%
-  left_join(RawhistGR4JclimAdjmeanDaily %>% select(HydroDOY, Raw = MeanDailyQ), by = "HydroDOY") %>%
-  left_join(AdjhistGR4JclimAdjmeanDaily %>% select(HydroDOY, Adj = MeanDailyQ), by = "HydroDOY")
+  left_join(histGR4JObsmeanDaily %>% select(HydroDOY, gr4jObs = MeanDailyQ), by = "HydroDOY") %>%
+  left_join(RawhistGR4JclimAdjmeanDaily %>% select(HydroDOY, gr4jRaw = MeanDailyQ), by = "HydroDOY") %>%
+  left_join(AdjhistGR4JclimAdjmeanDaily %>% select(HydroDOY, gr4jAdj = MeanDailyQ), by = "HydroDOY")
 
 # 5-day moving average to reduce noise and highlight the seasonal signal
-daily_cycle_plot$Obs_smooth = rollmean(daily_cycle_plot$Obs, k = 5, fill = "extend")
-daily_cycle_plot$Raw_smooth = rollmean(daily_cycle_plot$Raw, k = 5, fill = "extend")
-daily_cycle_plot$Adj_smooth = rollmean(daily_cycle_plot$Adj, k = 5, fill = "extend")
+daily_cycle_plot$Obs_smooth = rollmean(daily_cycle_plot$Obs, k = 20, fill = "extend")
+daily_cycle_plot$gr4jObs_smooth = rollmean(daily_cycle_plot$gr4jObs, k = 20, fill = "extend")
+daily_cycle_plot$gr4jRaw_smooth = rollmean(daily_cycle_plot$gr4jRaw, k = 20, fill = "extend")
+daily_cycle_plot$gr4jAdj_smooth = rollmean(daily_cycle_plot$gr4jAdj, k = 20, fill = "extend")
 
 par(mfrow = c(1, 1), mar = c(5, 5, 2, 2), family = "serif")
 
 y_range = range(c(daily_cycle_plot$Obs_smooth, 
-                   daily_cycle_plot$Raw_smooth, 
-                   daily_cycle_plot$Adj_smooth), na.rm = TRUE)
+                  daily_cycle_plot$gr4jObs_smooth, 
+                  daily_cycle_plot$gr4jRaw_smooth, 
+                  daily_cycle_plot$gr4jAdj_smooth), na.rm = TRUE)
 
 plot(daily_cycle_plot$HydroDOY, daily_cycle_plot$Obs_smooth, 
-     type = "l", lwd = 1.1, col = "black",
+     type = "l", 
+     lwd = 1.9, 
+     lty = 3,
+     col = "black",
      ylim = y_range,
-     xlab = "Hydrological day of year", 
-     ylab = "Mean daily discharge (m3/s)",
+     xlab = "Days of hydrological of year", 
+     ylab = "Mean daily discharge [m3.s]",
      xaxt = "n",
      cex.lab = 1.2, 
      cex.axis = 1.2,
@@ -293,21 +307,25 @@ plot(daily_cycle_plot$HydroDOY, daily_cycle_plot$Obs_smooth,
 
 axis(1, at = seq(1, 365, 15))
 
-lines(daily_cycle_plot$HydroDOY, daily_cycle_plot$Raw_smooth, 
-      col = "red", lwd = 1.1, lty = 2)
+lines(daily_cycle_plot$HydroDOY, daily_cycle_plot$gr4jObs_smooth, 
+      col = "#3fa86bff", lwd = 1.8, lty = 1)
 
-lines(daily_cycle_plot$HydroDOY, daily_cycle_plot$Adj_smooth, 
-      col = "blue", lwd = 1.1, lty = 3)
+lines(daily_cycle_plot$HydroDOY, daily_cycle_plot$gr4jRaw_smooth, 
+      col = "#ffb04e", lwd = 1.8, lty = 1)
+
+lines(daily_cycle_plot$HydroDOY, daily_cycle_plot$gr4jAdj_smooth, 
+      col = "#5aa4ff", lwd = 1.8, lty = 1)
 
 grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted")
 
 legend("topright", 
-       legend = c("GR4J with observed data", 
-                  "GR4J with raw RCM", 
-                  "GR4J with bias-corrected RCM"),
-       col = c("black", "red", "blue"), 
-       lwd = c(1.5, 1.5, 1.5), 
-       lty = c(1, 2, 3), 
+       legend = c("Observed", 
+                  "GR4J with observed data", 
+                  "GR4J with raw RCM data",
+                  "GR4J with bias-corrected RCM data"),
+       col = c("black", "#31d677", "#ffb04e", "#5aa4ff"), 
+       lwd = rep(2.5, 4), 
+       lty = c(3, rep(1,3)), 
        bty = "o", cex = 1.1)
 ```
 
@@ -317,8 +335,8 @@ legend("topright",
 #| eval: true
 #| warning: false
 #| message: false
-#| fig-width: 10
-#| fig-height: 6
+#| fig-width: 8
+#| fig-height: 3
 #| out-width: "100%"
 #| code-fold: true
 #| code-summary: Show the code
@@ -342,48 +360,51 @@ metrics = list(
   list(obs = "Obs_VCN7", var = "_VCN7", title = "Low Flow VCN7")
 )
 
-rows = c("Raw", "Adj")
+rows = c("Adj")
 
-par(mfrow = c(2, 3), mar = c(4.5, 4.5, 3, 1), family = "serif", pty = "s")
+par(mfrow = c(1, 3), mar = c(4.5, 4.5, 3, 1), family = "serif", pty = "s")
 
 for(r in rows) {
   for(m in metrics) {
     
-    # Extract the vectors (removing NAs is vital for Q-Q math)
     obs_vals = na.omit(plot_data[[m$obs]])
     sim_col  = paste0(r, m$var)
     sim_vals = na.omit(plot_data[[sim_col]])
-    
-    # Calculate the range based on both distributions to keep the plot square
-    val_range = range(c(obs_vals, sim_vals), na.rm = TRUE)
-    
-    # Styling logic
-    pt_color = ifelse(r == "Raw", "#ffb04e", "#5aa4ff")
+
     row_lab  = ifelse(r == "Raw", "Raw RCM", "Bias-Corrected RCM")
+
+    if (m$var == "_VCN7") { # enhance viz :)
+      obs_vals = obs_vals[obs_vals < 0.31]
+      sim_vals = sim_vals[sim_vals < 0.31]
+    } 
     
-    # Use EventStat's qqPlot
-    # This automatically handles the sorting and quantile calculation
+    val_range = range(c(obs_vals, sim_vals), na.rm = TRUE)
+
     qqPlot(x = obs_vals, 
            y = sim_vals,
            plot.type = "Q-Q",
-           qq.line.type = "0-1", # Adds the 1:1 reference line
+           qq.line.type = "least squares", 
            add.line = TRUE,
-           xlim = val_range, 
-           ylim = val_range,
-           points.col = pt_color,
-           line.col = "gray50",
-           pch = 1, 
-           cex = 1.2,
+           points.col = "#9040ff",
+           line.col = "#ff6287",
+           pch = 3, 
+           cex = .9,
            cex.lab = 1.4,
            cex.axis = 1.2,
-           main = paste(m$title, "\n(", row_lab, ")"),
-           xlab = "Observed Quantiles",
-           ylab = "Simulated Quantiles")
+           xlim = val_range, 
+           ylim = val_range,
+           main = paste(m$title),
+           xlab = "GR4J with bias-corrected RCM data",
+           ylab = "GR4J with observed data")
 
     grid()
   }
 }
 ```
+
+
+# Validation of the CDFt bias correction using calibrated GR4J hydrological model over the historical period
+
 
 
 # Validation of the bias correction using calibrated IHACRES hydrological model
@@ -404,12 +425,12 @@ library(hydromad)
 fit_ihacres = readRDS("output_modelcalibration/fittedIHACRES_lez.rds")
 
 # prepare inputs
-histRCM = adjCLM[["histCLM_adj"]]
-input_data <- data.frame(
+histRCM = adjCNRM_MBCn[["histCNRM_adj"]]
+input_data = data.frame(
   P = as.numeric(histRCM$PR), 
   E = as.numeric(histRCM$PET)
 )
-input_data <- zoo(input_data, order.by = as.Date(histRCM$Date))
+input_data = zoo(input_data, order.by = as.Date(histRCM$Date))
 
 # run IHACRES prediction
 Qsim_ihacres = predict(fit_ihacres, newdata = input_data)

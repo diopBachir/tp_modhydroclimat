@@ -5,7 +5,7 @@ page-layout: full
 
 # Get the Data Used
 
-The data used in this practical session are available in the project’s dedicated [GitHub repository](https://github.com/diopBachir/tp_modhydroclimat/). The analysis is based on daily observed streamflow records and climate projection data for the `LEZ` watershed. Detailed metadata for this watershed are available on the [HydroPortail website (here)](https://www.sandre.eaufrance.fr/geo/CoursEau_Carthage2017/V52-0400). 
+The data used in this practical session are available in the project’s dedicated [GitHub repository](https://github.com/diopBachir/tp_modhydroclimat/). The analysis is based on daily observed streamflow records and climate projection data for the `LEZ` watershed. Detailed metadata for this watershed are available on the [HydroPortail website (here)](https://www.hydro.eaufrance.fr/stationhydro/Y320002001/fiche). 
 
 ::: {.callout-note icon="false"}
 ## Download the Data
@@ -51,73 +51,57 @@ An **`IDE (Integrated Development Environment)`** is a **software application** 
 
 # Libraries (Packages)
 
-::: {.callout-important}
-## Must-haves
+
+Below are the **R packages** used in this practical, with links and short descriptions. The simplest, general way to install any R package is:
+
 ```{r}
 #| echo: true
 #| eval: false
+#| message: false
+#| warning: false
 
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(lubridate)
-library(trend)
-library(extRemes)
+install.packages("package_name") # install from CRAN
+library(package_name)            # Load it after installation
 ```
+
+If the package is on [**GitHub**](https://github.com/), we can use the **`remotes`** or **`devtools`** package:
+
+```{r}
+#| echo: true
+#| eval: false
+#| message: false
+#| warning: false
+
+# onstall remotes if not already installed
+if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
+
+# install a package from GitHub
+remotes::install_github("username/repo_name")
+
+# Load it
+library(package_name)
+```
+
+::: {.callout-note title="The R packages used in this practical"}
+
+📦 [**`{dplyr}`**](https://dplyr.tidyverse.org/) — Grammar of data manipulation, providing a consistent set of verbs that solve the most common data manipulation challenge.
+
+📦 [**`{tidyr}`**](https://tidyr.tidyverse.org/) — Help you create tidy data.
+
+📦 [**`{zoo}`**](https://cran.r-project.org/web/packages/zoo/index.html) — Tools and functions for time series analysis and manipulation.
+
+📦 [**`{trend}`**](https://cran.r-project.org/web/packages/trend/index.html) — Provides non-parametric tests test for trend detection.
+
+📦 [**`{lubridate}**](https://cran.r-project.org/web/packages/lubridate/index.html) — To work with date-times and time-spans.
+
+📦 [**`{extRemes}`**](https://www.jstatsoft.org/article/view/v072i08) — For fitting and analyzing extreme value distributions.
+
+📦 [**`{airGR}`**](https://hydrogr.github.io/airGR/) — GR hydrological models toolbox for rainfall–runoff modeling.
+
+📦 [**`{hydromad}`**](https://hydromad.github.io/) — Provide a modelling framework for environmental hydrology.
+
+📦 [**`{EventStats}`**](https://cran.r-project.org/web/packages/EnvStats/index.html) — Graphical and statistical analyses of environmental data.
+
+📦 [**`{MBC}`**](https://github.com/cran/MBC/tree/master) — For calibrating and applying univariate and multivariate bias correction algorithms for climate model simulations of multiple climate variables.
+
 :::
-
-::: {.callout-note}
-The packages `dplyr`, `ggplot2` and `lubridate` are part of the [`tidyverse`](https://www.tidyverse.org/packages/) collection of R packages. The `core tidyverse` includes the packages that you’re likely to use in everyday data analyses. It's is advised to install this set of packages, including `dplyr`, `ggplot2` and `lubridate`, together by running:
-
-```{r}
-#| echo: true
-#| eval: false
-
-install.packages("tidyverse")
-```
-:::
-
-📦 [{extRemes}](https://www.jstatsoft.org/article/view/v072i08) — For fitting and analyzing extreme value distributions.
-
-```{r}
-#| echo: true
-#| eval: false
-
-install.packages("extRemes")
-```
-
-📦 [{trend}](https://cran.r-project.org/web/packages/trend/index.html) — Provides non-parametric tests test for trend detection.
-
-```{r}
-#| echo: true
-#| eval: false
-
-install.packages("trend")
-```
-
-📦 [{dplyr}](https://cran.r-project.org/web/packages/dplyr/index.html) — For data manipulation and tidy workflows
-
-```{r}
-#| echo: true
-#| eval: false
-
-install.packages("dplyr")
-```
-
-📦 [{ggplot2}](https://cran.r-project.org/web/packages/ggplot2/index.html) — For creating clear and publication-quality plots
-
-```{r}
-#| echo: true
-#| eval: false
-
-install.packages("ggplot2")
-```
-
-📦 [{lubridate}](https://cran.r-project.org/web/packages/lubridate/index.html) — To work with date-times and time-spans.
-
-```{r}
-#| echo: true
-#| eval: false
-
-install.packages("lubridate")
-```
