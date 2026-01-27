@@ -11,7 +11,7 @@ A watershed is the fundamental spatial unit used in hydrological modelling.
 It is considered hydrologically closed: all precipitation falling within the watershed is partitioned into evapotranspiration, infiltration, and runoff.
 Infiltrated water may contribute to subsurface flow and groundwater storage, while all runoff ultimately drains through a single outlet.
 
-![Schematic representation of a watershed. *(Source: Adapted from Karambiri et Diello, 2008)*](images/watershed.png){#fig-Rbenefits width=50% fig-alt="Illustration of a watershed"}
+![Schematic representation of a watershed. *(Source: Adapted by Bodian et al. (2012) from Karambiri et Diello, 2008)*](images/watershed.png){#fig-Rbenefits width=75% fig-alt="Illustration of a watershed"}
 
 
 # Hydrological Modelling
