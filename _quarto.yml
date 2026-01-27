@@ -42,7 +42,11 @@ website:
       - href: validation/index.qmd
         text: Validation
       - href: scenarios/index.qmd
+<<<<<<< HEAD
         text: Climate scenarios
+=======
+        text: Scénarios
+>>>>>>> b774e407f2fc51033dcdd980d1da0f8e8e9eebe6
       # - href: blockmaxima/index.qmd
       #   text: Block Maxima Approach
       # - href: pot/index.qmd

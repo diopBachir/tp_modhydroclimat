@@ -1,5 +1,9 @@
 ---
+<<<<<<< HEAD
 title: "Climate scenarios"
+=======
+title: "Scénarios climatiques"
+>>>>>>> b774e407f2fc51033dcdd980d1da0f8e8e9eebe6
 page-layout: full
 ---
 
