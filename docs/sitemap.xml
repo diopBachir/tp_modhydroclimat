@@ -2,15 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://diopbachir.github.io/tp_eva/index.html/index.html</loc>
-    <lastmod>2026-01-19T14:36:54.773Z</lastmod>
+    <lastmod>2026-01-27T04:02:07.465Z</lastmod>
   </url>
   <url>
     <loc>https://diopbachir.github.io/tp_eva/index.html/loaddata/index.html</loc>
-    <lastmod>2026-01-18T15:18:40.643Z</lastmod>
-  </url>
-  <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/pot/index.html</loc>
-    <lastmod>2025-10-05T23:12:23.312Z</lastmod>
+    <lastmod>2026-01-26T23:08:22.036Z</lastmod>
   </url>
   <url>
     <loc>https://diopbachir.github.io/tp_eva/index.html/softwaresetup/index.html</loc>
@@ -18,26 +14,18 @@
   </url>
   <url>
     <loc>https://diopbachir.github.io/tp_eva/index.html/biascorr/index.html</loc>
-    <lastmod>2026-01-18T14:03:09.061Z</lastmod>
-  </url>
-  <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/blockmaxima/index.html</loc>
-    <lastmod>2025-10-23T14:05:00.487Z</lastmod>
+    <lastmod>2026-01-27T02:32:57.634Z</lastmod>
   </url>
   <url>
     <loc>https://diopbachir.github.io/tp_eva/index.html/introduction/index.html</loc>
-    <lastmod>2026-01-18T08:37:40.743Z</lastmod>
+    <lastmod>2026-01-26T20:15:27.396Z</lastmod>
   </url>
   <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/simulation/index.html</loc>
-    <lastmod>2026-01-18T18:51:01.132Z</lastmod>
+    <loc>https://diopbachir.github.io/tp_eva/index.html/validation/index.html</loc>
+    <lastmod>2026-01-27T02:33:28.687Z</lastmod>
   </url>
   <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/pot/pot_bk.html</loc>
-    <lastmod>2025-07-17T22:47:56.067Z</lastmod>
-  </url>
-  <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/modelcalib/index.html</loc>
-    <lastmod>2026-01-19T16:09:50.106Z</lastmod>
+    <loc>https://diopbachir.github.io/tp_eva/index.html/scenarios/index.html</loc>
+    <lastmod>2026-01-27T03:52:36.279Z</lastmod>
   </url>
 </urlset>

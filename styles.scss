@@ -40,7 +40,7 @@ $code-block-bg: $off-white;
 -----------------------------------------------------------------------------*/
 body {
   font-family: 'Merriweather', Georgia, 'Times New Roman', Times, Serif;
-  font-size: 1.1em;
+  font-size: .9em;
   line-height: 1.6em;
   background-color: #faf8f8;
 }
@@ -48,7 +48,7 @@ body {
 pre>code {
   font-family: 'Hack', 'Source Code Pro', 'Courier New', 'Courier', monospace;
   font-size: $font-size-base * .99 !important;
-  line-height: 1.1em;
+  line-height: 1.3em;
   background-color: #edf0f5;
 }
 

@@ -5,17 +5,17 @@ project:
 bibliography: references.bib
 csl: apa.csl # optional, for styling
 
-image: https://github.com/diopBachir/tp_eva/blob/master/docs/evaillustr.png
+image: https://github.com/diopBachir/tp_modhydroclimat/blob/main/docs/images/raifall-runoff-model-illustr.png
 
 website:
-  title: "Introduction to Extreme Value Analysis"
+  title: "Hydro-Climatic Modelling Workflow: A Practical Guide"
   image: evaillustr.png
   open-graph: 
-     title: "Introduction to Extreme Value Analysis"
-     description: "A comprehensive guide to extreme value analysis"
-     image: evaillustr.png
+     title: "Hydro-Climatic Modelling Workflow: A Practical Guide"
+     description: "Step-by-step hydro-climatic modelling"
+     image: raifall-runoff-model-illustr.png
      locale: fr_FR
-  favicon: evaillustr.png
+  favicon: raifall-runoff-model-illustr.png
   twitter-card: true
   site-url: https://diopbachir.github.io/tp_eva/index.html
   back-to-top-navigation: true
@@ -39,8 +39,10 @@ website:
         text: Model calibration
       - href: biascorr/index.qmd
         text: Bias correction
-      - href: simulation/index.qmd
-        text: Simulation
+      - href: validation/index.qmd
+        text: Validation
+      - href: scenarios/index.qmd
+        text: Climate scenarios
       # - href: blockmaxima/index.qmd
       #   text: Block Maxima Approach
       # - href: pot/index.qmd

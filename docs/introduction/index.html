@@ -90,6 +90,49 @@ div.csl-indent {
 <script src="https://kit.fontawesome.com/0fba9333d8.js" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
 
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <meta property="og:title" content="Introduction to Extreme Value Analysis">
 <meta property="og:description" content="A comprehensive guide to extreme value analysis">
@@ -140,8 +183,12 @@ div.csl-indent {
 <span class="menu-text">Bias correction</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../simulation/index.html"> 
-<span class="menu-text">Simulation</span></a>
+    <a class="nav-link" href="../validation/index.html"> 
+<span class="menu-text">Validation</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../scenarios/index.html"> 
+<span class="menu-text">Scénarios</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -171,8 +218,9 @@ div.csl-indent {
   <li><a href="#hydrologcal-model-calibration" id="toc-hydrologcal-model-calibration" class="nav-link" data-scroll-target="#hydrologcal-model-calibration"><span class="header-section-number">3.1</span> Hydrologcal model calibration</a></li>
   <li><a href="#bias-correction-of-climate-models" id="toc-bias-correction-of-climate-models" class="nav-link" data-scroll-target="#bias-correction-of-climate-models"><span class="header-section-number">3.2</span> Bias correction of climate models</a></li>
   </ul></li>
-  <li><a href="#practical-objectives-of-this-module" id="toc-practical-objectives-of-this-module" class="nav-link" data-scroll-target="#practical-objectives-of-this-module"><span class="header-section-number">4</span> Practical Objectives of this Module</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">5</span> References</a></li>
+  <li><a href="#potential-evapotranspiration-pet" id="toc-potential-evapotranspiration-pet" class="nav-link" data-scroll-target="#potential-evapotranspiration-pet"><span class="header-section-number">4</span> Potential Evapotranspiration (PET)</a></li>
+  <li><a href="#practical-objectives-of-this-module" id="toc-practical-objectives-of-this-module" class="nav-link" data-scroll-target="#practical-objectives-of-this-module"><span class="header-section-number">5</span> Practical Objectives of this Module</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">6</span> References</a></li>
   </ul>
 </nav>
 </nav>
@@ -276,19 +324,66 @@ Figure&nbsp;2: Classification of hydrological models based on the <strong>spatia
 <h2 data-number="3.2" class="anchored" data-anchor-id="bias-correction-of-climate-models"><span class="header-section-number">3.2</span> Bias correction of climate models</h2>
 <p>When assessing the impacts of climate change, hydrological models are typically forced using projections from climate models, including <a href="https://www.climatehubs.usda.gov/hubs/northwest/topic/basics-global-climate-models">Global</a> and <a href="https://climatechange.academy/climate-change-assessment-tools/how-regional-climate-models-enhance-predictions/">Regional Climate Models (GCMs and RCMs)</a>. In this context, the outputs of GCMs developed within Phase 6 of the <a href="https://wcrp-cmip.org/cmip-phases/cmip6/">Coupled Model Intercomparison Project (CMIP6)</a>, which supported the <a href="https://www.ipcc.ch/assessment-report/ar6/">IPCC Sixth Assessment Report (AR6)</a>, provide valuable information for evaluating future climate change impacts.</p>
 <p>However, GCM simulations cannot be used directly as inputs for hydrological models, as they commonly exhibit systematic biases relative to observations. <strong>Bias Correction</strong> is a mandatory step to align climate simulations with local historical observations before running the hydrological model.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Mechanics of Bias Correction [@Chun2012]">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Mechanics of Bias Correction <span class="citation" data-cites="Chun2012">(<a href="#ref-Chun2012" role="doc-biblioref">Chun et al., 2012</a>)</span>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Consider a single weather variable (such as daily temperature at a specific grid point) observed over two distinct periods:</p>
+<ul>
+<li>Present-Day Period: Represented by actual observations <strong><span class="math inline">X_o</span></strong> and climate model simulations <strong><span class="math inline">X_m</span></strong>.</li>
+<li>Future Period: Represented by unknown future observations <strong><span class="math inline">X'_o</span></strong> and future climate model projections <strong><span class="math inline">X'_m</span></strong>.</li>
+</ul>
+<p>The primary goal of a future climate assessment is to estimate the statistical distribution of <strong><span class="math inline">X'_o</span></strong> by leveraging the known data samples from <strong><span class="math inline">X_o</span></strong>, <strong><span class="math inline">X_m</span></strong>, and <strong><span class="math inline">X'_m</span></strong>.</p>
+<p>The bias correction strategy is built on the fundamental assumption that model errors are <strong>stationary</strong>, meaning they do not change over time. Under this logic, the mathematical relationship required to align the present-day model <strong><span class="math inline">X_m</span></strong> with present-day observations <strong><span class="math inline">X_o</span></strong> is the exact same relationship needed to align the future model <strong><span class="math inline">X'_m</span></strong> with future observations <strong><span class="math inline">X'_o</span></strong>.</p>
+<p>As shown in <a href="#fig-biascorr" class="quarto-xref">Figure&nbsp;3</a>, this method effectively <strong>“shifts”</strong> or <strong>“reshapes”</strong> the model’s output to match the historical reality, then applies that same transformation to future projections. The schematic (a) illustrates the relationship between four key variables: present-day observations (<strong><span class="math inline">X_o</span></strong>), present-day model simulations <strong>(<span class="math inline">X_m</span>)</strong>, future model projections <strong>(<span class="math inline">X'_m</span>)</strong>, and the estimated future observations <strong>(<span class="math inline">X'_o</span>)</strong>. The bias correction strategy assumes that model discrepancies (biases) remain stationary over time. As shown in the probability density functions (b), the transformation required to align the present-day model (<strong><span class="math inline">X_m</span></strong>, solid blue) with historical observations (<strong><span class="math inline">X_o</span></strong>, solid red) is applied to the future model projections (<strong><span class="math inline">X'_m</span></strong>, solid purple). This results in the calibrated future projected variable (<strong><span class="math inline">X'_o</span></strong>, dashed orange), which inherits the statistical characteristics of the observed distribution while accounting for the model-predicted climate change signal.</p>
+<div id="fig-biascorr" class="quarto-figure quarto-figure-center quarto-float anchored" alt="Bias correction Illustr">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-biascorr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/biascorr_illustr.png" class="img-fluid figure-img" style="width:100.0%" alt="Bias correction Illustr">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-biascorr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Conceptual Framework of the Bias Correction Pathway for Climate Model Projections <span class="citation" data-cites="Chun2012">(<a href="#ref-Chun2012" role="doc-biblioref">Chun et al., 2012</a>)</span>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 </section>
 </section>
-<section id="practical-objectives-of-this-module" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Practical Objectives of this Module</h1>
+<section id="potential-evapotranspiration-pet" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Potential Evapotranspiration (PET)</h1>
+<p><strong>PET</strong> is a key hydrological variable representing the water loss from soil and vegetation under the assumption of unlimited water availability (i.e., the atmospheric “evaporative demand”). It quantifies how much water would be evaporated or transpired if there were no water limitations. <strong>PET</strong> is a critical input to conceptual rainfall–runoff models, as it governs soil moisture dynamics and controls the amount of water available for runoff generation. PET can be estimated using various empirical methods, such as <strong>Hargreaves</strong>, <strong>Penman-Monteith</strong>, or <strong>Thornthwaite</strong> formulas, depending on available climate data.</p>
+<div id="fig-pet" class="quarto-figure quarto-figure-center quarto-float anchored" alt="Schematic of the PET physics">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/pet-illustr.png" class="img-fluid figure-img" style="width:100.0%" alt="Schematic of the PET physics">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Evapotranspiration: sum of evaporation from water bodies and land surfaces plus transpiration from plants, such as trees and grasses. (Image by LabXchange © The President and Fellows of Harvard College)
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="practical-objectives-of-this-module" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Practical Objectives of this Module</h1>
 <p>📌 Calibration and validation of hydrological models</p>
 <p>📌 Climate data processing &amp; bias correction</p>
 <p>📌 Impact assessment of climate change (scenarios)</p>
 <p>📌 Hydrological indicator analysis</p>
 <p>📌 Apply all methods in practice using reproducible, open-source tools within the <a href="https://www.r-project.org/">R environment</a>.</p>
 </section>
-<section id="references" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> References</h1>
+<section id="references" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-Chun2012" class="csl-entry" role="listitem">
+Chun, K. H., Stephenson, D. B., Collins, M., Ferro, C. A. T., &amp; Brown, S. J. (2012). Calibration strategies: A source of additional uncertainty in climate change projections. <em>Bulletin of the American Meteorological Society</em>, <em>93</em>(1), 21–26. <a href="https://doi.org/10.1175/2011BAMS3110.1">https://doi.org/10.1175/2011BAMS3110.1</a>
+</div>
 <div id="ref-GUPTA200980" class="csl-entry" role="listitem">
 Gupta, H. V., Kling, H., Yilmaz, K. K., &amp; Martinez, G. F. (2009). Decomposition of the mean squared error and NSE performance criteria: Implications for improving hydrological modelling. <em>Journal of Hydrology</em>, <em>377</em>(1), 80–91. https://doi.org/<a href="https://doi.org/10.1016/j.jhydrol.2009.08.003">https://doi.org/10.1016/j.jhydrol.2009.08.003</a>
 </div>

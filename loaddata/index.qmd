@@ -20,7 +20,7 @@ The file **`dataobs_P_TEMP_ETP_DEBIT.csv`** contains historical observations use
 
 The database includes climate projections from three different RCMs, organized into specific folders:
 
-* **CLM:** Community Land Model / Climate Limited-area Modelling.
+* **CLM:** Community Land Model / Community Earth System Model (USA).
 * **CNRM:** National Centre for Meteorological Research (France).
 * **IPSL:** Institut Pierre-Simon Laplace (France).
 
@@ -178,7 +178,7 @@ To automate the processing of our climate model folders **`(CLM, CNRM, IPSL)`**,
 #| eval: true
 #| warning: false
 #| message: false
-#| code-fold: false
+#| code-fold: true
 #| code-summary: Show the code
 
 #' ---------------Function to prepare climate data-------------------
@@ -321,9 +321,7 @@ This approach not only improves computational efficiency in future R sessions bu
 The following code creates an **`output/`** directory and saves the observed historical data alongside the processed climate model data. To ensure a seamless transition between data preparation and the subsequent modelling phases, we utilize the **RDS (R Data Serialization)** format to archive our preprocessed datasets. Exporting the filtered historical observations and the nested lists of climate projections into **`.rds`** files is more robust than using **flat CSVs**, as it preserves **R-specific metadata**, such as **complex list structures** and **Date-class attributes**, while offering significant file compression.
 
 ::: {.callout-note title="Reloading Preprocessed Data"}
-
 In the next part of the practical session, the previously exported datasets can be easily reloaded in a single step using the **`readRDS()`** function. This approach preserves the original data structure, including column types, ensuring a consistent and analysis-ready dataset without the need to repeat preprocessing steps.
-
 :::
 
 ```{r}

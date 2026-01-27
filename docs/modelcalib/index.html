@@ -217,8 +217,12 @@ window.Quarto = {
 <span class="menu-text">Bias correction</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../simulation/index.html"> 
-<span class="menu-text">Simulation</span></a>
+    <a class="nav-link" href="../validation/index.html"> 
+<span class="menu-text">Validation</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../scenarios/index.html"> 
+<span class="menu-text">Scénarios</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -273,10 +277,7 @@ window.Quarto = {
 <h1 data-number="1"><span class="header-section-number">1</span> Load necessary libraries</h1>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(airGR)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(hydromad)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lattice)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(latticeExtra)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="load-preprocessed-observational-data" class="level1" data-number="2">
@@ -301,7 +302,7 @@ window.Quarto = {
 <div id="fig-gr4jschema" class="quarto-figure quarto-figure-center quarto-float anchored" alt="Schematic structure of the daily GR4J model">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-gr4jschema-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/gr4j-illustr.png" class="img-fluid figure-img" style="width:45.0%" alt="Schematic structure of the daily GR4J model">
+<img src="images/gr4j-illustr.png" class="img-fluid figure-img" style="width:55.0%" alt="Schematic structure of the daily GR4J model">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gr4jschema-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: Schematic structure of the <strong>GR4J rainfall-runoff model</strong> <span class="citation" data-cites="PERRIN2003275">(<a href="#ref-PERRIN2003275" role="doc-biblioref">Perrin et al., 2003</a>)</span>. <span class="math inline">P</span> denotes rainfall (mm), <span class="math inline">E</span> is potential evapotranspiration (mm), <span class="math inline">S</span> represents the level of the production reservoir (mm), <span class="math inline">R</span> the level of the routing reservoir (mm), and <span class="math inline">Q</span> the simulated streamflow (mm). <span class="math inline">UH</span> refers to the unit hydrograph, and <span class="math inline">F(X₂)</span> to the groundwater exchange function.
@@ -572,7 +573,7 @@ Figure&nbsp;2: GR4J model calibration results: top row shows the total precipita
 </section>
 <section id="further-analysis-calibration-of-the-ihacres-model" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Further Analysis: Calibration of the IHACRES Model</h1>
-<p>While the <strong>GR4J model</strong> is used for the remainder of the practical, further analysis may include the calibration of the <strong>IHACRES model</strong>. <strong>IHACRES</strong> stands for <strong><code>I</code></strong>dentification of unit <strong><code>H</code></strong>ydrographs <strong><code>A</code></strong>nd <strong><code>C</code></strong>omponent flows from <strong><code>R</code></strong>ainfall, <strong><code>E</code></strong>vaporation and <strong><code>S</code></strong>treamflow data. The IHACRES model is a lumped conceptual rainfall-runoff model which architecture is divided into two fundamental modules (<span class="citation" data-cites="ihacresschema">(<a href="#ref-ihacresschema" role="doc-biblioref"><strong>ihacresschema?</strong></a>)</span>). The <strong>non-linear loss module</strong> converts observed rainfall into effective rainfall by accounting for antecedent moisture conditions through a catchment wetness index, controlled by a small set of parameters governing catchment drying and rainfall–runoff efficiency, typically influenced by temperature or potential evapotranspiration (<span class="citation" data-cites="ihacresschema">(<a href="#ref-ihacresschema" role="doc-biblioref"><strong>ihacresschema?</strong></a>)</span>). The <strong>linear routing module</strong> then transforms this effective rainfall into discharge using linear reservoirs whose parameters control the response time and relative contribution of quick flow (surface or near-surface runoff) and slow flow (groundwater contribution or baseflow). For a detailed description of the model structure and parameterization, readers are referred to <span class="citation" data-cites="Jakeman93WR00877">Jakeman &amp; Hornberger (<a href="#ref-Jakeman93WR00877" role="doc-biblioref">1993</a>)</span>.</p>
+<p>While the <strong>GR4J model</strong> is used for the remainder of the practical, further analysis may include the calibration of the <strong>IHACRES model</strong>. <strong>IHACRES</strong> stands for <strong><code>I</code></strong>dentification of unit <strong><code>H</code></strong>ydrographs <strong><code>A</code></strong>nd <strong><code>C</code></strong>omponent flows from <strong><code>R</code></strong>ainfall, <strong><code>E</code></strong>vaporation and <strong><code>S</code></strong>treamflow data. The IHACRES model is a lumped conceptual rainfall-runoff model which architecture is divided into two fundamental modules (<a href="#fig-ihacresschema" class="quarto-xref">Figure&nbsp;3</a>). The <strong>non-linear loss module</strong> converts observed rainfall into effective rainfall by accounting for antecedent moisture conditions through a catchment wetness index, controlled by a small set of parameters governing catchment drying and rainfall–runoff efficiency, typically influenced by temperature or potential evapotranspiration (<span class="citation" data-cites="ihacresschema">(<a href="#ref-ihacresschema" role="doc-biblioref"><strong>ihacresschema?</strong></a>)</span>). The <strong>linear routing module</strong> then transforms this effective rainfall into discharge using linear reservoirs whose parameters control the response time and relative contribution of quick flow (surface or near-surface runoff) and slow flow (groundwater contribution or baseflow). For a detailed description of the model structure and parameterization, readers are referred to <span class="citation" data-cites="Jakeman93WR00877">Jakeman &amp; Hornberger (<a href="#ref-Jakeman93WR00877" role="doc-biblioref">1993</a>)</span>.</p>
 <div id="fig-ihacresschema" class="quarto-figure quarto-figure-center quarto-float anchored" alt="Schematic structure of the IHACRES model">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ihacresschema-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -586,21 +587,24 @@ Figure&nbsp;3: Schematic structure of the IHACRES model <span class="citation" d
 <p>In <strong><code>R</code></strong>, the most common and robust way to use the <strong><code>IHACRES</code></strong> model is through the <strong><code>hydromad package</code></strong>. It is specifically designed for conceptual rainfall-runoff modeling and allows to handle both the <strong>non-linear loss</strong> and <strong>linear routing</strong> modules separately or as a combined model.</p>
 <p>The model requires a time-series object (<strong><code>zoo</code></strong> or <strong><code>xts</code></strong>) containing Rainfall (<span class="math inline">P</span>), Temperature (<span class="math inline">T</span>) or Potential Evapotranspiration (<span class="math inline">E</span>), and observed Discharge (<span class="math inline">Q</span>).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert data into a zoo object</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>hist_obs<span class="sc">$</span>Date <span class="ot">=</span> <span class="fu">as.Date</span>(hist_obs<span class="sc">$</span>Date)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>ts_data <span class="ot">=</span> <span class="fu">with</span>(</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  hist_obs, </span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">zoo</span>(<span class="fu">cbind</span>(<span class="at">P =</span> P, <span class="at">E =</span> PET, <span class="at">Q =</span> Q), <span class="at">order.by =</span> Date)</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(ts_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(hydromad)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert data into a zoo object</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>hist_obs<span class="sc">$</span>Date <span class="ot">=</span> <span class="fu">as.Date</span>(hist_obs<span class="sc">$</span>Date)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>ts_data <span class="ot">=</span> <span class="fu">with</span>(</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  hist_obs, </span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">zoo</span>(<span class="fu">cbind</span>(<span class="at">P =</span> P, <span class="at">E =</span> PET, <span class="at">Q =</span> Q), <span class="at">order.by =</span> Date)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ts_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>'zoo' series from 1977-01-01 to 2005-12-31
-  Data: num [1:10592, 1:3] 2.85 0 0 1.7 6.4 5.95 0 0 0 0 ...
- - attr(*, "dimnames")=List of 2
-  ..$ : NULL
-  ..$ : chr [1:3] "P" "E" "Q"
-  Index:  Date[1:10592], format: "1977-01-01" "1977-01-02" "1977-01-03" "1977-01-04" "1977-01-05" ...</code></pre>
+<pre><code>              P    E         Q
+1977-01-01 2.85 0.75 14.561798
+1977-01-02 0.00 0.90 11.649438
+1977-01-03 0.00 1.55  7.766292
+1977-01-04 1.70 2.25  5.824719
+1977-01-05 6.40 1.00  4.853933
+1977-01-06 5.95 0.70  3.994787</code></pre>
 </div>
 </div>
 <p>Next, we define the <strong>IHACRES model</strong> structure by specifying the two modules. In the chunk below, we use the <strong><code>CWI (Catchment Wetness Index)</code></strong> for the <strong>loss module</strong> and <strong><code>expuh (Exponential Unit Hydrograph)</code></strong> for the <strong>routing</strong>.</p>
@@ -614,56 +618,36 @@ Figure&nbsp;3: Schematic structure of the IHACRES model <span class="citation" d
 <span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>                   <span class="co"># Set parameter bounds (example)</span></span>
 <span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">tau_q =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">2</span>),   <span class="co"># Quick flow time constant</span></span>
 <span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">tau_s =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">100</span>),  <span class="co"># Slow flow time constant</span></span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">v_s =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))       <span class="co"># Relative volume of slow flow</span></span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>ihacres</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Hydromad model with "cwi" SMA and "expuh" routing:
-Start = 1977-01-01, End = 2005-12-31
-
-SMA Parameters:
-      lower upper     
-tw        0   100     
-f         0     8     
-scale    NA    NA     
-l         0     0 (==)
-p         1     1 (==)
-t_ref    20    20 (==)
-Routing Parameters:
-      lower upper  
-tau_q   0.1     2  
-tau_s  10.0   100  
-v_s     0.0     1  </code></pre>
-</div>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">v_s =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))       <span class="co"># Relative volume of slow flow</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>To calibrate the parameters of the <strong>IHACRES model</strong>, we will use the <strong>Shuffled Complex Evolution (SCE)</strong> global optimizer. The <strong><code>SCE algorithm</code></strong>, developed at the <strong>University of Arizona <span class="citation" data-cites="DUAN1994265">(<a href="#ref-DUAN1994265" role="doc-biblioref">Duan et al., 1994</a>)</span></strong>, is a global optimization strategy specifically designed to efficiently explore high-dimensional and complex parameter spaces where multiple local optima may exist. It is worth noting that the <strong>IHACRES model</strong> involves up to nine (9) parameters to be optimized (cf. <span class="citation" data-cites="KIM2015543">Kim (<a href="#ref-KIM2015543" role="doc-biblioref">2015</a>)</span>). We first define a robust <strong>KGE</strong> objective function for <strong><code>hydromad</code></strong>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>kge_fun <span class="ot">=</span> <span class="cf">function</span>(Q, X, ...) </span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove missing values to prevent cor/sd returning NA</span></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  ok <span class="ot">=</span> <span class="fu">complete.cases</span>(Q, X)</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">sum</span>(ok) <span class="sc">&lt;</span> <span class="dv">2</span>) <span class="fu">return</span>(<span class="cn">NA</span>)</span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  Q <span class="ot">=</span> Q[ok]</span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  X <span class="ot">=</span> X[ok]</span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">=</span> <span class="fu">cor</span>(X, Q)                     <span class="co"># correlation</span></span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  alpha <span class="ot">=</span> <span class="fu">sd</span>(X) <span class="sc">/</span> <span class="fu">sd</span>(Q)             <span class="co"># variability ratio</span></span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  beta <span class="ot">=</span> <span class="fu">mean</span>(X) <span class="sc">/</span> <span class="fu">mean</span>(Q)          <span class="co"># bias ratio</span></span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Calculate KGE</span></span>
-<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>  val <span class="ot">=</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">sqrt</span>((r <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> (alpha <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> (beta <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>  val</span>
-<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>kge_fun <span class="ot">=</span> <span class="cf">function</span>(Q, X, ...) </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove missing values to prevent cor/sd returning NA</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  ok <span class="ot">=</span> <span class="fu">complete.cases</span>(Q, X)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">sum</span>(ok) <span class="sc">&lt;</span> <span class="dv">2</span>) <span class="fu">return</span>(<span class="cn">NA</span>)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  Q <span class="ot">=</span> Q[ok]</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  X <span class="ot">=</span> X[ok]</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">=</span> <span class="fu">cor</span>(X, Q)                     <span class="co"># correlation</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  alpha <span class="ot">=</span> <span class="fu">sd</span>(X) <span class="sc">/</span> <span class="fu">sd</span>(Q)             <span class="co"># variability ratio</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  beta <span class="ot">=</span> <span class="fu">mean</span>(X) <span class="sc">/</span> <span class="fu">mean</span>(Q)          <span class="co"># bias ratio</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Calculate KGE</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  val <span class="ot">=</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">sqrt</span>((r <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> (alpha <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> (beta <span class="sc">-</span> <span class="dv">1</span>)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>  val</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="callout callout-style-default callout-warning callout-titled" title="Note on Calibration Time">
+<div class="callout callout-style-default callout-warning callout-titled" title="Note on calibration time">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Note on Calibration Time
+Note on calibration time
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -671,51 +655,54 @@ Note on Calibration Time
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run calibration using the SCE algorithm and KGE as obj. function</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>fit_ihacres <span class="ot">=</span> <span class="fu">fitBySCE</span>(</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  ihacres, </span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">objective =</span> kge_fun,</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Run SCE with only 5 iterations (very short, just for testing)</span></span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Use 2 complexes in the population (again, very minimal).</span></span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">maxit =</span> <span class="dv">5</span>, <span class="at">ncomplex =</span> <span class="dv">2</span>)</span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run calibration using the SCE algorithm and KGE as obj. function</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>fit_ihacres <span class="ot">=</span> <span class="fu">fitBySCE</span>(</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  ihacres, </span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">objective =</span> kge_fun,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Run SCE with only 5 iterations (very short, just for testing)</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Use 2 complexes in the population (again, very minimal).</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">maxit =</span> <span class="dv">5</span>, <span class="at">ncomplex =</span> <span class="dv">2</span>)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in fitBySCE(ihacres, objective = kge_fun, control = list(maxit = 5, :
 Maximum number of function evaluations or iterations reached.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of calibrated parameters</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_ihacres)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of calibrated parameters</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_ihacres)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-hydromad(DATA = ts_data, tau_q = 1.30526, tau_s = 12.2441, v_s = 0.298025, 
-    sma = "cwi", routing = "expuh", tw = 9.53867, f = 1.85669, 
-    scale = 0.00190669)
+hydromad(DATA = ts_data, tau_q = 1.46908, tau_s = 47.6472, v_s = 0.262652, 
+    sma = "cwi", routing = "expuh", tw = 1.88532, f = 3.13821, 
+    scale = 0.00222142)
 
 Time steps: 10492 (0 missing).
 Runoff ratio (Q/P): (1.03 / 2.393) = 0.4303
-rel bias: -1.173e-07
-r squared: 0.573
-r sq sqrt: 0.4984
-r sq log: 0.4187
+rel bias: -9.815e-08
+r squared: 0.5904
+r sq sqrt: 0.5483
+r sq log: 0.5246
 
 For definitions see ?hydromad.stats</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Extract the KGE value</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>kge_val <span class="ot">=</span> <span class="fu">objFunVal</span>(fit_ihacres, <span class="at">objective =</span> kge_fun)</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"IHACRES calibration KGE:"</span>, kge_val)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Extract the KGE value</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>kge_val <span class="ot">=</span> <span class="fu">objFunVal</span>(fit_ihacres, <span class="at">objective =</span> kge_fun)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"IHACRES calibration KGE:"</span>, kge_val)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IHACRES calibration KGE: 0.7903994</code></pre>
+<pre><code>IHACRES calibration KGE: 0.7981259</code></pre>
 </div>
 </div>
 <p>Unlike the <strong><code>airGR package</code></strong>, which provides a dedicated <strong>built-in plotting function</strong> for visualizing model calibration results, the<strong><code>hydromad package</code></strong> does not include an equivalent comprehensive graphical output. Consequently, we limit the graphical assessment to a direct comparison between observed and simulated discharge time series, which nonetheless provides a clear and informative evaluation of model performance (<a href="#fig-calibihacres" class="quarto-xref">Figure&nbsp;4</a>).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xyplot</span>(fit_ihacres,</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">with.standard =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">"Time"</span>,</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylab =</span> <span class="st">"Discharge (m3/s)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lattice)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(latticeExtra)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="fu">xyplot</span>(fit_ihacres,</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">with.standard =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">"Time"</span>,</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylab =</span> <span class="st">"Discharge (m3/s)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-calibihacres" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -728,6 +715,10 @@ Figure&nbsp;4: IHACRES model calibration results: observed versus simulated disc
 </figure>
 </div>
 </div>
+</div>
+<p>As for the GR4J model, we can save the calibrated IHACRES model for future use.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(fit_ihacres, <span class="at">file=</span><span class="st">"output_modelcalibration/fittedIHACRES_lez.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="references" class="level1" data-number="5">
