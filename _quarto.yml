@@ -43,14 +43,6 @@ website:
         text: Validation
       - href: scenarios/index.qmd
         text: Climate scenarios
-      # - href: blockmaxima/index.qmd
-      #   text: Block Maxima Approach
-      # - href: pot/index.qmd
-        # text: Threshold Exceedance (POT)
-    #   - href: teaching/index.qmd
-    #     text: Distributions Fitting
-    #   - href: about/index.qmd
-    #     text: Quantiles Estimation
   page-footer:
     left: "© Copyright 2025"
     right: "Powered by <a href='https://quarto.org/'>Quarto</a>"
