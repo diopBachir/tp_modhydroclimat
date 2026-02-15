@@ -304,44 +304,11 @@ $rcp85
 </section>
 <section id="calculate-potential-evapotranspiration-pet" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Calculate potential evapotranspiration (PET)</h1>
-<p>m_proj = readRDS(“output_preprocessed/processed_climatedata_lez.rds”) climdataCNRM = clim_proj[[“climdataCNRM”]]</p>
-<p>lapply(climdataCNRM, function(df) head(df, 5)) Before applying bias correction, we first compute the <strong>PET</strong> from the climate model data. We will use the <strong>`Hargreaves and Samani</strong> equation <span class="citation" data-cites="Hargreaves1985">(<a href="#ref-Hargreaves1985" role="doc-biblioref">Hargreaves &amp; Samani, 1985</a>)</span>, a widely adopted temperature-based method that estimates <strong>PET</strong> from daily temperature extremes and extraterrestrial radiation. Calculating <strong>PET</strong> at this stage ensures that both precipitation and evapotranspiration are consistently represented, which is essential for subsequent hydrological modelling and bias-correction procedures.</p>
+<p>Before applying bias correction, we first compute the <strong>PET</strong> from the climate model data. We will use the <strong><code>Hargreaves and Samani</code></strong> equation <span class="citation" data-cites="Hargreaves1985">(<a href="#ref-Hargreaves1985" role="doc-biblioref">Hargreaves &amp; Samani, 1985</a>)</span>, a widely adopted temperature-based method that estimates <strong>PET</strong> from daily temperature extremes and extraterrestrial radiation. Calculating <strong>PET</strong> at this stage ensures that both precipitation and evapotranspiration are consistently represented, which is essential for subsequent hydrological modelling and bias-correction procedures. To simplify the process, we have provided a ready-to-use function named <a href="https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/calc_hargreaves.R"><strong><code>calc_hargreaves(...)</code></strong></a> available in the <a href="https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/">helper functions folder</a> of this practical’s repository. The chunk below source this function:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Expand to see the calc_hargreaves(…) function</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>calc_hargreaves <span class="ot">=</span> <span class="cf">function</span>(df, <span class="at">lat =</span> <span class="fl">44.2</span>) </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert Latitude to Radians</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  phi <span class="ot">=</span> lat <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get Day of Year from the Date column</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  doy <span class="ot">=</span> <span class="fu">yday</span>(df<span class="sc">$</span>Date)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 1. Inverse relative distance Earth-Sun (dr)</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  dr <span class="ot">=</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fl">0.033</span> <span class="sc">*</span> <span class="fu">cos</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> doy <span class="sc">/</span> <span class="dv">365</span>)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 2. Solar declination (delta)</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  delta <span class="ot">=</span> <span class="fl">0.409</span> <span class="sc">*</span> <span class="fu">sin</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> doy <span class="sc">/</span> <span class="dv">365</span> <span class="sc">-</span> <span class="fl">1.39</span>)</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 3. Sunset hour angle (ws)</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># This handles the geometry of the Earth's curve at 44.2 degrees</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  ws <span class="ot">=</span> <span class="fu">acos</span>(<span class="sc">-</span><span class="fu">tan</span>(phi) <span class="sc">*</span> <span class="fu">tan</span>(delta))</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 4. Extraterrestrial radiation (Ra) in MJ/m2/day</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  Ra <span class="ot">=</span> (<span class="dv">24</span> <span class="sc">*</span> <span class="dv">60</span> <span class="sc">/</span> pi) <span class="sc">*</span> <span class="fl">0.0820</span> <span class="sc">*</span> dr <span class="sc">*</span> (ws <span class="sc">*</span> <span class="fu">sin</span>(phi) <span class="sc">*</span> <span class="fu">sin</span>(delta) <span class="sc">+</span> <span class="fu">cos</span>(phi) <span class="sc">*</span> <span class="fu">cos</span>(delta) <span class="sc">*</span> <span class="fu">sin</span>(ws))</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 5. Convert Ra to evaporation equivalent (mm/day)</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 1 MJ/m2/day is approx 0.408 mm/day</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  Ra_mm <span class="ot">=</span> Ra <span class="sc">*</span> <span class="fl">0.408</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 6. Final Hargreaves Calculation</span></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  T_mean <span class="ot">=</span> (df<span class="sc">$</span>TMAX <span class="sc">+</span> df<span class="sc">$</span>TMIN) <span class="sc">/</span> <span class="dv">2</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  <span class="co"># pmax ensures we don't get NaNs if Tmin &gt; Tmax (though rare)</span></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  PET <span class="ot">=</span> <span class="fl">0.0023</span> <span class="sc">*</span> Ra_mm <span class="sc">*</span> (T_mean <span class="sc">+</span> <span class="fl">17.8</span>) <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="fu">pmax</span>(<span class="dv">0</span>, df<span class="sc">$</span>TMAX <span class="sc">-</span> df<span class="sc">$</span>TMIN))</span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(PET)</span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>github_repo <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"https://raw.githubusercontent.com/"</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"diopBachir/tp_modhydroclimat/main/"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(github_repo, <span class="st">"helper_functions/calc_hargreaves.R"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the calc_hargreaves() function to the 'hist', 'rcp45', and 'rcp85'</span></span>
@@ -395,7 +362,7 @@ $rcp85
 </section>
 <section id="apply-bias-correction" class="level3" data-number="4.1.2">
 <h3 data-number="4.1.2" class="anchored" data-anchor-id="apply-bias-correction"><span class="header-section-number">4.1.2</span> Apply bias correction</h3>
-<p>The function <strong><code>seasonalMBCn(...)</code></strong> defined in the chunk below provides a clean wrapper around the <strong><code>MBCn()</code></strong> routine. It automatically extracts date components, applies the multivariate bias correction to historical and future simulations, and returns bias-corrected datasets that are ready for subsequent hydrological modelling.</p>
+<p>The helper function <strong><code>seasonalMBCn(...)</code></strong> defined in the chunk below provides a clean wrapper around the <strong><code>MBCn()</code></strong> routine. It automatically extracts date components, applies the multivariate bias correction to historical and future simulations, and returns bias-corrected datasets that are ready for subsequent hydrological modelling.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>

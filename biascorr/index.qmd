@@ -54,7 +54,7 @@ lapply(climdataCNRM, function(df) head(df, 5))
 
 # Calculate potential evapotranspiration (PET)
 
-Before applying bias correction, we first compute the **PET** from the climate model data. We will use the **`Hargreaves and Samani`** equation [@Hargreaves1985], a widely adopted temperature-based method that estimates **PET** from daily temperature extremes and extraterrestrial radiation. Calculating **PET** at this stage ensures that both precipitation and evapotranspiration are consistently represented, which is essential for subsequent hydrological modelling and bias-correction procedures. To simplify the process, we have provided a ready-to-use function named [**`calc_hargreaves(...)`**](https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/calc_hargreaves.R) available in the [helper functions folder](https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/) of this practical’s repository.
+Before applying bias correction, we first compute the **PET** from the climate model data. We will use the **`Hargreaves and Samani`** equation [@Hargreaves1985], a widely adopted temperature-based method that estimates **PET** from daily temperature extremes and extraterrestrial radiation. Calculating **PET** at this stage ensures that both precipitation and evapotranspiration are consistently represented, which is essential for subsequent hydrological modelling and bias-correction procedures. To simplify the process, we have provided a ready-to-use function named [**`calc_hargreaves(...)`**](https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/calc_hargreaves.R) available in the [helper functions folder](https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/) of this practical’s repository. The chunk below source this function:
 
 ```{r}
 #| echo: true
@@ -62,6 +62,8 @@ Before applying bias correction, we first compute the **PET** from the climate m
 #| message: false
 #| warning: false
 
+github_repo = paste0("https://raw.githubusercontent.com/",
+                     "diopBachir/tp_modhydroclimat/main/")
 source(file.path(github_repo, "helper_functions/calc_hargreaves.R"))
 ```
 
@@ -95,7 +97,6 @@ We will use the **`MBCn` (N-dimensional Multivariate Bias Correction) algorithm*
 Unlike traditional univariate bias-correction methods that adjust each variable independently, **`MBCn`** corrects multiple variables simultaneously, such as **precipitation** and **potential evapotranspiration (PET)**, while explicitly preserving their **multivariate dependence structure**. This property is particularly important for hydrological modelling, where interactions between climate variables directly influence soil moisture dynamics, evapotranspiration, and runoff generation.
 
 
-
 ### Accounting for seasonality
 
 To properly account for **seasonality**, the bias-correction procedure is applied **separately for each calendar month**. The data are first split into monthly subsets (e.g., all Januaries together, all Februaries together, and so on). The **`MBCn` algorithm** is then applied independently to each monthly “slice”, after which the corrected data are recombined into continuous time series.
@@ -105,97 +106,15 @@ This seasonal stratification ensures that statistical relationships learned for 
 
 ### Apply bias correction
 
-The function **`seasonalMBCn(...)`** defined in the chunk below provides a clean wrapper around the **`MBCn()`** routine. It automatically extracts date components, applies the multivariate bias correction to historical and future simulations, and returns bias-corrected datasets that are ready for subsequent hydrological modelling.
+The helper function [**`seasonalMBCn(...)`**](https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/seasonalMBCn.R) sourced in the chunk below provides a clean wrapper around the **`MBCn()`** routine. It automatically extracts date components, applies the multivariate bias correction to historical and future simulations, and returns bias-corrected datasets that are ready for subsequent hydrological modelling.
 
 ```{r}
 #| echo: true
 #| eval: true
 #| message: false
 #| warning: false
-#| code-fold: true
-#| code-summary: Show the code
 
-
-# @param obs: Data frame/matrix of historical observations
-# @param mod_hist: Data frame/matrix of historical model outputs
-# @param mod_proj: Data frame/matrix of future model projections (RCP)#| code-fold: true
-#| code-summary:
-# @param var_names: Vector of column names to process
-seasonalMBCn = function(obs, 
-                        mod_hist, 
-                        mod_proj, 
-                        var_names = c("PR", "PET")) 
-{
-  # helper function to add date parts
-  add_date_parts = function(df) 
-  {
-    df$Year  = as.numeric(format(df$Date, "%Y"))
-    df$Month = as.numeric(format(df$Date, "%m"))
-    df$Day   = as.numeric(format(df$Date, "%d"))
-
-    df
-  }
-
-  # add date parts
-  obs       = add_date_parts(obs)
-  mod_hist  = add_date_parts(mod_hist)
-  mod_proj  = add_date_parts(mod_proj)
-  
-  # Lists to store the corrected chunks for each month
-  hist_list = list()
-  proj_list = list()
-  
-  # Loop through each month (1 = Jan, ..., 12 = Dec)
-  for (m in 1:12) {
-
-    # Subset data for the current month
-    s_obs  = obs[obs$Month == m, ]
-    s_hist = mod_hist[mod_hist$Month == m, ]
-    s_proj = mod_proj[mod_proj$Month == m, ]
-    
-    # 2. Convert to matrices for MBCn
-    m_obs  = as.matrix(s_obs[, var_names])
-    m_hist = as.matrix(s_hist[, var_names])
-    m_proj = as.matrix(s_proj[, var_names])
-    
-    # Run MBCn
-    capture.output({ # stop the MBCn from printing the iteration progress
-      fit = MBCn(
-        o.c = m_obs,
-        m.c = m_hist,
-        m.p = m_proj,
-        iter = 100,
-        ratio.seq = c(TRUE, TRUE), 
-        trace = .01
-      )
-    })
-    
-    # Prepare Adjusted Chunks
-    s_hist_adj = as.data.frame(fit$mhat.c)
-    colnames(s_hist_adj) = paste0(var_names, "_adj")
-    hist_list[[m]] = cbind(s_hist, s_hist_adj)
-    
-    # Projection
-    s_proj_adj = as.data.frame(fit$mhat.p)
-    colnames(s_proj_adj) = paste0(var_names, "_adj")
-    proj_list[[m]] = cbind(s_proj, s_proj_adj)
-  }
-  
-  # Recombine all months and restore chronological order
-  # We use do.call(rbind, ...) to stack the 12 data frames
-  final_hist = do.call(rbind, hist_list)
-  final_proj = do.call(rbind, proj_list)
-  
-  # Sort by Year, Month and Dayto keep time series linear
-  final_hist = final_hist[
-    order(final_hist$Year, final_hist$Month, final_hist$Day), 
-  ][,c("Date", "PR", "PR_adj", "PET", "PET_adj")]
-  final_proj = final_proj[
-    order(final_proj$Year, final_proj$Month, final_proj$Day), 
-  ][,c("Date", "PR", "PR_adj", "PET", "PET_adj")]
-  
-  list(hist = final_hist, proj = final_proj)
-}
+source(file.path(github_repo, "helper_functions/seasonalMBCn.R"))
 ```
 
 ```{r}
