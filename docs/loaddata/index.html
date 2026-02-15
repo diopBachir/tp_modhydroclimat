@@ -299,7 +299,7 @@ Climate data file naming convention
 </div>
 <div class="callout-body-container callout-body">
 <p>The climate files follow a standardized naming convention as below: <strong><code>[model]_data[Variable]_[Scenario].csv</code></strong>.</p>
-<p><strong>Example:</strong> <strong><code>clm_dataTMAX_rcp85.csv</code></strong> represents the Maximum Temperature projections for the Lez basin using the CLM model under the pessimistic RCP8.5 scenario.</p>
+<p><strong>Example:</strong> <strong><code>cnrm_dataTMAX_rcp85.csv</code></strong> represents the Maximum Temperature projections for the Lez basin using the CLM model under the pessimistic RCP8.5 scenario.</p>
 </div>
 </div>
 </section>
@@ -455,7 +455,7 @@ The <strong><code>86.4</code></strong> Constant
 <span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>  {</span>
 <span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Construct file path based on naming convention</span></span>
-<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    fname <span class="ot">=</span> <span class="fu">paste0</span>(<span class="fu">tolower</span>(model_prefix), <span class="st">"_data"</span>, var_name, <span class="st">"_"</span>, scenario, <span class="st">".csv"</span>)</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    fname <span class="ot">=</span> <span class="fu">paste0</span>(<span class="fu">tolower</span>(model_prefix), <span class="st">"_"</span>, <span class="fu">tolower</span>(var_name), <span class="st">"_"</span>, scenario, <span class="st">".csv"</span>)</span>
 <span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>    file_path <span class="ot">=</span> <span class="fu">file.path</span>(base_path, <span class="fu">toupper</span>(model_prefix), fname)</span>
 <span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Load CSV</span></span>
@@ -518,17 +518,13 @@ The <strong><code>86.4</code></strong> Constant
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Process all models</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>clm_data <span class="ot">=</span> <span class="fu">prepare_climate_data</span>(</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"clm"</span>, climdatapath, hist_start, hist_end, fut_start, fut_end</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>cnrm_data <span class="ot">=</span> <span class="fu">prepare_climate_data</span>(</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"cnrm"</span>, climdatapath, hist_start, hist_end, fut_start, fut_end</span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>cnrm_data <span class="ot">=</span> <span class="fu">prepare_climate_data</span>(</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"cnrm"</span>, climdatapath, hist_start, hist_end, fut_start, fut_end</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>ipsl_data <span class="ot">=</span> <span class="fu">prepare_climate_data</span>(</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ipsl"</span>, climdatapath, hist_start, hist_end, fut_start, fut_end</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>shmi_mpi_data <span class="ot">=</span> <span class="fu">prepare_climate_data</span>(</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"smhi_mpi"</span>, climdatapath, hist_start, hist_end, fut_start, fut_end</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="sec-exportpreprocessed" class="level1" data-number="4">
@@ -560,19 +556,18 @@ Reloading Preprocessed Data
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># This keeps all Climate Models in a single file</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>models_list <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">climdataCLM =</span> clm_data,</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">climdataCNRM =</span> cnrm_data,</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">climdataIPSL =</span> ipsl_data</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>preprocessed_data <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_hist =</span> obs_hist,</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">models   =</span> models_list</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Export using saveRDS</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(obs_hist, <span class="at">file=</span><span class="st">"output_preprocessed/processed_obsdata_lez.rds"</span>)</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(models_list, <span class="at">file=</span><span class="st">"output_preprocessed/processed_climatedata_lez.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">climdataCNRM =</span> cnrm_data,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">climdataSHMI_MPI =</span> shmi_mpi_data</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>preprocessed_data <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_hist =</span> obs_hist,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">models   =</span> models_list</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Export using saveRDS</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(obs_hist, <span class="at">file=</span><span class="st">"output_preprocessed/processed_obsdata_lez.rds"</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(models_list, <span class="at">file=</span><span class="st">"output_preprocessed/processed_climatedata_lez.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

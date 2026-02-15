@@ -1,59 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/loaddata/index.html</loc>
-    <lastmod>2026-01-27T05:34:30.999Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/validation/index.html</loc>
-    <lastmod>2026-01-27T04:59:05.927Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/introduction/index.html</loc>
-    <lastmod>2026-01-27T05:15:04.004Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/scenarios/index.html</loc>
-    <lastmod>2026-01-27T05:56:49.568Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/modelcalib/index.html</loc>
-    <lastmod>2026-01-27T05:21:39.901Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/biascorr/index.html</loc>
-    <lastmod>2026-01-27T05:48:11.664Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/softwaresetup/index.html</loc>
-    <lastmod>2026-01-27T05:49:43.765Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/index.html</loc>
-    <lastmod>2026-01-27T05:52:00.131Z</lastmod>
-  </url>
-  <url>
     <loc>https://diopbachir.github.io/tp_eva/index.html/loaddata/index.html</loc>
-    <lastmod>2026-01-30T20:33:32.049Z</lastmod>
-  </url>
-  <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/biascorr/index.html</loc>
-    <lastmod>2026-01-30T20:35:26.211Z</lastmod>
-  </url>
-  <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/validation/index.html</loc>
-    <lastmod>2026-01-29T00:00:28.195Z</lastmod>
+    <lastmod>2026-02-15T18:29:09.223Z</lastmod>
   </url>
   <url>
     <loc>https://diopbachir.github.io/tp_eva/index.html/modelcalib/index.html</loc>
-    <lastmod>2026-01-27T05:21:39.901Z</lastmod>
+    <lastmod>2026-02-15T18:29:43.419Z</lastmod>
   </url>
   <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/index.html</loc>
-    <lastmod>2026-01-29T18:03:36.846Z</lastmod>
+    <loc>https://diopbachir.github.io/tp_eva/index.html/validation/index.html</loc>
+    <lastmod>2026-02-15T19:46:49.367Z</lastmod>
   </url>
   <url>
     <loc>https://diopbachir.github.io/tp_eva/index.html/softwaresetup/index.html</loc>
-    <lastmod>2026-01-28T19:56:51.665Z</lastmod>
+    <lastmod>2026-02-09T08:13:02.310Z</lastmod>
+  </url>
+  <url>
+    <loc>https://diopbachir.github.io/tp_eva/index.html/biascorr/index.html</loc>
+    <lastmod>2026-02-15T17:11:59.210Z</lastmod>
+  </url>
+  <url>
+    <loc>https://diopbachir.github.io/tp_eva/index.html/scenarios/index.html</loc>
+    <lastmod>2026-02-11T01:06:31.244Z</lastmod>
+  </url>
+  <url>
+    <loc>https://diopbachir.github.io/tp_eva/index.html/introduction/index.html</loc>
+    <lastmod>2026-02-11T01:09:16.912Z</lastmod>
   </url>
 </urlset>

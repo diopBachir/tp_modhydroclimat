@@ -79,5 +79,8 @@
   },
   "scenarios/index.qmd": {
     "index.html": "96bdedee"
+  },
+  "loaddata/index.knit.md": {
+    "index.knit.html": "f9649c22"
   }
 }

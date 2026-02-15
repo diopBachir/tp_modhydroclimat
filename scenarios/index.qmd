@@ -30,8 +30,8 @@ library(lubridate)
 gr4j_param = readRDS("output_modelcalibration/fittedGR4J_lez.rds")
 str(gr4j_param)
 
-adjCLM = readRDS("output_biascorrection/biascorrectedCLM.rds")
-lapply(adjCLM, function(df) head(df, 5))
+adjCNRM = readRDS("output_biascorrection/biascorrectedCNRM-MBCn.rds")
+lapply(adjCNRM, function(df) head(df, 5))
 ```
 
 
@@ -55,16 +55,16 @@ Next, we run the GR4J over the historical, RCP45 and RCP85 bias-corrected data.
 #| warning: false
 #| message: false
 
-gr4jsim_hist_CLM = run_gr4j_simulation(
-  adjCLM[["histCLM_adj"]], "PR_adj", "PET_adj", NA, gr4j_param
+gr4jsim_hist_CNRM = run_gr4j_simulation(
+  adjCNRM[["histCNRM_adj"]], "PR_adj", "PET_adj", NA, gr4j_param
 )[,c("Date", "Qsim")]
 
-gr4jsim_rcp45_CLM = run_gr4j_simulation(
-  adjCLM[["rcp45CLM_adj"]], "PR_adj", "PET_adj", NA, gr4j_param
+gr4jsim_rcp45_CNRM = run_gr4j_simulation(
+  adjCNRM[["rcp45CNRM_adj"]], "PR_adj", "PET_adj", NA, gr4j_param
 )[,c("Date", "Qsim")]
 
-gr4jsim_rcp85_CLM = run_gr4j_simulation(
-  adjCLM[["rcp85CLM_adj"]], "PR_adj", "PET_adj", NA, gr4j_param
+gr4jsim_rcp85_CNRM = run_gr4j_simulation(
+  adjCNRM[["rcp85CNRM_adj"]], "PR_adj", "PET_adj", NA, gr4j_param
 )[,c("Date", "Qsim")]
 
 ```
@@ -91,11 +91,11 @@ source("scripts/compute_mean_daly_Q.R")
 #| warning: false
 #| message: false
 
-histGR4J_CLM = compute_mean_daily_cycle(gr4jsim_hist_CLM, "HIST", "Qsim")
+histGR4J_CNRM = compute_mean_daily_cycle(gr4jsim_hist_CNRM, "HIST", "Qsim")
 
-rcp45GR4J_CLM = compute_mean_daily_cycle(gr4jsim_rcp45_CLM, "RCP4.5", "Qsim")
+rcp45GR4J_CNRM = compute_mean_daily_cycle(gr4jsim_rcp45_CNRM, "RCP4.5", "Qsim")
 
-rcp85GR4J_CLM = compute_mean_daily_cycle(gr4jsim_rcp85_CLM, "RCP8.5", "Qsim")
+rcp85GR4J_CNRM = compute_mean_daily_cycle(gr4jsim_rcp85_CNRM, "RCP8.5", "Qsim")
 
 ```
 
@@ -112,18 +112,19 @@ Now we plot the **mean daily discharge** over the hydrological year to evaluate 
 #| code-fold: true
 #| code-summary: Show the code
 #| label: fig-climate_sign_avg_mean_doyQ
-#| fig-cap: "Mean monthly discharge simulated by GR4J using bias-corrected RCM data under historical, RCP4.5, and RCP8.5 scenarios (smoothed using a 5-day centered rolling mean)."
+#| fig-cap: "Mean daily discharge simulated by GR4J using bias-corrected RCM data under historical, RCP4.5, and RCP8.5 scenarios."
 
-all_days = histGR4J_CLM$HydroDOY
+all_days = histGR4J_CNRM$HydroDOY
 
-hist_rm  = rollmean(histGR4J_CLM$MeanDailyQ,  k = 5, align = "center", fill = NA)
-rcp45_rm = rollmean(rcp45GR4J_CLM$MeanDailyQ, k = 5, align = "center", fill = NA)
-rcp85_rm = rollmean(rcp85GR4J_CLM$MeanDailyQ, k = 5, align = "center", fill = NA)
+hist_rm  = rollmean(histGR4J_CNRM$MeanDailyQ,  k = 20, align = "center", fill = NA)
+rcp45_rm = rollmean(rcp45GR4J_CNRM$MeanDailyQ, k = 20, align = "center", fill = NA)
+rcp85_rm = rollmean(rcp85GR4J_CNRM$MeanDailyQ, k = 20, align = "center", fill = NA)
 
 y_range = range(c(hist_rm, rcp45_rm, rcp85_rm), na.rm = TRUE)
 
-plot(histGR4J_CLM$HydroDOY, hist_rm,
+plot(histGR4J_CNRM$HydroDOY, hist_rm,
      type = "l", lwd = 1.5,
+     lty = 3,
      col = "black",
      ylim = y_range,
      cex.lab = 1.2, 
@@ -131,16 +132,18 @@ plot(histGR4J_CLM$HydroDOY, hist_rm,
      xlab = "Hydrological day",
      ylab = "Mean daily discharge (m³/s)")
 
-lines(rcp45GR4J_CLM$HydroDOY, rcp45_rm,
-      col = "blue", lwd = 1.5, lty = 2)
+lines(rcp45GR4J_CNRM$HydroDOY, rcp45_rm,
+      col = "blue", lwd = 1.5, lty = 1)
 
-lines(rcp85GR4J_CLM$HydroDOY, rcp85_rm,
-      col = "red", lwd = 1.5, lty = 3)
+lines(rcp85GR4J_CNRM$HydroDOY, rcp85_rm,
+      col = "red", lwd = 1.5, lty = 1)
 
 legend("topright",
-       legend = c("GR4J HIST", "GR4J RCP4.5", "GR4J RCP8.5"),
+       legend = c("GR4J with Bias corrected RCM-HIST", 
+                  "GR4J with Bias corrected RCM-RCP4.5", 
+                  "GR4J with Bias corrected RCM-RCP8.5"),
        col = c("black", "blue", "red"),
-       lty = c(1, 2, 3),
+       lty = c(3, 1, 1),
        lwd = 2,
        bty = "o")
 
@@ -176,9 +179,9 @@ compute_monthly_mean = function(df, Q_col) {
     arrange(Month)
 }
 
-hist_mon  = compute_monthly_mean(gr4jsim_hist_CLM,  "Qsim")
-rcp45_mon = compute_monthly_mean(gr4jsim_rcp45_CLM, "Qsim")
-rcp85_mon = compute_monthly_mean(gr4jsim_rcp85_CLM, "Qsim")
+hist_mon  = compute_monthly_mean(gr4jsim_hist_CNRM,  "Qsim")
+rcp45_mon = compute_monthly_mean(gr4jsim_rcp45_CNRM, "Qsim")
+rcp85_mon = compute_monthly_mean(gr4jsim_rcp85_CNRM, "Qsim")
 
 hydro_months = c(9:12, 1:8)
 hydro_labels = month.abb[hydro_months]
@@ -247,9 +250,9 @@ extract_amax = function(df, Q_col = "Qsim")
 }
 
 # extract annual maximum flow
-amf_hist = extract_amax(gr4jsim_hist_CLM)
-amf_rcp45 = extract_amax(gr4jsim_rcp45_CLM)
-amf_rcp85 = extract_amax(gr4jsim_rcp85_CLM)
+amf_hist = extract_amax(gr4jsim_hist_CNRM)
+amf_rcp45 = extract_amax(gr4jsim_rcp45_CNRM)
+amf_rcp85 = extract_amax(gr4jsim_rcp85_CNRM)
 
 # fit the GEV distribution using the L-moments
 fit_hist  = fevd(amf_hist, type = "GEV", method = "GMLE")
@@ -262,24 +265,63 @@ rl_hist  <- return.level(fit_hist, return.period = return_periods)
 rl_rcp45 <- return.level(fit_rcp45, return.period = return_periods)
 rl_rcp85 <- return.level(fit_rcp85, return.period = return_periods)
 
-y_lims <- range(c(rl_hist, rl_rcp45, rl_rcp85), na.rm = TRUE)
+x_lims <- range(c(rl_hist, rl_rcp45, rl_rcp85), na.rm = TRUE)
 
-plot(return_periods, rl_hist, type = "l", log = "x",
-     ylim = y_lims, lwd = 2, col = "black",
+plot(rl_hist, 
+     return_periods, 
+     type = "l", 
+     log = "",
+     xlim = x_lims, 
+     lwd = 2, 
+     col = "black",
+     lty = 3,
      cex.lab = 1.2, 
      cex.axis = 1.2,
-     xlab = "Return Period (years)",
-     ylab = "Return Level [m3.s]")
+     xlab = "Return Level [m3.s]",
+     ylab = "Return Period (years)")
 
-lines(return_periods, rl_rcp45, col = "blue", lwd = 2, lty = 2)
-lines(return_periods, rl_rcp85, col = "red", lwd = 2, lty = 3)
+lines(rl_rcp45, return_periods, col = "blue", lwd = 2, lty = 1)
+lines(rl_rcp85, return_periods, col = "red", lwd = 2, lty = 1)
 
 legend("topleft", 
-       legend = c("GEV HIST", "GEV RCP4.5", "GEV RCP8.5"),
+       legend = c("GR4J with Bias corrected RCM-HIST", 
+                  "GR4J with Bias corrected RCM-RCP4.5", 
+                  "GR4J with Bias corrected RCM-RCP8.5"),
        col = c("black", "blue", "red"),
-       lty = c(1, 2, 3), 
+       lty = c(3, 1, 1), 
        lwd = 2,
        bty = "o",
        cex = .9)
 
 ```
+
+
+# Exercices
+
+## Exercice 1: GR4J with MHI-MPI
+
+Perform a climate change impact assessment using the calibrated **`GR4J model`**  driven by bias-corrected **`SMHI-MPI`** climate projections.
+
+Analyze and discuss the changes relative to the reference period using the same hydrological indicators as previously defined.
+
+
+## Exercice 2: IHACRES with CNRM
+
+Perform the same climate change impact assessment using the calibrated **`IHACRES model`** driven by bias-corrected **`CNRM`** climate projections.
+
+Compare the results with those obtained in Exercise 1 and discuss the differences.
+
+
+## Exercice 3: IHACRES with SMHI–MPI
+
+Perform the same climate change impact assessment using the calibrated **`IHACRES`** model driven by bias-corrected **`SMHI–MPI`** climate projections.
+
+Discuss the relative influence of the hydrological model and the climate model on the projected hydrological changes.
+
+
+## Exercice 4: Synthesis question
+
+Based on all exercises, discuss the sensitivity of climate change impact assessments to:
+
+- the choice of hydrological model,
+- the choice of climate model.

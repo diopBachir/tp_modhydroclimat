@@ -72,7 +72,7 @@ If the package is on [**GitHub**](https://github.com/), we can use the **`remote
 #| message: false
 #| warning: false
 
-# onstall remotes if not already installed
+# install remotes if not already installed
 if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
 
 # install a package from GitHub

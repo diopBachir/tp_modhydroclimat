@@ -17,9 +17,9 @@ for (f in files) {
 }
 
 
-files <- list.files("data/SMHI-MPI", pattern = "^smhi_mpi_.*\\.csv$", full.names = T)
+files <- list.files("data/SMHI_MPI", pattern = "^smhi_mpi_.*\\.csv$", full.names = T)
 
-for (f in files[1]) {
+for (f in files) {
 
   df <- read.csv(f, header = FALSE)
   colnames(df) <- c("year", "month", "day", "value")

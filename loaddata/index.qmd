@@ -226,7 +226,7 @@ prepare_climate_data = function(model_prefix,
   {
     
     # Construct file path based on naming convention
-    fname = paste0(tolower(model_prefix), "_data", var_name, "_", scenario, ".csv")
+    fname = paste0(tolower(model_prefix), "_", tolower(var_name), "_", scenario, ".csv")
     file_path = file.path(base_path, toupper(model_prefix), fname)
     
     # Load CSV
