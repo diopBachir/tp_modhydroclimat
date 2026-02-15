@@ -25,6 +25,8 @@ As described in the [**database section**](../loaddata/index.qmd#sec-exportprepr
 ```{r}
 #| echo: true
 #| eval: true
+#| message: false
+#| warning: false
 
 hist_obs = readRDS("output_preprocessed/processed_obsdata_lez.rds")
 names(hist_obs) = c("Date", "PR", "T", "PET", "Q")
@@ -41,6 +43,8 @@ lapply(climdataCNRM, function(df) head(df, 5))
 ```{r}
 #| echo: true
 #| eval: true
+#| message: false
+#| warning: false
 
 clim_proj = readRDS("output_preprocessed/processed_climatedata_lez.rds")
 climdataCNRM = clim_proj[["climdataCNRM"]]
@@ -49,50 +53,16 @@ lapply(climdataCNRM, function(df) head(df, 5))
 ```
 
 # Calculate potential evapotranspiration (PET)
-m_proj = readRDS("output_preprocessed/processed_climatedata_lez.rds")
-climdataCNRM = clim_proj[["climdataCNRM"]]
 
-lapply(climdataCNRM, function(df) head(df, 5))
-Before applying bias correction, we first compute the **PET** from the climate model data. We will use the **`Hargreaves and Samani** equation [@Hargreaves1985], a widely adopted temperature-based method that estimates **PET** from daily temperature extremes and extraterrestrial radiation. Calculating **PET** at this stage ensures that both precipitation and evapotranspiration are consistently represented, which is essential for subsequent hydrological modelling and bias-correction procedures.
+Before applying bias correction, we first compute the **PET** from the climate model data. We will use the **`Hargreaves and Samani`** equation [@Hargreaves1985], a widely adopted temperature-based method that estimates **PET** from daily temperature extremes and extraterrestrial radiation. Calculating **PET** at this stage ensures that both precipitation and evapotranspiration are consistently represented, which is essential for subsequent hydrological modelling and bias-correction procedures. To simplify the process, we have provided a ready-to-use function named [**`calc_hargreaves(...)`**](https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/calc_hargreaves.R) available in the [helper functions folder](https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/) of this practical’s repository.
 
 ```{r}
 #| echo: true
 #| eval: true
-#| code-fold: true
-#| code-summary: Expand to see the calc_hargreaves(...) function
+#| message: false
+#| warning: false
 
-calc_hargreaves = function(df, lat = 44.2) 
-{
-  # Convert Latitude to Radians
-  phi = lat * pi / 180
-  
-  # Get Day of Year from the Date column
-  doy = yday(df$Date)
-  
-  # 1. Inverse relative distance Earth-Sun (dr)
-  dr = 1 + 0.033 * cos(2 * pi * doy / 365)
-  
-  # 2. Solar declination (delta)
-  delta = 0.409 * sin(2 * pi * doy / 365 - 1.39)
-  
-  # 3. Sunset hour angle (ws)
-  # This handles the geometry of the Earth's curve at 44.2 degrees
-  ws = acos(-tan(phi) * tan(delta))
-  
-  # 4. Extraterrestrial radiation (Ra) in MJ/m2/day
-  Ra = (24 * 60 / pi) * 0.0820 * dr * (ws * sin(phi) * sin(delta) + cos(phi) * cos(delta) * sin(ws))
-  
-  # 5. Convert Ra to evaporation equivalent (mm/day)
-  # 1 MJ/m2/day is approx 0.408 mm/day
-  Ra_mm = Ra * 0.408
-  
-  # 6. Final Hargreaves Calculation
-  T_mean = (df$TMAX + df$TMIN) / 2
-  # pmax ensures we don't get NaNs if Tmin > Tmax (though rare)
-  PET = 0.0023 * Ra_mm * (T_mean + 17.8) * sqrt(pmax(0, df$TMAX - df$TMIN))
-  
-  return(PET)
-}
+source(file.path(github_repo, "helper_functions/calc_hargreaves.R"))
 ```
 
 ```{r}
