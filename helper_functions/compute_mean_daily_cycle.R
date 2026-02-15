@@ -1,4 +1,4 @@
-compute_mean_daily_cycle = function(df, model_name, Q_col) 
+compute_mean_daily_Q = function(df, model_name, Q_col) 
 {
   df %>%
     mutate(

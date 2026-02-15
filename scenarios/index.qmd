@@ -35,7 +35,7 @@ lapply(adjCNRM, function(df) head(df, 5))
 ```
 
 
-In the previous sections, we have defined a helper function named **`run_gr4j_simulation(...)`** that prepares all required input objects for the GR4J model using already calibrated parameters. We have defined a script named **`run_gr4j_simulation.R`** that contains this function. So we will load it instead of recoding the function.
+As in the previous sections, we source the [**`run_gr4j_simulation(...)`**](https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/prepare_climate_data.R) helper function that prepares all required input objects for the GR4J model using already calibrated parameters.
 
 ```{r}
 #| echo: true
@@ -43,11 +43,13 @@ In the previous sections, we have defined a helper function named **`run_gr4j_si
 #| warning: false
 #| message: false
 
-source("scripts/run_gr4j_simulation.R")
+github_repo = paste0("https://raw.githubusercontent.com/",
+                     "diopBachir/tp_modhydroclimat/main/")
+source(file.path(github_repo, "helper_functions/run_gr4j_simulation.R"))
 ```
 
 
-Next, we run the GR4J over the historical, RCP45 and RCP85 bias-corrected data.
+Next, we run the GR4J with the historical, RCP45 and RCP85 bias-corrected data.
 
 ```{r}
 #| echo: true
@@ -73,7 +75,7 @@ gr4jsim_rcp85_CNRM = run_gr4j_simulation(
 # Comparison of historical and projected (RCP4.5 and RCP8.5) mean daily and monthly discharge
 
 
-Let's plot the mean daily and monthly  discharge for the historical, RCP4.5 and RCP8.5 simulations. We have already a function named **`compute_mean_daily_cycle(...)`** defined in the previous steps. We have written this function in a script **`compute_mean_daly_Q.R`** named, so we will load it and compute the mean daily discharge.
+Let's plot the mean daily and monthly  discharge for the historical, RCP4.5 and RCP8.5 simulations. We source, in the chunk below, the [**`compute_mean_daily_cycle(...)`**](https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/prepare_climate_data.R) helper function.
 
 ```{r}
 #| echo: true
@@ -81,7 +83,7 @@ Let's plot the mean daily and monthly  discharge for the historical, RCP4.5 and 
 #| warning: false
 #| message: false
 
-source("scripts/compute_mean_daly_Q.R")
+source(file.path(github_repo, "helper_functions/compute_mean_daily_cycle.R"))
 ```
 
 

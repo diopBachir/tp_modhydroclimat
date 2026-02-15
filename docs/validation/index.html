@@ -381,57 +381,10 @@ $rcp85CNRM_adj
 <li><strong>Annual Minimum 7-day Discharge (VCN7)</strong></li>
 <li><strong>Mean daily hydrograph over the hydrological year</strong></li>
 </ul>
-<p>Below, we define two helper functions to compute these metrics:</p>
+<p>Below, we source two helper functions to compute these metrics ([<strong><code>compute_mean_daily_cycle(...)</code></strong>] and [<strong><code>compute_hydro_indices(..)</code></strong>]) from the online repository.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>compute_hydro_indices <span class="ot">=</span> <span class="cf">function</span>(df, model_name, Q_col) </span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Revert selected Q from mm to m3/s (assuming area is 178 km2)</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>      <span class="co"># .data[[...]] allows us to reference the column dynamically</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">Q_val =</span> (.data[[Q_col]] <span class="sc">*</span> <span class="dv">178</span>) <span class="sc">/</span> <span class="fl">86.4</span>,</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">Date =</span> <span class="fu">as.Date</span>(Date),</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Define Water Year (Sept 1st)</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">WaterYear =</span> <span class="fu">ifelse</span>(<span class="fu">month</span>(Date) <span class="sc">&gt;=</span> <span class="dv">9</span>, <span class="fu">year</span>(Date) <span class="sc">+</span> <span class="dv">1</span>, <span class="fu">year</span>(Date))</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(WaterYear) <span class="sc">%&gt;%</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">Model =</span> model_name,</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">AnMean =</span> <span class="fu">mean</span>(Q_val, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">Amax   =</span> <span class="fu">max</span>(Q_val, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">minVCN7 =</span> <span class="fu">min</span>(<span class="fu">rollapply</span>(Q_val, <span class="at">width =</span> <span class="dv">7</span>, <span class="at">FUN =</span> mean, <span class="at">fill =</span> <span class="cn">NA</span>), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>compute_mean_daily_cycle <span class="ot">=</span> <span class="cf">function</span>(df, model_name, Q_col) </span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span></span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Convert from mm/day to m3/s</span></span>
-<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">Q_val =</span> (.data[[Q_col]] <span class="sc">*</span> <span class="dv">178</span>) <span class="sc">/</span> <span class="fl">86.4</span>,</span>
-<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>      <span class="at">Date =</span> <span class="fu">as.Date</span>(Date),</span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Hydrological year (Sept–Aug)</span></span>
-<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>      <span class="at">WaterYear =</span> <span class="fu">ifelse</span>(<span class="fu">month</span>(Date) <span class="sc">&gt;=</span> <span class="dv">9</span>, <span class="fu">year</span>(Date) <span class="sc">+</span> <span class="dv">1</span>, <span class="fu">year</span>(Date)),</span>
-<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Hydrological day of year (Sept 1 = 1)</span></span>
-<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">HydroDOY =</span> <span class="fu">ifelse</span>(</span>
-<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>        <span class="fu">month</span>(Date) <span class="sc">&gt;=</span> <span class="dv">9</span>,</span>
-<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>        <span class="fu">yday</span>(Date) <span class="sc">-</span> <span class="fu">yday</span>(<span class="fu">as.Date</span>(<span class="fu">paste0</span>(<span class="fu">year</span>(Date), <span class="st">"-09-01"</span>))) <span class="sc">+</span> <span class="dv">1</span>,</span>
-<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>        <span class="fu">yday</span>(Date) <span class="sc">+</span> (<span class="dv">365</span> <span class="sc">-</span> <span class="fu">yday</span>(<span class="fu">as.Date</span>(<span class="fu">paste0</span>(<span class="fu">year</span>(Date) <span class="sc">-</span> <span class="dv">1</span>, <span class="st">"-09-01"</span>))) <span class="sc">+</span> <span class="dv">1</span>)</span>
-<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
-<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(HydroDOY) <span class="sc">%&gt;%</span></span>
-<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(</span>
-<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>      <span class="at">Model =</span> model_name,</span>
-<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">MeanDailyQ =</span> <span class="fu">mean</span>(Q_val, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(github_repo, <span class="st">"helper_functions/compute_mean_daily_cycle.R"</span>))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(github_repo, <span class="st">"helper_functions/compute_hydro_indices.R"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can apply these functions to compute the indices for the observed and climate-model-driven GR4J simulations:</p>
 <div class="cell">
