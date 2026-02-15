@@ -105,7 +105,7 @@ We define the **`hydrological year`** starting on **`September 1st`**. Once the 
 - **Annual Minimum 7-day Discharge (VCN7)**
 - **Mean daily hydrograph over the hydrological year**
 
-Below, we define two helper functions to compute these metrics:
+Below, we source two helper functions to compute these metrics ([**`compute_mean_daily_cycle(...)`**] and [**`compute_hydro_indices(..)`**]) from the online repository.
 
 
 ```{r}
@@ -113,56 +113,9 @@ Below, we define two helper functions to compute these metrics:
 #| eval: true
 #| warning: false
 #| message: false
-#| code-fold: true
-#| code-summary: Show the code
 
-compute_hydro_indices = function(df, model_name, Q_col) 
-{
-  df %>%
-    mutate(
-      # Revert selected Q from mm to m3/s (assuming area is 178 km2)
-      # .data[[...]] allows us to reference the column dynamically
-      Q_val = (.data[[Q_col]] * 178) / 86.4,
-      Date = as.Date(Date),
-      # Define Water Year (Sept 1st)
-      WaterYear = ifelse(month(Date) >= 9, year(Date) + 1, year(Date))
-    ) %>%
-    group_by(WaterYear) %>%
-    summarise(
-      Model = model_name,
-      AnMean = mean(Q_val, na.rm = TRUE),
-      Amax   = max(Q_val, na.rm = TRUE),
-      minVCN7 = min(rollapply(Q_val, width = 7, FUN = mean, fill = NA), na.rm = TRUE),
-      .groups = "drop"
-    )
-}
-
-compute_mean_daily_cycle = function(df, model_name, Q_col) 
-{
-  df %>%
-    mutate(
-      # Convert from mm/day to m3/s
-      Q_val = (.data[[Q_col]] * 178) / 86.4,
-      Date = as.Date(Date),
-      
-      # Hydrological year (Sept–Aug)
-      WaterYear = ifelse(month(Date) >= 9, year(Date) + 1, year(Date)),
-      
-      # Hydrological day of year (Sept 1 = 1)
-      HydroDOY = ifelse(
-        month(Date) >= 9,
-        yday(Date) - yday(as.Date(paste0(year(Date), "-09-01"))) + 1,
-        yday(Date) + (365 - yday(as.Date(paste0(year(Date) - 1, "-09-01"))) + 1)
-      )
-    ) %>%
-    group_by(HydroDOY) %>%
-    summarise(
-      Model = model_name,
-      MeanDailyQ = mean(Q_val, na.rm = TRUE),
-      .groups = "drop"
-    )
-}
-
+source(file.path(github_repo, "helper_functions/compute_mean_daily_cycle.R"))
+source(file.path(github_repo, "helper_functions/compute_hydro_indices.R"))
 ```
 
 

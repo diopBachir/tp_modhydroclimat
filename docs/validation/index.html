@@ -322,50 +322,11 @@ $rcp85CNRM_adj
 <pre><code>[1] 247.151127   1.319029 116.745926   1.202703</code></pre>
 </div>
 </div>
-<p>Before running the GR4J simulations, we define a helper function (<strong><code>run_gr4j_simulation(...)</code></strong>) that prepares all required input objects for the model using already calibrated parameters. This function streamlines the simulation workflow, avoids repeating the input preparation steps, and ensures consistency across all model runs.</p>
+<p>Before running the GR4J simulations, we source the <a href="https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/prepare_climate_data.R"><strong><code>run_gr4j_simulation(...)</code></strong></a> helper function that prepares all required input objects for the model using already calibrated parameters. This function streamlines the simulation workflow, avoids repeating the input preparation steps, and ensures consistency across all model runs.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>run_gr4j_simulation <span class="ot">=</span> <span class="cf">function</span>(data, Pvarname, PETvarname, Qobs, params) </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">=</span> data[<span class="fu">complete.cases</span>(data[, <span class="fu">c</span>(Pvarname, PETvarname)]), ]</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  data[[Pvarname]] <span class="ot">=</span> <span class="fu">ifelse</span>(data[[Pvarname]] <span class="sc">&lt;</span> <span class="dv">0</span>, <span class="dv">0</span>, data[[Pvarname]])</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  data[[PETvarname]] <span class="ot">=</span> <span class="fu">ifelse</span>(data[[PETvarname]] <span class="sc">&lt;</span> <span class="dv">0</span>, <span class="dv">0</span>, data[[PETvarname]])</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ensure Date format (POSIXt required by airGR) ---</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  data[[<span class="st">"Date"</span>]] <span class="ot">=</span> <span class="fu">as.POSIXct</span>(data[[<span class="st">"Date"</span>]])</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create model inputs ---</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  InputsModel <span class="ot">=</span> <span class="fu">CreateInputsModel</span>(</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">FUN_MOD  =</span> RunModel_GR4J,</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">DatesR   =</span> data[[<span class="st">"Date"</span>]],</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">Precip   =</span> data[[Pvarname]],</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">PotEvap  =</span> data[[PETvarname]]</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create run options (no warm-up) ---</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  RunOptions <span class="ot">=</span> <span class="fu">CreateRunOptions</span>(</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">FUN_MOD =</span> RunModel_GR4J,</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">InputsModel =</span> InputsModel,</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">IndPeriod_Run =</span> <span class="fu">seq_len</span>(<span class="fu">length</span>(data[[<span class="st">"Date"</span>]]))</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Run GR4J simulation ---</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>  OutputsModel <span class="ot">=</span> <span class="fu">RunModel_GR4J</span>(</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">InputsModel =</span> InputsModel,</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">RunOptions  =</span> RunOptions,</span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">Param       =</span> params</span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Return simulation outputs ---</span></span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">Date =</span> data<span class="sc">$</span>Date,</span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">Qobs =</span> Qobs,</span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">Qsim =</span> OutputsModel<span class="sc">$</span>Qsim</span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>github_repo <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"https://raw.githubusercontent.com/"</span>,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"diopBachir/tp_modhydroclimat/main/"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(github_repo, <span class="st">"helper_functions/run_gr4j_simulation.R"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Reference simulation (Benchmark using station data):</p>
 <div class="cell">
