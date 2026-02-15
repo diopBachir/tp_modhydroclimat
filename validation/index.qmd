@@ -51,56 +51,17 @@ gr4j_param
 ```
 
 
-Before running the GR4J simulations, we define a helper function (**`run_gr4j_simulation(...)`**) that prepares all required input objects for the model using already calibrated parameters. This function streamlines the simulation workflow, avoids repeating the input preparation steps, and ensures consistency across all model runs.
+Before running the GR4J simulations, we source the [**`run_gr4j_simulation(...)`**](https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/prepare_climate_data.R) helper function that prepares all required input objects for the model using already calibrated parameters. This function streamlines the simulation workflow, avoids repeating the input preparation steps, and ensures consistency across all model runs.
 
 ```{r}
 #| echo: true
 #| eval: true
 #| warning: false
 #| message: false
-#| code-fold: true
-#| code-summary: Show the code
 
-run_gr4j_simulation = function(data, Pvarname, PETvarname, Qobs, params) 
-{
-  
-  data = data[complete.cases(data[, c(Pvarname, PETvarname)]), ]
-  data[[Pvarname]] = ifelse(data[[Pvarname]] < 0, 0, data[[Pvarname]])
-  data[[PETvarname]] = ifelse(data[[PETvarname]] < 0, 0, data[[PETvarname]])
-
-  # Ensure Date format (POSIXt required by airGR) ---
-  data[["Date"]] = as.POSIXct(data[["Date"]])
-  
-  # Create model inputs ---
-  InputsModel = CreateInputsModel(
-    FUN_MOD  = RunModel_GR4J,
-    DatesR   = data[["Date"]],
-    Precip   = data[[Pvarname]],
-    PotEvap  = data[[PETvarname]]
-  )
-  
-  # Create run options (no warm-up) ---
-  RunOptions = CreateRunOptions(
-    FUN_MOD = RunModel_GR4J,
-    InputsModel = InputsModel,
-    IndPeriod_Run = seq_len(length(data[["Date"]]))
-  )
-  
-  # Run GR4J simulation ---
-  OutputsModel = RunModel_GR4J(
-    InputsModel = InputsModel,
-    RunOptions  = RunOptions,
-    Param       = params
-  )
-  
-  # Return simulation outputs ---
-  data.frame(
-    Date = data$Date,
-    Qobs = Qobs,
-    Qsim = OutputsModel$Qsim
-  )
-}
-
+github_repo = paste0("https://raw.githubusercontent.com/",
+                     "diopBachir/tp_modhydroclimat/main/")
+source(file.path(github_repo, "helper_functions/run_gr4j_simulation.R"))
 ```
 
 Reference simulation (Benchmark using station data):
