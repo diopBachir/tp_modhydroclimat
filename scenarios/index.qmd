@@ -75,7 +75,7 @@ gr4jsim_rcp85_CNRM = run_gr4j_simulation(
 # Comparison of historical and projected (RCP4.5 and RCP8.5) mean daily and monthly discharge
 
 
-Let's plot the mean daily and monthly  discharge for the historical, RCP4.5 and RCP8.5 simulations. We source, in the chunk below, the [**`compute_mean_daily_cycle(...)`**](https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/prepare_climate_data.R) helper function.
+Let's plot the mean daily and monthly  discharge for the historical, RCP4.5 and RCP8.5 simulations. We source, in the chunk below, the [**`compute_mean_daily_cycle(...)`**](https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/compute_mean_daily_cycle.R) helper function.
 
 ```{r}
 #| echo: true
@@ -261,40 +261,42 @@ fit_hist  = fevd(amf_hist, type = "GEV", method = "GMLE")
 fit_rcp45 = fevd(amf_rcp45, type = "GEV", method = "GMLE")
 fit_rcp85 = fevd(amf_rcp85, type = "GEV", method = "GMLE")
 
-return_periods <- seq(1.1, 100, length.out = 100)
+# Create a sequence of flow values (Annual Maxima)
+flow_range = seq(min(c(amf_hist, amf_rcp45, amf_rcp85)), 
+                  max(c(amf_hist, amf_rcp45, amf_rcp85)), 
+                  length.out = 200)
 
-rl_hist  <- return.level(fit_hist, return.period = return_periods)
-rl_rcp45 <- return.level(fit_rcp45, return.period = return_periods)
-rl_rcp85 <- return.level(fit_rcp85, return.period = return_periods)
+# Calculate probabilities for each scenario using the fitted parameters
+p_hist  = extRemes::pevd(flow_range, loc = fit_hist$results$par[1], 
+                         scale = fit_hist$results$par[2], 
+                         shape = fit_hist$results$par[3])
 
-x_lims <- range(c(rl_hist, rl_rcp45, rl_rcp85), na.rm = TRUE)
+p_rcp45 = extRemes::pevd(flow_range, loc = fit_rcp45$results$par[1], 
+                         scale = fit_rcp45$results$par[2], 
+                         shape = fit_rcp45$results$par[3])
 
-plot(rl_hist, 
-     return_periods, 
-     type = "l", 
-     log = "",
-     xlim = x_lims, 
-     lwd = 2, 
-     col = "black",
-     lty = 3,
-     cex.lab = 1.2, 
-     cex.axis = 1.2,
-     xlab = "Return Level [m3.s]",
-     ylab = "Return Period (years)")
+p_rcp85 = extRemes::pevd(flow_range, loc = fit_rcp85$results$par[1], 
+                         scale = fit_rcp85$results$par[2], 
+                         shape = fit_rcp85$results$par[3])
 
-lines(rl_rcp45, return_periods, col = "blue", lwd = 2, lty = 1)
-lines(rl_rcp85, return_periods, col = "red", lwd = 2, lty = 1)
 
-legend("topleft", 
+# Plot the Probability (CDF)
+plot(flow_range, p_hist, type = "l", lwd = 2, col = "black", lty = 2,
+     xlab = "Annual Maximum Flow [m3.s]", 
+     ylab = "Probability")
+
+lines(flow_range, p_rcp45, col = "blue", lwd = 2, lty = 2)
+lines(flow_range, p_rcp85, col = "red", lwd = 2, lty = 2)
+
+legend("bottomright", 
        legend = c("GR4J with Bias corrected RCM-HIST", 
                   "GR4J with Bias corrected RCM-RCP4.5", 
                   "GR4J with Bias corrected RCM-RCP8.5"),
        col = c("black", "blue", "red"),
-       lty = c(3, 1, 1), 
+       lty = c(2, 2, 2), 
        lwd = 2,
        bty = "o",
        cex = .9)
-
 ```
 
 

@@ -100,7 +100,7 @@ library(package_name)
 
 📦 [**`{hydromad}`**](https://hydromad.github.io/) — Provide a modelling framework for environmental hydrology.
 
-📦 [**`{EventStats}`**](https://cran.r-project.org/web/packages/EnvStats/index.html) — Graphical and statistical analyses of environmental data.
+📦 [**`{EnvStats}`**](https://cran.r-project.org/web/packages/EnvStats/index.html) — Graphical and statistical analyses of environmental data.
 
 📦 [**`{MBC}`**](https://github.com/cran/MBC/tree/master) — For calibrating and applying univariate and multivariate bias correction algorithms for climate model simulations of multiple climate variables.
 

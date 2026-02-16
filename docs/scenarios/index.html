@@ -263,11 +263,13 @@ $rcp85CNRM_adj
 5 2070-01-05 0.080232 0.0000000 1.0305621 1.8004305</code></pre>
 </div>
 </div>
-<p>In the previous sections, we have defined a helper function named <strong><code>run_gr4j_simulation(...)</code></strong> that prepares all required input objects for the GR4J model using already calibrated parameters. We have defined a script named <strong><code>run_gr4j_simulation.R</code></strong> that contains this function. So we will load it instead of recoding the function.</p>
+<p>As in the previous sections, we source the <a href="https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/prepare_climate_data.R"><strong><code>run_gr4j_simulation(...)</code></strong></a> helper function that prepares all required input objects for the GR4J model using already calibrated parameters.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"scripts/run_gr4j_simulation.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>github_repo <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"https://raw.githubusercontent.com/"</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"diopBachir/tp_modhydroclimat/main/"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(github_repo, <span class="st">"helper_functions/run_gr4j_simulation.R"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Next, we run the GR4J over the historical, RCP45 and RCP85 bias-corrected data.</p>
+<p>Next, we run the GR4J with the historical, RCP45 and RCP85 bias-corrected data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>gr4jsim_hist_CNRM <span class="ot">=</span> <span class="fu">run_gr4j_simulation</span>(</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  adjCNRM[[<span class="st">"histCNRM_adj"</span>]], <span class="st">"PR_adj"</span>, <span class="st">"PET_adj"</span>, <span class="cn">NA</span>, gr4j_param</span>
@@ -284,9 +286,9 @@ $rcp85CNRM_adj
 </section>
 <section id="comparison-of-historical-and-projected-rcp4.5-and-rcp8.5-mean-daily-and-monthly-discharge" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Comparison of historical and projected (RCP4.5 and RCP8.5) mean daily and monthly discharge</h1>
-<p>Let’s plot the mean daily and monthly discharge for the historical, RCP4.5 and RCP8.5 simulations. We have already a function named <strong><code>compute_mean_daily_cycle(...)</code></strong> defined in the previous steps. We have written this function in a script <strong><code>compute_mean_daly_Q.R</code></strong> named, so we will load it and compute the mean daily discharge.</p>
+<p>Let’s plot the mean daily and monthly discharge for the historical, RCP4.5 and RCP8.5 simulations. We source, in the chunk below, the <a href="https://github.com/diopBachir/tp_modhydroclimat/blob/main/helper_functions/compute_mean_daily_cycle.R"><strong><code>compute_mean_daily_cycle(...)</code></strong></a> helper function.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"scripts/compute_mean_daly_Q.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(github_repo, <span class="st">"helper_functions/compute_mean_daily_cycle.R"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>histGR4J_CNRM <span class="ot">=</span> <span class="fu">compute_mean_daily_cycle</span>(gr4jsim_hist_CNRM, <span class="st">"HIST"</span>, <span class="st">"Qsim"</span>)</span>
@@ -443,39 +445,42 @@ Figure&nbsp;2: Mean monthly discharge simulated by GR4J using bias-corrected RCM
 <span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>fit_rcp45 <span class="ot">=</span> <span class="fu">fevd</span>(amf_rcp45, <span class="at">type =</span> <span class="st">"GEV"</span>, <span class="at">method =</span> <span class="st">"GMLE"</span>)</span>
 <span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>fit_rcp85 <span class="ot">=</span> <span class="fu">fevd</span>(amf_rcp85, <span class="at">type =</span> <span class="st">"GEV"</span>, <span class="at">method =</span> <span class="st">"GMLE"</span>)</span>
 <span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>return_periods <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">1.1</span>, <span class="dv">100</span>, <span class="at">length.out =</span> <span class="dv">100</span>)</span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>rl_hist  <span class="ot">&lt;-</span> <span class="fu">return.level</span>(fit_hist, <span class="at">return.period =</span> return_periods)</span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>rl_rcp45 <span class="ot">&lt;-</span> <span class="fu">return.level</span>(fit_rcp45, <span class="at">return.period =</span> return_periods)</span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>rl_rcp85 <span class="ot">&lt;-</span> <span class="fu">return.level</span>(fit_rcp85, <span class="at">return.period =</span> return_periods)</span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>x_lims <span class="ot">&lt;-</span> <span class="fu">range</span>(<span class="fu">c</span>(rl_hist, rl_rcp45, rl_rcp85), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rl_hist, </span>
-<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>     return_periods, </span>
-<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>     <span class="at">type =</span> <span class="st">"l"</span>, </span>
-<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>     <span class="at">log =</span> <span class="st">""</span>,</span>
-<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlim =</span> x_lims, </span>
-<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">2</span>, </span>
-<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"black"</span>,</span>
-<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>     <span class="at">lty =</span> <span class="dv">3</span>,</span>
-<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex.lab =</span> <span class="fl">1.2</span>, </span>
-<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex.axis =</span> <span class="fl">1.2</span>,</span>
-<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Return Level [m3.s]"</span>,</span>
-<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Return Period (years)"</span>)</span>
-<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(rl_rcp45, return_periods, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">1</span>)</span>
-<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(rl_rcp85, return_periods, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">1</span>)</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a sequence of flow values (Annual Maxima)</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>flow_range <span class="ot">=</span> <span class="fu">seq</span>(<span class="fu">min</span>(<span class="fu">c</span>(amf_hist, amf_rcp45, amf_rcp85)), </span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">max</span>(<span class="fu">c</span>(amf_hist, amf_rcp45, amf_rcp85)), </span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>                  <span class="at">length.out =</span> <span class="dv">200</span>)</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate probabilities for each scenario using the fitted parameters</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>p_hist  <span class="ot">=</span> extRemes<span class="sc">::</span><span class="fu">pevd</span>(flow_range, <span class="at">loc =</span> fit_hist<span class="sc">$</span>results<span class="sc">$</span>par[<span class="dv">1</span>], </span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>                         <span class="at">scale =</span> fit_hist<span class="sc">$</span>results<span class="sc">$</span>par[<span class="dv">2</span>], </span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>                         <span class="at">shape =</span> fit_hist<span class="sc">$</span>results<span class="sc">$</span>par[<span class="dv">3</span>])</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>p_rcp45 <span class="ot">=</span> extRemes<span class="sc">::</span><span class="fu">pevd</span>(flow_range, <span class="at">loc =</span> fit_rcp45<span class="sc">$</span>results<span class="sc">$</span>par[<span class="dv">1</span>], </span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>                         <span class="at">scale =</span> fit_rcp45<span class="sc">$</span>results<span class="sc">$</span>par[<span class="dv">2</span>], </span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>                         <span class="at">shape =</span> fit_rcp45<span class="sc">$</span>results<span class="sc">$</span>par[<span class="dv">3</span>])</span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>p_rcp85 <span class="ot">=</span> extRemes<span class="sc">::</span><span class="fu">pevd</span>(flow_range, <span class="at">loc =</span> fit_rcp85<span class="sc">$</span>results<span class="sc">$</span>par[<span class="dv">1</span>], </span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>                         <span class="at">scale =</span> fit_rcp85<span class="sc">$</span>results<span class="sc">$</span>par[<span class="dv">2</span>], </span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>                         <span class="at">shape =</span> fit_rcp85<span class="sc">$</span>results<span class="sc">$</span>par[<span class="dv">3</span>])</span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the Probability (CDF)</span></span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(flow_range, p_hist, <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">lty =</span> <span class="dv">2</span>,</span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Annual Maximum Flow [m3.s]"</span>, </span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Probability"</span>)</span>
 <span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, </span>
-<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"GR4J with Bias corrected RCM-HIST"</span>, </span>
-<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"GR4J with Bias corrected RCM-RCP4.5"</span>, </span>
-<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"GR4J with Bias corrected RCM-RCP8.5"</span>),</span>
-<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"blue"</span>, <span class="st">"red"</span>),</span>
-<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">1</span>), </span>
-<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty =</span> <span class="st">"o"</span>,</span>
-<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex =</span> .<span class="dv">9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(flow_range, p_rcp45, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(flow_range, p_rcp85, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"bottomright"</span>, </span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"GR4J with Bias corrected RCM-HIST"</span>, </span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"GR4J with Bias corrected RCM-RCP4.5"</span>, </span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"GR4J with Bias corrected RCM-RCP8.5"</span>),</span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"blue"</span>, <span class="st">"red"</span>),</span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>), </span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty =</span> <span class="st">"o"</span>,</span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex =</span> .<span class="dv">9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div id="fig-climate_sign_rl" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -602,7 +607,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/diopbachir\.github\.io\/tp_eva\/index\.html");
+      var filterRegex = new RegExp("https:\/\/sbdiop\.quarto\.pub\/hydro-climatic-modelling-workflow-a-practical-guide");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

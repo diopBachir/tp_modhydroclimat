@@ -1,31 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/loaddata/index.html</loc>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/loaddata/index.html</loc>
     <lastmod>2026-02-15T20:22:56.806Z</lastmod>
   </url>
   <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/modelcalib/index.html</loc>
-    <lastmod>2026-02-15T18:29:43.419Z</lastmod>
-  </url>
-  <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/validation/index.html</loc>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/validation/index.html</loc>
     <lastmod>2026-02-15T22:17:01.909Z</lastmod>
   </url>
   <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/softwaresetup/index.html</loc>
-    <lastmod>2026-02-09T08:13:02.310Z</lastmod>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/introduction/index.html</loc>
+    <lastmod>2026-02-11T01:09:16.912Z</lastmod>
   </url>
   <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/biascorr/index.html</loc>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/scenarios/index.html</loc>
+    <lastmod>2026-02-15T23:09:44.034Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/modelcalib/index.html</loc>
+    <lastmod>2026-02-16T01:48:26.990Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/biascorr/index.html</loc>
     <lastmod>2026-02-15T21:45:36.425Z</lastmod>
   </url>
   <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/scenarios/index.html</loc>
-    <lastmod>2026-02-11T01:06:31.244Z</lastmod>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/softwaresetup/index.html</loc>
+    <lastmod>2026-02-09T08:13:02.310Z</lastmod>
   </url>
   <url>
-    <loc>https://diopbachir.github.io/tp_eva/index.html/introduction/index.html</loc>
-    <lastmod>2026-02-11T01:09:16.912Z</lastmod>
+    <loc>https://sbdiop.quarto.pub/hydro-climatic-modelling-workflow-a-practical-guide/index.html</loc>
+    <lastmod>2026-02-16T01:24:59.437Z</lastmod>
+  </url>
+  <url>
+    <loc>https://diopbachir.github.io/tp_eva/index.html/softwaresetup/index.html</loc>
+    <lastmod>2026-02-16T15:58:44.925Z</lastmod>
   </url>
 </urlset>

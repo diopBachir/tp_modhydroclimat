@@ -22,6 +22,8 @@ As described in the [**database section**](../loaddata/index.qmd#sec-exportprepr
 ```{r}
 #| echo: true
 #| eval: true
+#| message: false
+#| warning: false
 
 hist_obs = readRDS("output_preprocessed/processed_obsdata_lez.rds")
 str(hist_obs)
@@ -70,6 +72,8 @@ We first convert the **`Date`** column in the POSIXt format required by the **`a
 ```{r}
 #| echo: true
 #| eval: true
+#| message: false
+#| warning: false
 
 hist_obs$Date = as.POSIXct(hist_obs$Date)
 str(hist_obs$Date)
@@ -101,6 +105,8 @@ Before running the **GR4J model**, we must select the period for which we want t
 ```{r}
 #| echo: true
 #| eval: true
+#| message: false
+#| warning: false
 
 # define two years of warm-up period
 ind_WarmUp = seq(
@@ -126,6 +132,8 @@ We can now create the run options using the **`InputsModel`**, **`ind_WarmUp`** 
 ```{r}
 #| echo: true
 #| eval: true
+#| message: false
+#| warning: false
 
 RunOptions = CreateRunOptions(
   FUN_MOD = RunModel_GR4J,
@@ -141,6 +149,8 @@ Next, we use the **`CreateInputsCrit()`** function that gathers all the data and
 ```{r}
 #| echo: true
 #| eval: true
+#| message: false
+#| warning: false
 
 InputsCrit = CreateInputsCrit(
   # the name of the error criterion functions:
@@ -169,6 +179,8 @@ Before using the automatic calibration tool, we must prepare the calibration opt
 ```{r}
 #| echo: true
 #| eval: true
+#| message: false
+#| warning: false
 
 CalibOptions = CreateCalibOptions(  
   FUN_MOD = RunModel_GR4J,        # the name of the model function
@@ -183,6 +195,8 @@ Now we are ready to perform calibration of the GR4J model using the **`Calibrati
 ```{r}
 #| echo: true
 #| eval: true
+#| message: false
+#| warning: false
 
 OutputsCalib = Calibration_Michel(
   #* the inputs of the hydrological model previously prepared by the 
@@ -208,6 +222,8 @@ The **`Calibration_Michel()`** function returns a vector containing the optimize
 ```{r}
 #| echo: true
 #| eval: true
+#| message: false
+#| warning: false
 
 gr4j_params = OutputsCalib$ParamFinalR
 kge = OutputsCalib$CritFinal
@@ -233,6 +249,8 @@ Finally, we can vizualize the results of the GR4J model calibration. The **`airG
 ```{r}
 #| echo: true
 #| eval: true
+#| message: false
+#| warning: false
 #| fig-width: 12
 #| fig-height: 5
 #| out-width: "100%"
@@ -253,6 +271,8 @@ As in the data preprocessing stage, the **calibrated GR4J model** is reused in t
 ```{r}
 #| echo: true
 #| eval: true
+#| message: false
+#| warning: false
 
 # Create an output directory if it doesn't exist
 if (!dir.exists("output_modelcalibration")) dir.create("output_modelcalibration")
@@ -268,9 +288,47 @@ While the **GR4J model** is used for the remainder of the practical, further ana
 
 ![Schematic structure of the IHACRES model [@Zhaonh2019047]. $C$ represents mass balance which ensures the long-term volume of effective rainfall matches observed discharge, $\tau_s$ is the reference drying rate, which defines the soil's drying speed at a reference temperature, $f$ is the temperature modulation of drying rate](images/ihacres-illustr.png){#fig-ihacresschema width=100% fig-alt="Schematic structure of the IHACRES model"}
 
+::: {.callout-warning title="Note on the installation of the **`hydromad`** package"}
+
 In **`R`**, the most common and robust way to use the **`IHACRES`** model is through the **`hydromad package`**. It is specifically designed for conceptual rainfall-runoff modeling and allows to handle both the **non-linear loss** and **linear routing** modules separately or as a combined model. 
 
-The model requires a time-series object (**`zoo`** or **`xts`**) containing Rainfall ($P$), Temperature ($T$) or Potential Evapotranspiration ($E$), and observed Discharge ($Q$).
+For recents versions of **`R`**, the **`hydromad`** is no longer avaialble. On **Windows**, you need to install from source following a two-step process: you must first install the **C/Fortran compilers (Rtools)** so Windows can "build" the code, and then pull the source from GitHub.
+
+
+1. Download **`Rtools` same version as your `R`** from [**CRAN**](https://cran.r-project.org/bin/windows/Rtools/).
+2. Run the installer
+3. Restart RStudio after installation.
+4. Install Dependencies
+```{r}
+#| echo: true
+#| eval: false
+
+# 1. Install the 'remotes' package to handle GitHub downloads
+if (!require("remotes")) install.packages("remotes")
+
+# 2. Install mandatory dependencies from CRAN
+install.packages(c("zoo", "latticeExtra", "polynom", "car", 
+                   "Hmisc", "reshape", "DEoptim", "dream"))
+```
+
+5. Install hydromad from source (GitHub): in this practical, we are running **`R 4.5`**, but the **`hydromad`** source code is a bit older. The **`error error: 'PI' undeclared`** may be raised because **modern C compilers (like the one in Rtools45)** no longer automatically recognize **`PI`**; they expect **`M_PI`** from the **`math`** library. Since the source code on GitHub hasn't been updated for **`R 4.5`** yet, below is a way to bypass this:
+```{r}
+#| echo: true
+#| eval: false
+
+# Set compiler flags to ignore certain errors and include math constants
+Sys.setenv(PKG_CPPFLAGS = "-DPI=3.14159265358979323846")
+
+# Now try the install
+remotes::install_github("JosephGuillaume/hydromad")
+
+# Reset the variable after (to avoid affecting other packages)
+Sys.unsetenv("PKG_CPPFLAGS")
+```
+
+:::
+
+The **IHACRES** model requires a time-series object (**`zoo`** or **`xts`**) containing Rainfall ($P$), Temperature ($T$) or Potential Evapotranspiration ($E$), and observed Discharge ($Q$).
 
 ```{r}
 #| echo: true
